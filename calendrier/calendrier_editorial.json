@@ -1,0 +1,64 @@
+{
+  "client": "Excellence+",
+  "periode": "Août 2026",
+  "genere_le": "2026-07-28",
+  "valide_par_client": false,
+  "date_soumission_client": null,
+  "posts": [
+    {
+      "id": "EXC-FB-2026-W32-001",
+      "plateforme": "facebook",
+      "date": "2026-08-04",
+      "heure_wat": "18:30",
+      "pilier": "autorité_éducative",
+      "theme": "Inscriptions rentrée 2026 ouvertes",
+      "format": "image_texte",
+      "statut": "draft",
+      "fichier": "contenu/facebook/2026-08-04_inscriptions-rentree.md"
+    },
+    {
+      "id": "EXC-WA-2026-W32-001",
+      "plateforme": "whatsapp",
+      "date": "2026-08-05",
+      "heure_wat": "08:00",
+      "pilier": "autorité_éducative",
+      "theme": "Rappel inscriptions — priorité abonnés",
+      "format": "texte_court",
+      "statut": "draft",
+      "fichier": "contenu/whatsapp/2026-08-05_rappel-inscriptions.md"
+    },
+    {
+      "id": "EXC-FB-2026-W32-002",
+      "plateforme": "facebook",
+      "date": "2026-08-06",
+      "heure_wat": "18:30",
+      "pilier": "methode_excellence",
+      "theme": "Nos formules rentrée — carrousel",
+      "format": "carrousel",
+      "statut": "draft",
+      "fichier": "contenu/facebook/2026-08-06_formules-rentree.md"
+    },
+    {
+      "id": "EXC-IG-2026-W32-001",
+      "plateforme": "instagram",
+      "date": "2026-08-07",
+      "heure_wat": "19:00",
+      "pilier": "la_preuve",
+      "theme": "Témoignage Bac C 2025",
+      "format": "carrousel",
+      "statut": "draft",
+      "fichier": "contenu/instagram/2026-08-07_temoignage-bac-c.md"
+    },
+    {
+      "id": "EXC-TT-2026-W32-001",
+      "plateforme": "tiktok",
+      "date": "2026-08-08",
+      "heure_wat": "17:00",
+      "pilier": "methode_excellence",
+      "theme": "Script : comment on suit un élève en temps réel",
+      "format": "video_60s",
+      "statut": "draft",
+      "fichier": "contenu/tiktok/2026-08-08_suivi-eleve-script.md"
+    }
+  ]
+}
