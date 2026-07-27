@@ -1,0 +1,35 @@
+name: Rappel BAT en attente
+
+on:
+  schedule:
+    - cron: '0 8 * * *'
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pyyaml requests
+      - name: Vérifier BAT en attente
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          python3 -c "
+          import glob, yaml, requests, os
+          from datetime import datetime
+          webhook = os.environ.get('SLACK_WEBHOOK_URL')
+          pending = []
+          for f in glob.glob('contenu/**/*.md', recursive=True):
+              with open(f) as fp:
+                  content = fp.read()
+              parts = content.split('---', 2)
+              if len(parts) < 3: continue
+              meta = yaml.safe_load(parts[1])
+              if meta.get('statut') == 'BAT_soumis' and not meta.get('bap_recu_le'):
+                  pending.append(meta.get('id'))
+          if pending and webhook:
+              requests.post(webhook, json={'text': f'⏳ BAP en attente : {pending}'})
+          "

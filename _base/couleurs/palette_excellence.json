@@ -1,0 +1,33 @@
+{
+  "client": "Excellence+",
+  "version": "2026",
+  "couleurs": {
+    "navy": {
+      "hex": "#1B2D5C",
+      "rgb": [27, 45, 92],
+      "cmjn": [100, 92, 36, 41],
+      "usage": "Fond principal, titres, headers — dominant 60-70%"
+    },
+    "orange": {
+      "hex": "#F37021",
+      "rgb": [243, 112, 33],
+      "cmjn": [0, 67, 95, 0],
+      "usage": "Kickers, CTA, bande signature, accents — 10-20%"
+    },
+    "blanc": {
+      "hex": "#FFFFFF",
+      "rgb": [255, 255, 255],
+      "cmjn": [0, 0, 0, 0],
+      "usage": "Texte sur navy, espaces de respiration"
+    }
+  },
+  "regle_or": "Navy domine. Orange accentue. Blanc respire. Ne jamais inverser.",
+  "combinaisons_autorisees": [
+    "navy + orange + blanc",
+    "blanc sur navy",
+    "orange sur blanc (texte > 18pt uniquement)"
+  ],
+  "combinaisons_interdites": [
+    "orange + navy directement (lisibilité insuffisante pour texte)"
+  ]
+}
