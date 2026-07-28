@@ -12,6 +12,10 @@ Avant toute action, lire dans l'ordre :
 Si l'un de ces fichiers est absent : **ARRÊTER et alerter l'équipe.**
 Un fichier absent = une décision prise dans le vide.
 
+Ensuite, lire `STATUT_PROJET.md` (racine du repo) pour connaître l'état réel
+des livrables, les points de vigilance non résolus et les conventions déjà
+établies avant de reprendre le travail dans une nouvelle session.
+
 ## IDENTITÉ CLIENT
 
 - Nom exact : **Excellence+** (JAMAIS "Excellence++")
