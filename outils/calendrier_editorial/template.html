@@ -254,7 +254,7 @@ ENTRIES.forEach(e=>{ e.statut = StatutStore.get(e.id, e.statut); });
 
 /* ====== En-tête ====== */
 document.getElementById('hTitle').textContent = 'Excellence+ — Calendrier Éditorial';
-document.getElementById('hSub').textContent = 'Juillet → Décembre 2026 · Fuseau WAT (UTC+1)';
+document.getElementById('hSub').textContent = 'Août → Décembre 2026 · Fuseau WAT (UTC+1)';
 
 (function legend(){
   const el=document.getElementById('platformLegend');
@@ -281,7 +281,7 @@ const NAV = { view:'overview', month:null, week:null };
 
 function setBreadcrumb(){
   const el = document.getElementById('breadcrumbNav');
-  let html = `<span class="bc ${NAV.view==='overview'&&!isSearching()?'current':''}" data-nav="overview">🗓️ Vue 6 mois</span>`;
+  let html = `<span class="bc ${NAV.view==='overview'&&!isSearching()?'current':''}" data-nav="overview">🗓️ Vue d'ensemble</span>`;
   if(NAV.month){
     const m = MMAP[NAV.month];
     html += `<span class="sep">›</span><span class="bc ${NAV.view==='month'&&!isSearching()?'current':''}" data-nav="month">${esc(m.nom)}</span>`;

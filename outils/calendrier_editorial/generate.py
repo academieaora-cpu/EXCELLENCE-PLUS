@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Génère le calendrier éditorial Excellence+ v3 — juillet-décembre 2026.
-Transcrit fidèlement les posts Facebook juillet/août/septembre donnés par
+Génère le calendrier éditorial Excellence+ v3 — 5 mois actifs, août-décembre
+2026 (juillet achevé, retiré du plan actif — cf. STATUT_PROJET.md).
+Transcrit fidèlement les posts Facebook août/septembre donnés par
 l'utilisateur ; génère WhatsApp/Instagram/TikTok autour ; génère
-octobre-décembre systématiquement à partir des axes donnés.
+octobre-décembre systématiquement à partir des axes donnés. Décembre est
+positionné comme bilan mi-annuel du programme (pas un bilan de fin d'année
+calendaire).
 """
 import codecs
 import datetime
@@ -66,32 +69,27 @@ STATUTS = [
 ]
 
 MONTHS = [
-    {"id": "2026-07", "nom": "Juillet 2026", "sous_titre": "Mois 2 — Anticipation", "theme": "ANTICIPATION RENTRÉE",
-     "couleur": "#1B2D5C", "priorite": False},
-    {"id": "2026-08", "nom": "Août 2026", "sous_titre": "Mois 3 — Conversion intensive", "theme": "CONVERSION INTENSIVE",
+    {"id": "2026-08", "nom": "Août 2026", "sous_titre": "Mois 1 — Conversion intensive", "theme": "CONVERSION INTENSIVE",
      "couleur": "#F37021", "priorite": True},
-    {"id": "2026-09", "nom": "Septembre 2026", "sous_titre": "Mois 4 — Fermeture", "theme": "FERMETURE & URGENCE",
+    {"id": "2026-09", "nom": "Septembre 2026", "sous_titre": "Mois 2 — Fermeture", "theme": "FERMETURE & URGENCE",
      "couleur": "#C0392B", "priorite": False},
-    {"id": "2026-10", "nom": "Octobre 2026", "sous_titre": "Mois 5 — Fidélisation", "theme": "FIDÉLISATION",
+    {"id": "2026-10", "nom": "Octobre 2026", "sous_titre": "Mois 3 — Fidélisation", "theme": "FIDÉLISATION",
      "couleur": "#27AE60", "priorite": False},
-    {"id": "2026-11", "nom": "Novembre 2026", "sous_titre": "Mois 6 — Autorité", "theme": "AUTORITÉ",
+    {"id": "2026-11", "nom": "Novembre 2026", "sous_titre": "Mois 4 — Autorité", "theme": "AUTORITÉ",
      "couleur": "#142850", "priorite": False},
-    {"id": "2026-12", "nom": "Décembre 2026", "sous_titre": "Mois 7 — Bilan", "theme": "BILAN & PROJECTION",
+    {"id": "2026-12", "nom": "Décembre 2026", "sous_titre": "Mois 5 — Bilan mi-annuel", "theme": "BILAN MI-ANNUEL",
      "couleur": "#D4AC0D", "priorite": False},
 ]
 MONTH_BY_ID = {m["id"]: m for m in MONTHS}
 
 META_ADS = [
-    {"id": "ADS-1", "nom": "Campagne META ADS 1 — TEST", "periode": "14–27 juillet 2026", "budget": None,
-     "mois": "2026-07", "debut_iso": "2026-07-14", "fin_iso": "2026-07-27"},
-    {"id": "ADS-2", "nom": "Campagne META ADS 2 — CONVERSION", "periode": "4–24 août 2026", "budget": "30 000 FCFA",
+    {"id": "ADS-1", "nom": "Campagne META ADS 1 — CONVERSION", "periode": "4–24 août 2026", "budget": "30 000 FCFA",
      "mois": "2026-08", "debut_iso": "2026-08-04", "fin_iso": "2026-08-24"},
-    {"id": "ADS-3", "nom": "Campagne META ADS 3 — FERMETURE", "periode": "8–20 septembre 2026", "budget": "10 000 FCFA",
+    {"id": "ADS-2", "nom": "Campagne META ADS 2 — FERMETURE", "periode": "8–20 septembre 2026", "budget": "10 000 FCFA",
      "mois": "2026-09", "debut_iso": "2026-09-08", "fin_iso": "2026-09-20"},
 ]
 
 KPI_PAR_MOIS = {
-    "2026-07": "200-350 nouveaux abonnés FB · 5-8 demandes WhatsApp/jour · 2-3 inscriptions Vacances Utiles",
     "2026-08": "5-8 messages WhatsApp/jour · 8-12 nouvelles inscriptions",
     "2026-09": "6-10 inscriptions finales · verrouillage portefeuille rentrée",
 }
@@ -168,28 +166,11 @@ def base_entry(entry_id, titre, pilier, plateforme, format_, date_obj, heure, mo
 
 
 # ---------------------------------------------------------------------------
-# JUILLET / AOÛT / SEPTEMBRE — Facebook transcrit fidèlement (titre, pilier)
+# AOÛT / SEPTEMBRE — Facebook transcrit fidèlement (titre, pilier)
 # par semaine (S1..S4). "toute notre équipe" remplace tout chiffre headcount.
+# Juillet (achevé) a été retiré du plan actif — cf. STATUT_PROJET.md.
 # ---------------------------------------------------------------------------
 EXPLICIT_FB = {
-    "2026-07": [
-        [("Bulletin décevant : 5 réactions à adopter (et 3 à éviter)", AUT),
-         ("Témoignage audio : éviter le redoublement", PRE),
-         ("5 chiffres Excellence+ depuis le début", PRE),
-         ("Sondage — Avez-vous déjà fait appel à un répétiteur ?", AUT)],
-        [("Classe d'examen 2026-2027 : ce qu'il faut savoir", AUT),
-         ("Témoignage — mention Très Bien au Bac", PRE),
-         ("Portrait enseignant", MET),
-         ("Vacances utiles ou pures vacances ?", AUT)],
-        [("ANNONCE — Formule Vacances Utiles", MET),
-         ("Combler les lacunes en 6 semaines", MET),
-         ("Témoignage Bac S 2025", PRE),
-         ("Quel rêve d'études pour votre enfant ?", AUT)],
-        [("5 mythes sur les cours à domicile", AUT),
-         ("Recrutement 2026 : nos critères", MET),
-         ("Témoignage élève BEPC", PRE),
-         ("Sondage — Votre priorité rentrée ?", AUT)],
-    ],
     "2026-08": [
         [("🚨 Inscriptions rentrée 2026 ouvertes", AUT),
          ("Nos formules rentrée", MET),
@@ -233,7 +214,6 @@ FB_DAYS_4 = [1, 3, 5, 7]        # lun/mer/ven/dim
 FB_DAYS_5 = [1, 3, 5, 6, 7]     # lun/mer/ven/sam/dim
 
 WA_THEMES = {
-    "2026-07": ["Témoignage vidéo (priorité)", "Rappel Vacances Utiles", "Conseil vacances productives"],
     "2026-08": ["Rappel inscriptions — priorité abonnés", "Témoignage vidéo", "Photo coulisses pré-rentrée"],
     "2026-09": ["Photo terrain — cours en action", "Message de la direction", "Relance ciblée"],
 }
@@ -255,7 +235,6 @@ TT_RUBRIQUES_JAS = [
 ]
 
 MONTH_THEME_LOWER = {
-    "2026-07": "l'anticipation de la rentrée",
     "2026-08": "la conversion intensive",
     "2026-09": "la fermeture des inscriptions",
 }
@@ -280,9 +259,9 @@ AXES_OND = {
         "pilote": False,
     },
     "2026-12": {
-        "facebook": ["Bilan de l'année 2026", "Perspectives 2027", "Témoignage de fin d'année",
-                     "Remerciements aux familles", "Teaser programme janvier 2027"],
-        "whatsapp": ["Message chaleureux de fin d'année", "Bilan trimestre pour les abonnés", "Vœux"],
+        "facebook": ["Bilan mi-annuel du programme Excellence+ × AORA", "Perspectives second semestre 2027",
+                     "Témoignage de fin d'année", "Remerciements aux familles", "Teaser programme janvier 2027"],
+        "whatsapp": ["Message chaleureux de fin d'année", "Bilan mi-annuel pour les abonnés", "Vœux"],
         "pilote": False,
     },
 }
@@ -291,17 +270,17 @@ AXES_PILIER_GUESS = {
     "Vie de la communauté Excellence+": MET, "Conseil suivi mi-trimestre": AUT,
     "Témoignage élève en cours d'année": PRE, "Conseil examens de fin de trimestre": AUT,
     "Méthode de révision intensive": AUT, "Préparer le premier bulletin 2026-2027": AUT,
-    "Contenu pédagogique à valeur forte": AUT, "Bilan de l'année 2026": PRE,
-    "Perspectives 2027": MET, "Témoignage de fin d'année": PRE,
+    "Contenu pédagogique à valeur forte": AUT, "Bilan mi-annuel du programme Excellence+ × AORA": PRE,
+    "Perspectives second semestre 2027": MET, "Témoignage de fin d'année": PRE,
     "Remerciements aux familles": PRE, "Teaser programme janvier 2027": MET,
     "Message exclusif abonnés": MET, "Conseil hebdo": AUT, "Sondage satisfaction": AUT,
     "Rappel méthode": AUT, "Message direct abonnés": MET,
-    "Message chaleureux de fin d'année": PRE, "Bilan trimestre pour les abonnés": PRE, "Vœux": PRE,
+    "Message chaleureux de fin d'année": PRE, "Bilan mi-annuel pour les abonnés": PRE, "Vœux": PRE,
 }
 
 
 def main():
-    start = datetime.date(2026, 7, 1)
+    start = datetime.date(2026, 8, 1)
     end = datetime.date(2026, 12, 31)
     WEEKS, week_days = build_weeks(start, end)
     weeks_by_month = {}
@@ -314,7 +293,7 @@ def main():
     def add(entry):
         entries.append(entry)
 
-    # ---- Juillet / Août / Septembre : Facebook explicite ----
+    # ---- Août / Septembre : Facebook explicite ----
     for mois, weeks_content in EXPLICIT_FB.items():
         weeks = weeks_by_month[mois]
         for wi, week_posts in enumerate(weeks_content):
@@ -333,7 +312,7 @@ def main():
                 add(base_entry(eid, titre, pilier, "facebook", "Image + texte / Carrousel",
                                 date_obj, "18:30", mois, tags=["facebook", pilier]))
 
-    # ---- Juillet / Août / Septembre : WhatsApp (rotation des 3 thèmes donnés) ----
+    # ---- Août / Septembre : WhatsApp (rotation des 3 thèmes donnés) ----
     for mois, themes in WA_THEMES.items():
         for w in weeks_by_month[mois]:
             days = week_days[w["id"]]
@@ -348,8 +327,8 @@ def main():
                 add(base_entry(eid, titre, pilier, "whatsapp", "Texte court",
                                 date_obj, heure, mois, tags=["whatsapp", pilier]))
 
-    # ---- Juillet / Août / Septembre : Instagram + TikTok (générés, ancrés sur le thème du mois) ----
-    for mois in ("2026-07", "2026-08", "2026-09"):
+    # ---- Août / Septembre : Instagram + TikTok (générés, ancrés sur le thème du mois) ----
+    for mois in ("2026-08", "2026-09"):
         theme_lower = MONTH_THEME_LOWER[mois]
         for wk_i, w in enumerate(weeks_by_month[mois]):
             days = week_days[w["id"]]
