@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excellence+ — Calendrier Éditorial — CE-EXC-001</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1B2D5C; --navy2:#2A3F6E; --orange:#F37021;
+    --bg:#F4F6FB; --txt:#1A2332; --grey:#6B7280; --line:#E2E8F0; --white:#fff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       background:var(--bg);color:var(--txt);line-height:1.5;padding-bottom:60px;min-width:1280px}
+  @media(max-width:900px){body{min-width:0}}
+
+  /* ---------- En-tête ---------- */
+  .topbar{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:18px 28px;
+          display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .topbar .logo-chip{background:#fff;border-radius:8px;padding:6px 10px;display:flex;align-items:center;height:40px}
+  .topbar .logo-chip img{height:26px;width:auto;display:block}
+  .topbar .ttl{flex:1;min-width:220px}
+  .topbar h1{font-size:20px;font-weight:800}
+  .topbar .sub{font-size:12px;opacity:.85;margin-top:2px}
+  .topbar .ref{background:var(--orange);color:#fff;font-weight:800;font-size:11px;padding:4px 10px;border-radius:999px}
+
+  .circuit-bar{background:#0F1D3D;color:#C9D2E8;padding:8px 28px;font-size:11px;display:flex;
+              align-items:center;gap:10px;flex-wrap:wrap}
+  .circuit-bar b{color:#fff}
+  .circuit-bar .step{color:#fff;font-weight:700}
+  .circuit-bar .sep{color:var(--orange)}
+  .circuit-bar .rule{background:rgba(243,112,33,.18);color:#FFD8BE;padding:2px 8px;border-radius:4px;font-weight:600}
+
+  .toolbar{position:sticky;top:0;z-index:31;background:#fff;border-bottom:1px solid var(--line);
+           padding:10px 28px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+  .breadcrumb-nav{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--navy);flex-wrap:wrap}
+  .breadcrumb-nav span.bc{cursor:pointer;padding:5px 10px;border-radius:6px}
+  .breadcrumb-nav span.bc:hover{background:var(--bg)}
+  .breadcrumb-nav span.bc.current{background:var(--navy);color:#fff}
+  .breadcrumb-nav .sep{color:var(--grey);font-weight:400}
+  .export-btn{border:0;background:var(--orange);color:#fff;font-weight:700;font-size:13px;padding:9px 16px;
+              border-radius:8px;cursor:pointer}
+  .export-btn:hover{filter:brightness(1.05)}
+
+  .controls{padding:12px 28px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#fff;
+            border-bottom:1px solid var(--line)}
+  .controls input[type=search],.controls select{font-size:13px;padding:8px 11px;border:1px solid var(--line);
+            border-radius:8px;background:#fff;color:var(--txt)}
+  .controls input[type=search]{flex:1;min-width:200px}
+  .controls label.chk{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--grey);cursor:pointer}
+  .platform-legend{display:flex;gap:8px;flex-wrap:wrap;padding:10px 28px;font-size:11px;align-items:center}
+  .platform-legend .lg{display:flex;align-items:center;gap:5px;font-weight:700;padding:3px 9px;border-radius:999px;color:#fff}
+  .platform-legend .lg.hors-scope{background:var(--line)!important;color:var(--grey)!important;font-weight:600}
+  .platform-legend .lg .b{font-size:9px;opacity:.85;font-weight:600}
+
+  main{padding:16px 28px}
+
+  /* ---------- Niveau 1 : vue 6 mois ---------- */
+  .overview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+  .month-card{background:#fff;border:1px solid var(--line);border-top:6px solid var(--navy);border-radius:14px;
+              padding:18px;cursor:pointer;transition:transform .12s,box-shadow .12s;position:relative}
+  .month-card:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(27,45,92,.14)}
+  .month-card .star{position:absolute;top:-10px;right:14px;background:var(--orange);color:#fff;font-size:10px;
+                    font-weight:800;padding:4px 10px;border-radius:999px;box-shadow:0 3px 8px rgba(243,112,33,.4)}
+  .month-card .mkicker{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+  .month-card .mname{font-size:16px;font-weight:800;color:var(--navy)}
+  .month-card .msub{font-size:11px;font-weight:700;color:var(--grey);margin:2px 0 8px}
+  .month-card .mkpi{font-size:11.5px;color:var(--grey);background:var(--bg);border-radius:6px;padding:8px 10px;margin:10px 0}
+  .month-card .mplats{display:flex;gap:8px;flex-wrap:wrap;font-size:11px;margin-top:8px}
+  .month-card .mplats span{display:flex;align-items:center;gap:3px;font-weight:700;color:#fff;padding:2px 7px;border-radius:999px}
+  .month-card .ads-tag{display:inline-block;font-size:9.5px;font-weight:800;color:#fff;background:#C0392B;
+                       padding:2px 8px;border-radius:4px;margin-top:8px}
+
+  /* ---------- Niveau 2 : vue mensuelle (semaines) ---------- */
+  .month-header{background:#fff;border-radius:12px;padding:18px 20px;margin-bottom:16px;border-left:6px solid var(--navy)}
+  .month-header .kicker{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+  .month-header h2{font-size:22px;font-weight:800;color:var(--navy)}
+  .month-header .sub{font-size:12.5px;font-weight:700;color:var(--grey);margin:2px 0 10px}
+  .month-header .kpi-row{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--txt);margin-top:8px}
+  .month-header .kpi-row b{color:var(--navy)}
+  .week-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+  .week-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;cursor:pointer;
+            transition:transform .12s,box-shadow .12s}
+  .week-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(27,45,92,.12)}
+  .week-card .wname{font-weight:800;color:var(--navy);font-size:14px}
+  .week-card .wdates{font-size:11.5px;color:var(--grey);margin-bottom:8px}
+  .week-card .wcount{font-size:11.5px;color:var(--txt)}
+
+  /* ---------- Niveau 3 : cartes post ---------- */
+  .week-view-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+  .week-view-header h2{font-size:18px;font-weight:800;color:var(--navy)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+  .card{background:#fff;border:1px solid var(--line);border-top:6px solid var(--orange);border-radius:12px;
+        padding:14px 14px 12px;cursor:pointer;transition:transform .12s,box-shadow .12s;position:relative}
+  .card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(27,45,92,.12)}
+  .card.meta-ads{border-top-color:#C0392B;background:#FFF7F5}
+  .card .meta{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+  .badge{font-size:9.5px;font-weight:800;color:#fff;padding:3px 8px;border-radius:999px;white-space:nowrap}
+  .badge.fmt{background:var(--grey)}
+  .badge.statut{background:var(--grey);color:#fff}
+  .card .ct{font-size:14px;font-weight:700;margin:2px 0 8px;color:var(--navy);padding-right:24px}
+  .card .date{font-size:11.5px;color:var(--grey)}
+  .fav{position:absolute;top:10px;right:10px;font-size:17px;line-height:1;border:0;background:none;
+       cursor:pointer;color:#CBD5E1}
+  .fav.on{color:var(--orange)}
+  .empty{color:var(--grey);font-size:13px;padding:30px;text-align:center}
+
+  /* ---------- Modale fiche post ---------- */
+  .overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;z-index:100;
+                  align-items:flex-start;justify-content:center;padding:30px 16px;overflow:auto}
+  .overlay.show{display:flex}
+  .modal{background:#fff;border-radius:16px;max-width:760px;width:100%;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+  .modal-head{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:20px 24px;position:relative}
+  .modal-close{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;
+                border:0;background:rgba(255,255,255,.18);color:#fff;font-size:15px;cursor:pointer}
+  .modal-close:hover{background:rgba(255,255,255,.32)}
+  .modal-kicker{font-size:11px;font-weight:800;color:var(--orange);letter-spacing:.4px}
+  .modal-title{font-size:19px;font-weight:800;margin:4px 0 10px;padding-right:36px}
+  .modal-tags{display:flex;gap:6px;flex-wrap:wrap}
+  .tag{font-size:10px;background:rgba(255,255,255,.16);padding:3px 8px;border-radius:999px}
+  .modal-meta-row{display:flex;align-items:center;gap:14px;margin-top:12px;flex-wrap:wrap}
+  .fav-toggle{border:0;background:rgba(255,255,255,.16);color:#fff;font-size:12px;padding:6px 11px;
+              border-radius:8px;cursor:pointer}
+  .fav-toggle.on{background:var(--orange)}
+  .status-select{font-size:12px;padding:6px 9px;border-radius:8px;border:0;background:rgba(255,255,255,.16);color:#fff}
+  .modal-body{padding:18px 24px 20px;max-height:58vh;overflow:auto}
+  details.acc{border:1px solid var(--line);border-radius:10px;margin-bottom:10px;overflow:hidden}
+  details.acc>summary{cursor:pointer;list-style:none;padding:11px 14px;font-weight:700;color:var(--navy);
+                      background:#F8FAFC;font-size:13.5px;display:flex;align-items:center;gap:8px}
+  details.acc>summary::-webkit-details-marker{display:none}
+  details.acc>summary::before{content:"▸";color:var(--orange);font-size:11px;transition:transform .15s}
+  details.acc[open]>summary::before{transform:rotate(90deg)}
+  .acc-body{padding:11px 15px;font-size:13.5px;white-space:pre-wrap}
+  .kv{display:grid;grid-template-columns:120px 1fr;gap:6px 12px;font-size:13px}
+  .kv .k{color:var(--grey);font-weight:600}
+  .interdit-note{background:#FFF3E9;border-left:3px solid var(--orange);padding:9px 12px;font-size:12px;color:#7A3D0F;border-radius:4px}
+  .modal-actions{margin-top:12px;display:flex;justify-content:flex-end;gap:8px}
+  .copy-btn{background:var(--orange);color:#fff;border:0;padding:8px 15px;border-radius:8px;font-weight:700;cursor:pointer;font-size:12.5px}
+
+  .bottom{margin:40px 28px 0;padding-top:16px;border-top:1px solid var(--line);font-size:11.5px;color:var(--grey)}
+
+  @media print{
+    .toolbar,.controls,.platform-legend,.export-btn,.fav,.overlay,.circuit-bar{display:none!important}
+    body{padding-bottom:0}
+    .card{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo-chip"><img src="__LOGO_AORA__" alt="AORA"></div>
+    <div class="ttl">
+      <h1 id="hTitle">Calendrier Éditorial</h1>
+      <div class="sub" id="hSub"></div>
+    </div>
+    <span class="ref">CE-EXC-001</span>
+    <div class="logo-chip"><img src="__LOGO_EXCELLENCE__" alt="Excellence+"></div>
+  </header>
+
+  <div class="circuit-bar">
+    <span class="step">draft</span><span class="sep">→</span>
+    <span class="step">BAT soumis</span><span class="sep">(email, 48h ouvrables)</span><span class="sep">→</span>
+    <span class="step">BAP reçu</span><span class="sep">(email uniquement)</span><span class="sep">→</span>
+    <span class="step">publication auto. Composio</span><span class="sep">→</span>
+    <span class="step">archivage</span>
+    <span class="rule">⚠ Publication bloquée si bap_recu_le est vide</span>
+    <span class="rule">Vocal WhatsApp NON accepté comme BAP</span>
+    <span class="rule">2 rounds de corrections inclus — au-delà : avenant tarifaire</span>
+  </div>
+
+  <section class="toolbar">
+    <div class="breadcrumb-nav" id="breadcrumbNav"></div>
+    <button class="export-btn" id="exportPdfBtn">📄 Exporter PDF</button>
+  </section>
+
+  <section class="controls">
+    <input type="search" id="search" placeholder="Rechercher un titre, un thème…">
+    <select id="fPillar"><option value="">Tous les piliers</option></select>
+    <select id="fPlateforme"><option value="">Toutes les plateformes</option></select>
+    <select id="fStatut"><option value="">Tous les statuts</option></select>
+    <label class="chk"><input type="checkbox" id="fFav"> Favoris uniquement</label>
+  </section>
+  <div class="platform-legend" id="platformLegend"></div>
+
+  <main id="root"></main>
+
+  <footer class="bottom" id="footer"></footer>
+
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <div class="modal-head">
+        <button class="modal-close" id="modalClose">✕</button>
+        <div class="modal-kicker" id="modalKicker"></div>
+        <h2 class="modal-title" id="modalTitle"></h2>
+        <div class="modal-tags" id="modalTags"></div>
+        <div class="modal-meta-row">
+          <button class="fav-toggle" id="modalFavToggle">★ <span id="modalFavLabel">Favori</span></button>
+          <select class="status-select" id="modalStatusSelect"></select>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div id="modalAccordionView"></div>
+        <div class="modal-actions">
+          <button class="copy-btn" id="modalCopyBtn">Copier le texte</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ====== DONNÉES (injectées) ====== */
+__DATA_JS__
+
+window.PLATFORMS = window.PLATFORMS || [];
+window.PLATFORMS_HORS_SCOPE = window.PLATFORMS_HORS_SCOPE || [];
+window.PILLARS = window.PILLARS || [];
+window.STATUTS = window.STATUTS || [];
+window.MONTHS = window.MONTHS || [];
+window.WEEKS = window.WEEKS || [];
+window.ENTRIES = window.ENTRIES || [];
+window.META_ADS = window.META_ADS || [];
+window.KPI = window.KPI || {};
+
+const PMAP={}; PILLARS.forEach(p=>PMAP[p.id]=p);
+const MMAP={}; MONTHS.forEach(m=>MMAP[m.id]=m);
+const PLATMAP={}; PLATFORMS.forEach(p=>PLATMAP[p.id]=p);
+PLATFORMS_HORS_SCOPE.forEach(p=>PLATMAP[p.id]=p);
+const WMAP={}; WEEKS.forEach(w=>WMAP[w.id]=w);
+const SMAP={}; STATUTS.forEach(s=>SMAP[s.id]=s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const pillarName=id=>(PMAP[id]&&PMAP[id].nom)||'';
+const pillarColor=id=>(PMAP[id]&&PMAP[id].couleur)||'#9CA0A8';
+const platName=id=>(PLATMAP[id]&&PLATMAP[id].nom)||id||'';
+const platIcon=id=>(PLATMAP[id]&&PLATMAP[id].icone)||'';
+const platColor=id=>(PLATMAP[id]&&PLATMAP[id].couleur)||'#9CA0A8';
+const statutInfo=id=>SMAP[id]||STATUTS[0];
+
+/* ====== Favoris + statuts (persistance localStorage) ====== */
+const LS_FAV='aora_ce_exc_fav', LS_STATUT='aora_ce_exc_statut';
+const FavStore=(function(){
+  let state={}; try{state=JSON.parse(localStorage.getItem(LS_FAV)||'{}');}catch(e){}
+  function persist(){try{localStorage.setItem(LS_FAV,JSON.stringify(state));}catch(e){}}
+  return{is:id=>!!state[id],toggle:id=>{state[id]?delete state[id]:state[id]=true;persist();return !!state[id];}};
+})();
+const StatutStore=(function(){
+  let state={}; try{state=JSON.parse(localStorage.getItem(LS_STATUT)||'{}');}catch(e){}
+  function persist(){try{localStorage.setItem(LS_STATUT,JSON.stringify(state));}catch(e){}}
+  return{get:(id,def)=>state[id]||def,set:(id,val)=>{state[id]=val;persist();}};
+})();
+ENTRIES.forEach(e=>{ e.statut = StatutStore.get(e.id, e.statut); });
+
+/* ====== En-tête ====== */
+document.getElementById('hTitle').textContent = 'Excellence+ — Calendrier Éditorial';
+document.getElementById('hSub').textContent = 'Juillet → Décembre 2026 · Fuseau WAT (UTC+1)';
+
+(function legend(){
+  const el=document.getElementById('platformLegend');
+  const selP=document.getElementById('fPlateforme');
+  PLATFORMS.forEach(p=>{
+    el.insertAdjacentHTML('beforeend', `<span class="lg" style="background:${esc(p.couleur)}">${esc(p.icone)} ${esc(p.nom)}</span>`);
+    selP.insertAdjacentHTML('beforeend', `<option value="${esc(p.id)}">${esc(p.icone)} ${esc(p.nom)}</option>`);
+  });
+  PLATFORMS_HORS_SCOPE.forEach(p=>{
+    el.insertAdjacentHTML('beforeend', `<span class="lg hors-scope">${esc(p.icone)} ${esc(p.nom)} <span class="b">· ${esc(p.badge)}</span></span>`);
+  });
+  const selPi=document.getElementById('fPillar');
+  PILLARS.forEach(p=>{
+    selPi.insertAdjacentHTML('beforeend', `<option value="${esc(p.id)}">${esc(p.nom)} (${p.part}%)</option>`);
+  });
+  const selS=document.getElementById('fStatut');
+  STATUTS.forEach(s=>{
+    selS.insertAdjacentHTML('beforeend', `<option value="${esc(s.id)}">${esc(s.label)}</option>`);
+  });
+})();
+
+/* ====== État de navigation (drill-down) ====== */
+const NAV = { view:'overview', month:null, week:null };
+
+function setBreadcrumb(){
+  const el = document.getElementById('breadcrumbNav');
+  let html = `<span class="bc ${NAV.view==='overview'&&!isSearching()?'current':''}" data-nav="overview">🗓️ Vue 6 mois</span>`;
+  if(NAV.month){
+    const m = MMAP[NAV.month];
+    html += `<span class="sep">›</span><span class="bc ${NAV.view==='month'&&!isSearching()?'current':''}" data-nav="month">${esc(m.nom)}</span>`;
+  }
+  if(NAV.week){
+    const w = WMAP[NAV.week];
+    html += `<span class="sep">›</span><span class="bc ${NAV.view==='week'&&!isSearching()?'current':''}" data-nav="week">${esc(w.label)}</span>`;
+  }
+  if(isSearching()){
+    html += `<span class="sep">›</span><span class="bc current">🔎 Résultats</span>`;
+  }
+  el.innerHTML = html;
+}
+document.getElementById('breadcrumbNav').addEventListener('click', ev=>{
+  const bc = ev.target.closest('[data-nav]');
+  if(!bc) return;
+  const level = bc.getAttribute('data-nav');
+  clearFilters();
+  if(level==='overview'){ NAV.view='overview'; NAV.month=null; NAV.week=null; }
+  else if(level==='month'){ NAV.view='month'; NAV.week=null; }
+  else if(level==='week'){ NAV.view='week'; }
+  render();
+});
+
+function isSearching(){
+  return document.getElementById('search').value.trim() !== '' ||
+         document.getElementById('fPillar').value !== '' ||
+         document.getElementById('fPlateforme').value !== '' ||
+         document.getElementById('fStatut').value !== '' ||
+         document.getElementById('fFav').checked;
+}
+function clearFilters(){
+  document.getElementById('search').value='';
+  document.getElementById('fPillar').value='';
+  document.getElementById('fPlateforme').value='';
+  document.getElementById('fStatut').value='';
+  document.getElementById('fFav').checked=false;
+}
+function matches(e,q){
+  if(!q) return true;
+  q=q.toLowerCase();
+  const hay=[e.id,e.titre,e.resume,(e.tags||[]).join(' ')].join(' ').toLowerCase();
+  return hay.indexOf(q)>=0;
+}
+function applyFilters(list){
+  const q=document.getElementById('search').value.trim();
+  const fp=document.getElementById('fPillar').value;
+  const fpl=document.getElementById('fPlateforme').value;
+  const fs=document.getElementById('fStatut').value;
+  const ff=document.getElementById('fFav').checked;
+  return list.filter(e=>matches(e,q))
+             .filter(e=>!fp||e.pilier===fp)
+             .filter(e=>!fpl||e.plateforme===fpl)
+             .filter(e=>!fs||e.statut===fs)
+             .filter(e=>!ff||FavStore.is(e.id));
+}
+
+/* ====== Rendu : cartes post ====== */
+function cardHTML(e){
+  const pc=pillarColor(e.pilier);
+  const fav=FavStore.is(e.id);
+  const st=statutInfo(e.statut);
+  const isAds = !!e.meta_ads;
+  return `<div class="card${isAds?' meta-ads':''}" data-id="${esc(e.id)}" style="border-top-color:${isAds?'#C0392B':esc(pc)}">
+    <button class="fav ${fav?'on':''}" data-fav="${esc(e.id)}" title="Favori">★</button>
+    <div class="meta">
+      <span class="badge" style="background:${esc(platColor(e.plateforme))}">${esc(platIcon(e.plateforme))} ${esc(platName(e.plateforme))}</span>
+      <span class="badge" style="background:${esc(pc)}">${esc(pillarName(e.pilier))}</span>
+      <span class="badge fmt">${esc(e.format)}</span>
+      <span class="badge statut" style="background:${esc(st.couleur)}">${esc(st.label)}</span>
+    </div>
+    <div class="ct">${esc(e.titre)}</div>
+    <div class="date">📅 ${esc(e.date)}</div>
+  </div>`;
+}
+function metaAdsCardHTML(ad){
+  return `<div class="card meta-ads" data-adsid="${esc(ad.id)}" style="cursor:default">
+    <div class="meta"><span class="badge" style="background:#C0392B">🚩 META ADS — INFO ONLY</span></div>
+    <div class="ct">${esc(ad.nom)}</div>
+    <div class="date">📅 ${esc(ad.periode)}${ad.budget?' · '+esc(ad.budget):''}</div>
+    <div class="date" style="margin-top:4px;font-style:italic">Non publiable via Composio — géré directement sur Meta Business, budget distinct du forfait AORA.</div>
+  </div>`;
+}
+
+/* ====== Niveau 1 : vue 6 mois ====== */
+function renderOverview(){
+  const grid=document.getElementById('root');
+  let html = '<div class="overview-grid">';
+  MONTHS.forEach(m=>{
+    const monthEntries = ENTRIES.filter(e=>e.mois===m.id);
+    const n = monthEntries.length;
+    const publies = monthEntries.filter(e=>e.statut==='publie').length;
+    const enAttente = monthEntries.filter(e=>e.statut==='bat_envoye'||e.statut==='bat_valide').length;
+    const byPlat={}; PLATFORMS.forEach(p=>byPlat[p.id]=0);
+    monthEntries.forEach(e=>{ if(byPlat[e.plateforme]!=null) byPlat[e.plateforme]++; });
+    const platChips = PLATFORMS.filter(p=>byPlat[p.id]>0).map(p=>
+      `<span style="background:${esc(p.couleur)}">${esc(p.icone)} ${byPlat[p.id]}</span>`).join('');
+    const ads = META_ADS.filter(a=>a.mois===m.id);
+    html += `<div class="month-card" data-month="${esc(m.id)}" style="border-top-color:${esc(m.couleur)}">
+      ${m.priorite?'<span class="star">⭐ PRIORITÉ</span>':''}
+      <div class="mkicker" style="color:${esc(m.couleur)}">— ${esc(m.theme)}</div>
+      <div class="mname">${esc(m.nom)}</div>
+      <div class="msub">${esc(m.sous_titre)}</div>
+      <div class="mkpi"><b>${n}</b> posts prévus · <b>${publies}</b> publiés · <b>${enAttente}</b> en attente BAT</div>
+      <div class="mplats">${platChips}</div>
+      ${ads.map(a=>`<div class="ads-tag">🚩 ${esc(a.nom)}</div>`).join('')}
+    </div>`;
+  });
+  html += '</div>';
+  grid.innerHTML = html;
+}
+
+/* ====== Niveau 2 : vue mensuelle (semaines) ====== */
+function renderMonth(monthId){
+  const m = MMAP[monthId];
+  const root = document.getElementById('root');
+  const monthEntries = ENTRIES.filter(e=>e.mois===monthId);
+  const n = monthEntries.length;
+  const publies = monthEntries.filter(e=>e.statut==='publie').length;
+  const enAttente = monthEntries.filter(e=>e.statut==='bat_envoye'||e.statut==='bat_valide').length;
+  const kpiText = KPI[monthId];
+  const ads = META_ADS.filter(a=>a.mois===monthId);
+  let html = `<div class="month-header" style="border-left-color:${esc(m.couleur)}">
+    <div class="kicker" style="color:${esc(m.couleur)}">— ${esc(m.theme)}</div>
+    <h2>${esc(m.nom)}</h2>
+    <div class="sub">${esc(m.sous_titre)}</div>
+    <div class="kpi-row"><span><b>${n}</b> posts prévus</span><span><b>${publies}</b> publiés</span><span><b>${enAttente}</b> en attente BAT</span>
+      ${kpiText?`<span>🎯 ${esc(kpiText)}</span>`:''}</div>
+    ${ads.map(a=>`<div class="ads-tag" style="margin-top:8px">🚩 ${esc(a.nom)} — ${esc(a.periode)}${a.budget?' · '+esc(a.budget):''}</div>`).join('')}
+  </div>`;
+  const weeks = WEEKS.filter(w=>w.mois===monthId);
+  html += '<div class="week-grid">';
+  weeks.forEach(w=>{
+    const weekItems = ENTRIES.filter(e => weekIdOf(e) === w.id);
+    html += `<div class="week-card" data-week="${esc(w.id)}">
+      <div class="wname">${esc(w.label)}</div>
+      <div class="wdates">${esc(w.dates)}</div>
+      <div class="wcount">${weekItems.length} post${weekItems.length>1?'s':''}</div>
+    </div>`;
+  });
+  html += '</div>';
+  root.innerHTML = html;
+}
+function weekIdOf(e){
+  // dérive la semaine ISO à partir de la date de l'entrée
+  const d = new Date(e.date_iso+'T00:00:00');
+  const target = new Date(d.valueOf());
+  const dayNr = (d.getDay()+6)%7;
+  target.setDate(target.getDate()-dayNr+3);
+  const firstThursday = new Date(target.getFullYear(),0,4);
+  const diff = target - firstThursday;
+  const week = 1 + Math.round(diff/(7*24*3600*1000));
+  return 'S'+week;
+}
+
+/* ====== Niveau 3 : cartes de la semaine ====== */
+function adsOverlappingWeek(w){
+  return META_ADS.filter(a => a.debut_iso <= w.fin_iso && a.fin_iso >= w.debut_iso);
+}
+function renderWeek(weekId){
+  const w = WMAP[weekId];
+  const root = document.getElementById('root');
+  const items = ENTRIES.filter(e => weekIdOf(e) === weekId);
+  const ads = adsOverlappingWeek(w);
+  let html = `<div class="week-view-header"><h2>${esc(w.label)} · ${esc(w.dates)}</h2></div><div class="grid">`;
+  if(!items.length && !ads.length){ html += '<div class="empty">Aucun post cette semaine.</div>'; }
+  ads.forEach(a=>{ html += metaAdsCardHTML(a); });
+  items.sort((a,b)=>a.date_iso.localeCompare(b.date_iso) || a.heure.localeCompare(b.heure));
+  items.forEach(e=>{ html += cardHTML(e); });
+  html += '</div>';
+  root.innerHTML = html;
+}
+
+/* ====== Vue recherche / filtres (résultats à plat) ====== */
+function renderSearch(){
+  const root = document.getElementById('root');
+  const results = applyFilters(ENTRIES.slice()).sort((a,b)=>a.date_iso.localeCompare(b.date_iso));
+  let html = `<div class="week-view-header"><h2>${results.length} résultat${results.length>1?'s':''}</h2></div><div class="grid">`;
+  if(!results.length){ html += '<div class="empty">Aucun post ne correspond aux filtres.</div>'; }
+  results.forEach(e=>{ html += cardHTML(e); });
+  html += '</div>';
+  root.innerHTML = html;
+}
+
+/* ====== Orchestrateur ====== */
+function render(){
+  setBreadcrumb();
+  if(isSearching()){ renderSearch(); return; }
+  if(NAV.view==='overview'){ renderOverview(); }
+  else if(NAV.view==='month'){ renderMonth(NAV.month); }
+  else if(NAV.view==='week'){ renderWeek(NAV.week); }
+}
+
+document.getElementById('root').addEventListener('click', ev=>{
+  const fav = ev.target.closest('[data-fav]');
+  if(fav){ ev.stopPropagation(); const on=FavStore.toggle(fav.getAttribute('data-fav')); fav.classList.toggle('on',on); return; }
+  const mcard = ev.target.closest('.month-card');
+  if(mcard){ NAV.view='month'; NAV.month=mcard.getAttribute('data-month'); NAV.week=null; render(); return; }
+  const wcard = ev.target.closest('.week-card');
+  if(wcard){ NAV.view='week'; NAV.week=wcard.getAttribute('data-week'); render(); return; }
+  const card = ev.target.closest('.card[data-id]');
+  if(card){ openEntry(card.getAttribute('data-id')); return; }
+});
+
+['input','change'].forEach(evt=>{
+  ['search','fPillar','fPlateforme','fStatut','fFav'].forEach(id=>{
+    document.getElementById(id).addEventListener(evt, render);
+  });
+});
+
+/* ====== Modale fiche post ====== */
+const overlay=document.getElementById('overlay');
+let CURRENT=null;
+function findEntry(id){ return ENTRIES.find(e=>e.id===id); }
+function accSection(title,bodyHTML){ if(!bodyHTML) return ''; return `<details class="acc"><summary>${title}</summary><div class="acc-body">${bodyHTML}</div></details>`; }
+
+function openEntry(id){
+  const e=findEntry(id); if(!e) return; CURRENT=e;
+  document.getElementById('modalKicker').textContent = pillarName(e.pilier)+' · '+e.format+' · '+platIcon(e.plateforme)+' '+platName(e.plateforme);
+  document.getElementById('modalTitle').textContent = e.titre;
+  document.getElementById('modalTags').innerHTML = (e.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('');
+  const ft=document.getElementById('modalFavToggle');
+  ft.classList.toggle('on', FavStore.is(e.id));
+  const sel=document.getElementById('modalStatusSelect');
+  sel.innerHTML = STATUTS.map(s=>`<option value="${esc(s.id)}" ${s.id===e.statut?'selected':''}>${esc(s.label)}</option>`).join('');
+  let body = accSection('📝 Résumé', esc(e.resume));
+  body += accSection('📅 Date &amp; créneau', `<div class="kv"><span class="k">Date</span><span>${esc(e.date)}</span><span class="k">Plateforme</span><span>${esc(platName(e.plateforme))}</span><span class="k">Format</span><span>${esc(e.format)}</span></div>`);
+  body += accSection('⚠️ Contraintes éditoriales', `<div class="interdit-note">${esc(e.notes)}</div>`);
+  document.getElementById('modalAccordionView').innerHTML = body;
+  overlay.classList.add('show');
+}
+function closeModal(){ overlay.classList.remove('show'); CURRENT=null; }
+document.getElementById('modalClose').addEventListener('click', closeModal);
+overlay.addEventListener('click', ev=>{ if(ev.target===overlay) closeModal(); });
+document.addEventListener('keydown', ev=>{ if(ev.key==='Escape') closeModal(); });
+document.getElementById('modalFavToggle').addEventListener('click', ()=>{
+  if(!CURRENT) return; const on=FavStore.toggle(CURRENT.id);
+  document.getElementById('modalFavToggle').classList.toggle('on', on);
+});
+document.getElementById('modalStatusSelect').addEventListener('change', ev=>{
+  if(!CURRENT) return; CURRENT.statut = ev.target.value; StatutStore.set(CURRENT.id, ev.target.value);
+});
+document.getElementById('modalCopyBtn').addEventListener('click', ()=>{
+  if(!CURRENT) return;
+  const txt = `${CURRENT.id} — ${CURRENT.titre}\n${CURRENT.date}\n${platName(CURRENT.plateforme)} · ${pillarName(CURRENT.pilier)} · ${CURRENT.format}\n\n${CURRENT.resume}`;
+  navigator.clipboard && navigator.clipboard.writeText(txt).then(()=>{
+    const b=document.getElementById('modalCopyBtn'); b.textContent='Copié ✓'; setTimeout(()=>b.textContent='Copier le texte',1400);
+  });
+});
+
+document.getElementById('exportPdfBtn').addEventListener('click', ()=>window.print());
+
+/* ====== Pied de page ====== */
+(function footer(){
+  const f=document.getElementById('footer');
+  f.innerHTML = 'ACADÉMIE AORA × Excellence+ — Document confidentiel — CE-EXC-001 · '+ENTRIES.length+' créneaux planifiés · Généré le 28 juillet 2026.';
+})();
+
+render();
+</script>
+</body>
+</html>
