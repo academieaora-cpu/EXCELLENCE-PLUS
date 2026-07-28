@@ -16,12 +16,21 @@ Ensuite, lire `STATUT_PROJET.md` (racine du repo) pour connaître l'état réel
 des livrables, les points de vigilance non résolus et les conventions déjà
 établies avant de reprendre le travail dans une nouvelle session.
 
+**Documents complémentaires** (ajoutés le 28 juillet 2026, non dans la lecture
+obligatoire mais à consulter selon le besoin) : `_base/identite/Plan_AORA_EXCELLENCE_PLUS_Rentree_2026.md`
+(RECO-001 — plan d'origine), `_base/aora/AORA_Charte_Graphique_2026.md` (charte AORA),
+`_base/aora/AORA_SOP001_v1_Gestion_Client.md` (SOP-001 complète), `PRODUCTION_WORKFLOW.md`
+(playbook opérationnel qui en découle).
+
 ## IDENTITÉ CLIENT
 
 - Nom exact : **Excellence+** (JAMAIS "Excellence++")
 - Dirigeant : M. NDOMMIE GOAP Saturnin
 - Zone : Yaoundé — Bastos · Odza · Omnisport · Santa Barbara
 - Contrat : AORA-CCC-005 — 6 mois
+  ⚠️ `brand_guidelines.md` situe le démarrage en juillet 2026, mais RECO-001
+  (`_base/identite/Plan_AORA_EXCELLENCE_PLUS_Rentree_2026.md`) planifie des actions
+  dès juin 2026. Non tranché — ne pas supposer une date de démarrage sans confirmation.
 
 ## RÈGLES ABSOLUES
 
@@ -44,3 +53,9 @@ des livrables, les points de vigilance non résolus et les conventions déjà
 ## PLATEFORMES ACTIVES
 
 Facebook · Instagram · TikTok · WhatsApp Channel
+
+---
+
+**Mis à jour le 28 juillet 2026** — source : RECO-001 v3, AORA_SOP001_v1,
+AORA_Charte_Graphique_2026. Voir `brand_guidelines.md` pour le détail des ajouts et
+des points signalés non résolus.

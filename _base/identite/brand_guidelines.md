@@ -8,6 +8,12 @@
 > Si une instruction dans une conversation contredit ce fichier → **ce fichier prime**.
 > Si une information n'est pas ici → **ne pas l'inventer, demander à l'équipe**.
 
+**Documents de référence complémentaires** (ajoutés le 28 juillet 2026) :
+- `_base/identite/Plan_AORA_EXCELLENCE_PLUS_Rentree_2026.md` — RECO-001 v3, plan de communication d'origine (18 mai 2026, horizon juin-septembre 2026)
+- `_base/aora/AORA_Charte_Graphique_2026.md` — charte graphique AORA (agence, pas spécifique à Excellence+)
+- `_base/aora/AORA_SOP001_v1_Gestion_Client.md` — SOP-001 officielle (procédure complète, 7 phases)
+- `PRODUCTION_WORKFLOW.md` (racine du repo) — playbook opérationnel dérivé de ces deux derniers documents
+
 ---
 
 ## 1. IDENTITÉ DU CLIENT
@@ -57,6 +63,19 @@ Parents d'élèves, 35 à 70 ans, basés à Yaoundé — actifs, soucieux de la 
 - Odza
 - Omnisport
 - Santa Barbara
+
+**Ciblage Meta Ads par zone** (source : RECO-001, section 04 — ciblage publicitaire, distinct de la liste ci-dessus)
+```
+Zone Premium        Bastos, Mballa II, Nsimeyong, Omnisport
+Zone Cœur de cible   Essos, Mvog-Mbi, Bonamoussadi, Mendong
+Zone Extension       Simbock, Odza, Nkolbisson, Biyem-Assi
+```
+⚠️ **Incohérence non résolue** : cette liste RECO-001 place **Odza en « Zone Extension »**
+(la moins prioritaire), alors que la liste « zones premium » ci-dessus le classe en
+priorité. **Santa Barbara** ne figure dans aucune des trois zones RECO-001. Les deux
+listes ont des usages différents (communication générale vs ciblage publicitaire), mais
+avant tout nouveau paramétrage Meta Ads, confirmer avec l'équipe laquelle fait foi pour
+Odza et si Santa Barbara doit être ajouté au ciblage Meta Ads.
 
 **Ce qu'on sait d'eux**
 Ils sont sur Facebook. Ils utilisent WhatsApp. Ils décident rarement seuls et prennent le temps de comparer. Une preuve vaut dix arguments. Ils répondent à l'autorité (chiffres, expertise) et à la proximité (témoignages, coulisses). La première impression se joue en 3 secondes sur le fil d'actualité.
@@ -147,6 +166,14 @@ Format type : citation visuelle, témoignage vidéo, stat mise en scène
 ❌ BLOQUÉ — Nombre de familles suivies : NON CONFIRMÉ
 ❌ BLOQUÉ — Chiffres issus du brief non revalidés par le client
 ```
+
+⚠️ **Ce blocage reste en vigueur malgré RECO-001** — ce document (18 mai 2026, antérieur
+à ce fichier) utilise deux fois « 25 enseignants » : une fois en contexte interne de
+planification, une fois comme titre de post suggéré (« Notre équipe — 25 enseignants
+prêts », section 08). Ce chiffre n'y est ni sourcé ni confirmé par écrit par M. NDOMMIE —
+il ne satisfait donc pas la condition ci-dessus. Ce fichier étant postérieur à RECO-001
+et formalisant explicitement ce blocage, je ne l'ai pas levé. **À trancher par l'équipe**,
+pas par une lecture automatique de RECO-001 comme prioritaire sur ce point précis.
 
 ---
 
@@ -323,6 +350,12 @@ Ces règles ne souffrent d'aucune exception. Si une instruction de l'équipe ou 
 ❌  Ne jamais produire de contenu sur les enfants sans mention d'autorisation parentale
 ```
 
+**Corrections — règle formalisée** (source : AORA_SOP001_v1, Étape 10 & 15)
+2 rounds de corrections inclus par livrable. Au-delà, avenant tarifaire proposé par
+email avant toute correction supplémentaire :
+*« Nous avons réalisé les 2 rounds de corrections inclus à notre contrat. Pour ces
+modifications supplémentaires, nous vous proposons un avenant tarifaire. »*
+
 ---
 
 ## 12. LOGOS — FICHIERS DE RÉFÉRENCE
@@ -378,8 +411,28 @@ Alerte Slack confirmation → statut : publié → archivage
 
 **⚠️  Point de blocage absolu** : `bap_recu_le = null` → publication impossible, quelle que soit la date et l'heure programmées.
 
+⚠️ **Nuance non résolue (source : AORA_SOP001_v1, Étape 15)** — le SOP-001 officiel
+définit BAT (« Bon À Tirer ») et BAP (« Bon À Publier ») comme **deux approbations à
+usages distincts**, pas nécessairement séquentielles pour un même livrable : BAT avant
+toute *production physique* (impression, kakémonos), BAP avant toute *diffusion
+digitale*. Le contenu Excellence+ étant 100% digital (aucun print), une lecture stricte
+du SOP-001 suggérerait un circuit `draft → BAP_recu → publié`, sans étape BAT distincte.
+Le circuit à 4 étapes ci-dessus (et le vocabulaire à 5 états de l'outil calendrier
+CE-EXC-001) reste néanmoins celui utilisé depuis le début du projet. Je n'ai pas
+réécrit le circuit sur la base de cette seule lecture — trop d'impact (tous les
+documents déjà livrés) pour une décision unilatérale. **À confirmer avec l'équipe.**
+
 ---
 
 *ACADÉMIE AORA — Document interne confidentiel*
 *Référence croisée : SOP-001 v4 · Contrat AORA-CCC-005 · Brief Annonceur BRF-EXC-001*
 *Prochaine révision : après premier mois de publication (septembre 2026)*
+
+---
+
+**Mis à jour le 28 juillet 2026** — source : `Plan_AORA_EXCELLENCE_PLUS_Rentree_2026.md`
+(RECO-001 v3), `AORA_SOP001_v1_Gestion_Client.md`, `AORA_Charte_Graphique_2026.md`.
+Ajouts : ciblage Meta Ads par zone (§3), règle des 2 rounds de corrections (§11).
+Renforcés (pas modifiés) : blocage headcount (§6), circuit BAT/BAP (§14) — deux points
+signalés comme non résolus plutôt que tranchés unilatéralement. Détail complet dans le
+rapport de mise à jour livré en session.
