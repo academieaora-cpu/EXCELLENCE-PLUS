@@ -22,10 +22,11 @@ Dernière mise à jour : 28 juillet 2026.
 | Réf. | Fichier | Contenu |
 |---|---|---|
 | — | Structure repo initiale | `CLAUDE.md`, `_base/identite/*`, `_base/couleurs/*`, `_base/logos/*`, `_base/templates/*`, `calendrier/*.json`, `scripts/*.py`, `.github/workflows/*.yml` |
-| — | `calendrier/calendrier_editorial_aout_2026.html` | Calendrier HTML — août 2026 seul (semaine 32), première itération |
-| **CE-EXC-001** | `rapports/calendrier_editorial_excellence_plus.html` | Calendrier interactif **juillet → décembre 2026**, 288 créneaux, navigation 4 niveaux (vue 6 mois → mois → semaine → fiche). **Version courante, remplace toutes les itérations précédentes.** Voir `outils/calendrier_editorial/README.md` pour régénérer. |
-| **LE-EXC-001** | `rapports/ligne_editoriale_excellence_plus.html` + `.pdf` | Ligne éditoriale (7 sections), sourcée depuis `brand_guidelines.md` + `plateforme_marque.md` |
-| **PE-EXC-001** | `rapports/planification_editoriale_excellence_plus.html` + `.pdf` | Planification éditoriale (7 sections : synthèse stratégique, hiérarchie plateformes, thèmes mensuels, grille hebdo, circuit de validation, budget, taux validés) |
+| — | `calendrier/calendrier_editorial_aout_2026.html` | Calendrier HTML — août 2026 seul (semaine 32), première itération, jamais retouché depuis |
+| **CE-EXC-001** | `rapports/calendrier_editorial_excellence_plus.html` | Calendrier interactif **août → décembre 2026 (5 mois actifs — juillet achevé, retiré du plan)**, 239 créneaux, navigation 4 niveaux (vue d'ensemble → mois → semaine → fiche). Mois numérotés Mois 1 (août) à Mois 5 (décembre) ; décembre = bilan mi-annuel. **Version courante.** Voir `outils/calendrier_editorial/README.md` pour régénérer. |
+| **CC-EXC-001** | `rapports/calendrier_client_excellence_plus_aout_septembre.html` + `.pdf` | **Livrable client** — extrait août+septembre du calendrier ci-dessus, A4 **paysage**, trié par priorité de pilier (pas chronologique), langage client (pas de statut SOP-001), 89 publications, 9 pages, prêt pour soumission BAT. Twin livrable de CE-EXC-001 (même source de données). Voir `outils/calendrier_client/README.md`. |
+| **LE-EXC-001** | `rapports/ligne_editoriale_excellence_plus.html` + `.pdf` | Ligne éditoriale (7 sections), sourcée depuis `brand_guidelines.md` + `plateforme_marque.md`. Pas encore recalée sur 5 mois (voir vigilance §5). |
+| **PE-EXC-001** | `rapports/planification_editoriale_excellence_plus.html` + `.pdf` | Planification éditoriale (7 sections). **Version 1.1** — recalée sur 5 mois actifs (août-décembre), décembre repositionné bilan mi-annuel, forfait AORA (6 mois / 315 000 FCFA) laissé intact avec note distinguant durée contractuelle et fenêtre de production active. |
 
 ## Outillage préservé dans le repo
 
@@ -33,14 +34,23 @@ Dernière mise à jour : 28 juillet 2026.
   (`generate.py` → `build_data.py` → `inject_template.py` → HTML autonome).
   **100 % déterministe** (vérifié par diff sur runs successifs). Voir le
   `README.md` du dossier pour la commande de régénération et la liste des
-  endroits où modifier le contenu.
-- Les pipelines de LE-EXC-001 et PE-EXC-001 (rendu HTML→PDF via Playwright,
-  scripts d'injection de logos) **n'ont pas été préservés dans le repo** — ils
-  n'existaient que dans le scratchpad éphémère d'une session précédente et ont
-  été perdus à la fin de cette session. Seuls les fichiers finaux (HTML+PDF
-  dans `rapports/`) subsistent. À reconstruire si une régénération est
-  nécessaire un jour (le contenu source reste `brand_guidelines.md` +
-  `plateforme_marque.md` + `calendrier_editorial.json`).
+  endroits où modifier le contenu (piliers, plateformes, mois, axes de contenu).
+- `outils/calendrier_client/` — génère CC-EXC-001 à partir des données produites
+  par `calendrier_editorial/generate.py` (même source, pas de duplication de
+  contenu). `MOIS_CIBLES` dans `build_pdf.py` contrôle la période extraite.
+  Technique clé : sections piliers en `<table><thead>` (pas de simples `<div>`)
+  pour que l'en-tête coloré du pilier se répète automatiquement sur les pages de
+  continuation en impression — cf. README du dossier.
+- **Piège récurrent** : `generate.py` écrit `data/` + `data.js` dans le dossier
+  courant. Ces artefacts sont gitignorés mais `scripts/validate_repo.py` scanne
+  le **disque**, pas seulement git — il faut les supprimer (`rm -rf data
+  data.js`) avant `git status`/commit, sinon le scan « termes interdits »
+  remonte un faux positif sur le champ `notes` (avertissement intentionnel).
+- Les pipelines de LE-EXC-001 (rendu HTML→PDF via Playwright, scripts
+  d'injection de logos) **n'ont pas été préservés dans le repo** — seul le
+  fichier final (HTML+PDF dans `rapports/`) subsiste. À reconstruire si une
+  régénération est nécessaire un jour (contenu source : `brand_guidelines.md` +
+  `plateforme_marque.md`).
 
 ## Points de vigilance non résolus
 
@@ -62,6 +72,14 @@ Dernière mise à jour : 28 juillet 2026.
    normal à ce stade (rien n'est encore validé/publié), mais rappel que la
    règle absolue « jamais publier sans BAP » s'applique dès le premier post
    réel.
+5. **LE-EXC-001 n'a pas été recalé sur 5 mois actifs** (contrairement à
+   CE-EXC-001 et PE-EXC-001, v1.1) — il documente encore un cadre implicite
+   juillet-décembre. Impact limité (LE-EXC-001 est une charte éditoriale, pas
+   un planning daté), mais à harmoniser si le document est retouché.
+6. **Les 3 mois non couverts par CC-EXC-001** (octobre, novembre, décembre)
+   n'ont pas encore de pendant client — seuls août+septembre ont un extrait
+   BAT-ready. `outils/calendrier_client/build_pdf.py` peut être relancé avec
+   `MOIS_CIBLES` étendu quand ces mois devront être soumis à validation.
 
 ## Conventions établies (à respecter dans une nouvelle session)
 
@@ -94,14 +112,29 @@ Dernière mise à jour : 28 juillet 2026.
   vocabulaire à 5 états utilisé dans l'UI de CE-EXC-001 (« À rédiger / BAT
   envoyé / BAT validé / BAP reçu / Publié ») est une extension propre à cet
   outil, pas un remplacement du circuit SOP-001 officiel.
+- **Ne jamais coder en dur un compte qui peut dériver** (ex. libellé « Vue 6
+  mois » dans un breadcrumb) — la portée du calendrier a déjà changé une fois
+  (6 → 5 mois) et un libellé figé devient silencieusement faux. Préférer un
+  texte générique (« Vue d'ensemble ») ou une valeur calculée.
+- **Répétition d'en-tête de section à travers les sauts de page PDF** : une
+  simple `<div>` de titre ne réapparaît jamais sur une page de continuation.
+  Utiliser une vraie balise `<table><thead>` (le `<thead>` se répète
+  automatiquement à l'impression) dès qu'une section peut dépasser une page —
+  technique utilisée dans `outils/calendrier_client/build_pdf.py`.
+- **Séparer durée contractuelle et fenêtre de production active** : le forfait
+  AORA-CCC-005 reste 6 mois / 315 000 FCFA quoi qu'il arrive au contenu
+  éditorial (ex. juillet retiré du plan actif) — ne jamais recalculer une
+  figure contractuelle à partir d'un changement de portée éditoriale.
 
 ## Pour démarrer une nouvelle session
 
 Colle ceci en premier message :
 
-> Lis `STATUT_PROJET.md` et `CLAUDE.md` avant toute action. Le calendrier
-> CE-EXC-001 est à jour dans `rapports/`, pipeline de régénération dans
-> `outils/calendrier_editorial/`.
+> Lis `STATUT_PROJET.md` et `CLAUDE.md` avant toute action. CE-EXC-001 (interne,
+> août-décembre) et CC-EXC-001 (client, août-septembre) sont à jour dans
+> `rapports/`, pipelines de régénération dans `outils/calendrier_editorial/` et
+> `outils/calendrier_client/`.
 
 Rien d'autre n'est en attente à ce stade — tous les livrables demandés ont été
-poussés. Les 4 points de vigilance ci-dessus sont les seuls sujets ouverts.
+poussés sur `main` et la branche de travail. Les 6 points de vigilance
+ci-dessus sont les seuls sujets ouverts (aucun n'est bloquant).
