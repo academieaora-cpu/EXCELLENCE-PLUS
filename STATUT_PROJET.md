@@ -80,6 +80,23 @@ Dernière mise à jour : 28 juillet 2026.
    n'ont pas encore de pendant client — seuls août+septembre ont un extrait
    BAT-ready. `outils/calendrier_client/build_pdf.py` peut être relancé avec
    `MOIS_CIBLES` étendu quand ces mois devront être soumis à validation.
+7. **(28 juillet 2026)** Trois documents de référence poussés dans le repo
+   (`_base/identite/Plan_AORA_EXCELLENCE_PLUS_Rentree_2026.md` = RECO-001,
+   `_base/aora/AORA_Charte_Graphique_2026.md`, `_base/aora/AORA_SOP001_v1_Gestion_Client.md`)
+   ont déclenché une passe de réconciliation (`brand_guidelines.md`, `CLAUDE.md`,
+   nouveau `PRODUCTION_WORKFLOW.md`). Deux points **volontairement non tranchés**,
+   détaillés avec leur raisonnement dans `brand_guidelines.md` §6 et §14 :
+   - RECO-001 utilise « 25 enseignants » deux fois (dont un titre de post suggéré) —
+     le blocage headcount de `brand_guidelines.md` reste néanmoins en vigueur (ce
+     fichier est postérieur à RECO-001 et formalise ce blocage explicitement).
+   - Le SOP-001 officiel définit BAT et BAP comme deux approbations à usages
+     distincts (print vs digital), pas nécessairement séquentielles — le circuit
+     à 4 étapes utilisé partout dans ce repo n'a pas été réécrit sur cette seule
+     base (impact trop large pour une décision unilatérale).
+   Autres points ouverts : ciblage Meta Ads par zone RECO-001 vs zones premium
+   `brand_guidelines.md` (Odza classé différemment, Santa Barbara absent de
+   RECO-001) ; horizon RECO-001 commence en juin 2026, avant la date de démarrage
+   contractuel juillet 2026 indiquée dans `brand_guidelines.md`.
 
 ## Conventions établies (à respecter dans une nouvelle session)
 
