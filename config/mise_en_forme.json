@@ -1,0 +1,56 @@
+{
+  "_lisez_moi": [
+    "Mise en forme Unicode (YayText) appliquée au texte avant publication.",
+    "Ces caractères ne sont PAS des lettres : ce sont des symboles mathématiques",
+    "Unicode qui ressemblent à des lettres grasses ou italiques. Conséquences",
+    "réelles, qui justifient les limites ci-dessous :",
+    "  · un lecteur d'écran les épelle une à une, ou les ignore",
+    "  · la recherche Facebook ne les trouve pas",
+    "  · certains téléphones les copient mal — un numéro devient inutilisable",
+    "D'où la règle : on met en forme ce qui doit accrocher l'œil, jamais ce qui",
+    "doit être lu, cherché, copié ou composé."
+  ],
+
+  "facebook": {
+    "actif": true,
+    "segments_max": 2,
+    "_segments_max_note": [
+      "Deux segments au maximum par publication : l'accroche et un chiffre-clé.",
+      "Au-delà, l'effet s'annule — un texte entièrement en gras n'a plus rien",
+      "de saillant, et devient pénible à lire sur mobile."
+    ],
+    "cibles_autorisees": ["accroche", "chiffre_cle"],
+    "styles": {
+      "accroche": "gras",
+      "chiffre_cle": "gras"
+    },
+    "jamais_mettre_en_forme": [
+      "numero_whatsapp",
+      "hashtags",
+      "liens",
+      "adresses_email",
+      "mentions"
+    ]
+  },
+
+  "whatsapp": {
+    "actif": false,
+    "_note": [
+      "WhatsApp a sa propre syntaxe native (*gras*, _italique_) qui, elle, reste",
+      "du vrai texte : lisible par un lecteur d'écran, cherchable, copiable.",
+      "Ne jamais y injecter de l'Unicode stylé — ce serait remplacer une",
+      "solution correcte par une moins bonne."
+    ]
+  },
+
+  "instagram": { "actif": false },
+  "tiktok": { "actif": false },
+
+  "regles_absolues": [
+    "Jamais plus de segments_max segments mis en forme par publication.",
+    "Jamais le numéro WhatsApp, les hashtags ni les liens.",
+    "La mise en forme ne modifie JAMAIS les mots eux-mêmes : le texte validé au",
+    "BAP est celui qui part, seule sa graisse visuelle change. Si la mise en",
+    "forme oblige à réécrire une phrase, c'est la mise en forme qu'on abandonne."
+  ]
+}
