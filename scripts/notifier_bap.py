@@ -19,9 +19,15 @@ référence email, la validation n'est pas opposable.
 Usage :
     python3 scripts/notifier_bap.py --avant <SHA> --apres <SHA>
     python3 scripts/notifier_bap.py --avant HEAD~1 --apres HEAD --dry-run
+    python3 scripts/notifier_bap.py --test          # vérifie le câblage Slack
 
-Variables d'environnement :
-    SLACK_WEBHOOK_URL   webhook entrant Slack (absent → mode dry-run forcé)
+Variables d'environnement — l'une OU l'autre :
+    SLACK_WEBHOOK_URL                webhook entrant Slack
+    SLACK_BOT_TOKEN + SLACK_CHANNEL  jeton de bot (chat.postMessage)
+
+Aucune des deux → mode dry-run forcé : le message s'affiche, rien n'est envoyé.
+Un webhook absent ne fait pas échouer la CI ; il rendrait rouge un dépôt dont le
+contenu est pourtant correct.
 
 Codes de sortie : 0 = OK (avec ou sans notification) · 1 = erreur d'exécution
 """
@@ -194,32 +200,89 @@ def composer(evenements: list) -> str:
     return "\n".join(lignes)
 
 
-def envoyer(message: str, webhook: str) -> bool:
+def envoyer(message: str) -> bool:
+    """Poste sur Slack par webhook, sinon par jeton de bot. False si aucun des deux."""
     import urllib.request
     import urllib.error
-    corps = json.dumps({"text": message}).encode("utf-8")
+
+    webhook = os.environ.get("SLACK_WEBHOOK_URL", "").strip()
+    jeton = os.environ.get("SLACK_BOT_TOKEN", "").strip()
+    canal = os.environ.get("SLACK_CHANNEL", "").strip()
+
+    if webhook:
+        url = webhook
+        entetes = {"Content-Type": "application/json"}
+        corps = {"text": message}
+    elif jeton and canal:
+        url = "https://slack.com/api/chat.postMessage"
+        entetes = {
+            "Content-Type": "application/json; charset=utf-8",
+            "Authorization": f"Bearer {jeton}",
+        }
+        corps = {"channel": canal, "text": message}
+    else:
+        print("❌ Ni SLACK_WEBHOOK_URL ni SLACK_BOT_TOKEN+SLACK_CHANNEL.", file=sys.stderr)
+        return False
+
     requete = urllib.request.Request(
-        webhook, data=corps, headers={"Content-Type": "application/json"}
+        url, data=json.dumps(corps).encode("utf-8"), headers=entetes
     )
     try:
         with urllib.request.urlopen(requete, timeout=15) as rep:
-            return 200 <= rep.status < 300
-    except urllib.error.URLError as err:
+            charge = rep.read().decode("utf-8", errors="replace")
+            if not (200 <= rep.status < 300):
+                print(f"❌ Slack a répondu {rep.status} : {charge}", file=sys.stderr)
+                return False
+            # chat.postMessage répond 200 même en cas d'erreur métier.
+            if url.endswith("chat.postMessage"):
+                rep_json = json.loads(charge)
+                if not rep_json.get("ok"):
+                    print(f"❌ Slack : {rep_json.get('error')}", file=sys.stderr)
+                    return False
+            return True
+    except (urllib.error.URLError, json.JSONDecodeError) as err:
         print(f"❌ Envoi Slack impossible : {err}", file=sys.stderr)
         return False
 
 
+def message_test() -> str:
+    return (
+        "🔧 *Test de câblage — alerte BAP*\n"
+        "Si ce message s'affiche dans le canal, la chaîne "
+        "`dépôt → GitHub Actions → Slack` fonctionne.\n"
+        "_Les vraies alertes partiront à chaque `bap_recu_le` renseigné sur `main`._"
+    )
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Alerte Slack à la réception d'un BAP")
-    ap.add_argument("--avant", required=True, help="SHA du commit précédent")
+    ap.add_argument("--avant", help="SHA du commit précédent")
     ap.add_argument("--apres", default="HEAD", help="SHA du commit courant")
     ap.add_argument("--repo", type=Path, default=Path("."))
     ap.add_argument("--dry-run", action="store_true", help="Affiche sans envoyer")
+    ap.add_argument("--test", action="store_true", help="Envoie un message de test")
     args = ap.parse_args()
 
+    if args.test:
+        if args.dry_run:
+            print(f"--- message de test (non envoyé) ---\n{message_test()}")
+            return 0
+        print("Envoi du message de test…")
+        if envoyer(message_test()):
+            print("✅ Message envoyé — vérifie le canal Slack.")
+            return 0
+        return 1
+
+    if not args.avant:
+        ap.error("--avant est requis (sauf avec --test)")
+
     repo = args.repo.resolve()
-    webhook = os.environ.get("SLACK_WEBHOOK_URL", "").strip()
-    dry = args.dry_run or not webhook
+    configure = bool(
+        os.environ.get("SLACK_WEBHOOK_URL", "").strip()
+        or (os.environ.get("SLACK_BOT_TOKEN", "").strip()
+            and os.environ.get("SLACK_CHANNEL", "").strip())
+    )
+    dry = args.dry_run or not configure
 
     chemins = fichiers_modifies(args.avant, args.apres, repo)
     if not chemins:
@@ -234,12 +297,12 @@ def main() -> int:
     message = composer(evenements)
 
     if dry:
-        motif = "--dry-run" if args.dry_run else "SLACK_WEBHOOK_URL absent"
+        motif = "--dry-run" if args.dry_run else "Slack non configuré"
         print(f"--- message Slack ({motif}, non envoyé) ---\n{message}")
         return 0
 
     print(f"{len(evenements)} BAP détecté(s) — envoi Slack…")
-    return 0 if envoyer(message, webhook) else 1
+    return 0 if envoyer(message) else 1
 
 
 if __name__ == "__main__":
