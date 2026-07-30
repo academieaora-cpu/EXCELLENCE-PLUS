@@ -12,6 +12,7 @@ REQUIRED_FILES = [
     "_base/identite/plateforme_marque.md",
     "calendrier/semaine_active.json",
     "_base/couleurs/palette_excellence.json",
+    "config/creneaux.json",
 ]
 
 FORBIDDEN_TERMS = ["Excellence++"]
@@ -83,6 +84,38 @@ def check_forbidden_terms():
     return errors
 
 
+def check_placeholders_valides():
+    """Un A_REMPLIR dans un post DÉJÀ VALIDÉ est une erreur bloquante.
+
+    Portée volontairement étroite : un brouillon a le droit de contenir des
+    valeurs à remplir, c'est son état normal. Ce qui ne doit jamais arriver,
+    c'est qu'un post porte un BAP client et parte en publication avec un
+    numéro WhatsApp factice. Contrôler plus large rendrait la CI rouge en
+    permanence pendant la production — et une CI rouge en permanence n'est
+    plus lue par personne.
+    """
+    errors = []
+    for f in glob.glob("contenu/**/*.md", recursive=True):
+        with open(f, encoding="utf-8") as fp:
+            content = fp.read()
+        if "A_REMPLIR" not in content:
+            continue
+        parts = content.split("---", 2)
+        if len(parts) < 3:
+            continue
+        try:
+            meta = yaml.safe_load(parts[1]) or {}
+        except yaml.YAMLError:
+            continue
+        bap = meta.get("bap_recu_le")
+        if bap not in (None, "", "null"):
+            errors.append(
+                f"{f}: BAP reçu le {bap} mais contient encore A_REMPLIR — "
+                f"publication impossible en l'état"
+            )
+    return errors
+
+
 def main():
     checks = {
         "Fichiers de référence obligatoires": check_required_files(),
@@ -91,6 +124,7 @@ def main():
         "Python (scripts/)": check_python(),
         "Frontmatter des posts (contenu/)": check_post_frontmatter(),
         "Termes interdits": check_forbidden_terms(),
+        "Valeurs A_REMPLIR dans un post validé": check_placeholders_valides(),
     }
 
     failed = False

@@ -1,0 +1,90 @@
+{
+  "_lisez_moi": [
+    "Vérité machine des créneaux de publication. Le code lit CE fichier, jamais",
+    "les documents de référence — modifier brand_guidelines.md sans modifier ce",
+    "fichier ne change rien à ce qui est publié.",
+    "",
+    "3 publications par semaine AU TOTAL, tous canaux confondus (arbitrage du",
+    "30/07/2026). Un créneau = une publication = un canal. Facebook d'abord ;",
+    "les autres canaux s'ouvrent progressivement (voir canaux.activation).",
+    "",
+    "Le champ pilier de chaque créneau est un DÉFAUT, pas une règle figée : la",
+    "répartition 40/35/25 se mesure sur 30 jours glissants, pas sur la semaine.",
+    "Le pilier réel de chaque post vit dans le front-matter du fichier .md."
+  ],
+
+  "programme": {
+    "reference": "AORA-CCC-005",
+    "debut": "2026-08-01",
+    "fin": "2027-01-31",
+    "duree_mois": 6,
+    "premiere_publication": "2026-08-10",
+    "fuseau": "WAT",
+    "utc_offset": "+01:00",
+    "_note_fuseau": "WAT = UTC+1 toute l'année, pas d'heure d'été au Cameroun."
+  },
+
+  "horizon_jours": 14,
+
+  "creneaux": {
+    "facebook": [
+      { "jour": "mardi",  "heure": "12:30", "pilier": 1, "intention": "Conseil de fond — pause déjeuner, pic mobile chez les actifs" },
+      { "jour": "jeudi",  "heure": "19:00", "pilier": 2, "intention": "Méthode et coulisses — après le travail, avant les devoirs" },
+      { "jour": "samedi", "heure": "10:00", "pilier": 3, "intention": "Preuve et témoignages — matinée week-end, cellule familiale réunie" }
+    ]
+  },
+
+  "canaux": {
+    "activation": {
+      "facebook": "2026-08",
+      "whatsapp": "2026-08",
+      "instagram": "2026-09",
+      "tiktok": "2026-10",
+      "linkedin": null,
+      "youtube": null
+    },
+    "_note_activation": [
+      "Un canal dont la date d'activation est null ou postérieure au mois du",
+      "créneau ne doit pas être programmé. Facebook est le canal pivot : c'est",
+      "le seul ouvert au lancement, les créneaux ci-dessus lui sont tous",
+      "attribués. L'ouverture des suivants se décide au vu des premiers",
+      "résultats — ces dates sont des intentions, pas des engagements."
+    ]
+  },
+
+  "piliers": {
+    "1": { "cle": "autorité_éducative",  "nom": "Autorité éducative",     "part_cible": 40 },
+    "2": { "cle": "methode_excellence",  "nom": "La méthode Excellence+", "part_cible": 35 },
+    "3": { "cle": "la_preuve",           "nom": "La preuve",              "part_cible": 25 }
+  },
+  "_note_piliers": [
+    "Ces clés doivent correspondre EXACTEMENT au champ `pilier` du front-matter",
+    "des fichiers .md — elles sont reprises telles quelles du pipeline existant",
+    "(outils/calendrier_editorial/generate.py). Ne pas les normaliser."
+  ],
+
+  "themes_mensuels": {
+    "2026-08": "Fondation et preuve",
+    "2026-09": "La rentrée",
+    "2026-10": "La méthode au quotidien",
+    "2026-11": "Autorité éducative",
+    "2026-12": "Bilan et cap",
+    "2027-01": "Nouvel élan"
+  },
+
+  "depot": {
+    "dossier_approuves": "visuels/approuves",
+    "dossier_en_production": "visuels/en_production",
+    "dossier_contenu": "contenu"
+  },
+
+  "publicite": {
+    "meta_ads_mois_1": false,
+    "_note": [
+      "Aucune campagne au mois 1 (août 2026). Excellence+ choisit les mois où",
+      "elle souscrit ; décision communiquée par email au plus tard 7 jours avant",
+      "le début du mois concerné. Budget média distinct du forfait de gestion et",
+      "non fongible."
+    ]
+  }
+}

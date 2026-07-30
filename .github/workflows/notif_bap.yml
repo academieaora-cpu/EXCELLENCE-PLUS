@@ -15,6 +15,11 @@ on:
     paths:
       - 'contenu/**/*.md'
   workflow_dispatch:
+    inputs:
+      test:
+        description: "Envoyer un message de test pour vérifier le câblage Slack"
+        type: boolean
+        default: false
 
 jobs:
   notifier:
@@ -31,9 +36,20 @@ jobs:
 
       - run: pip install pyyaml
 
-      - name: Détecter les BAP nouvellement reçus
+      - name: Test de câblage Slack
+        if: ${{ inputs.test }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+        run: python3 scripts/notifier_bap.py --test
+
+      - name: Détecter les BAP nouvellement reçus
+        if: ${{ github.event_name == 'push' }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
         run: |
           python3 scripts/notifier_bap.py \
             --avant "${{ github.event.before }}" \
