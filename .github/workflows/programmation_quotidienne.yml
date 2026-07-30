@@ -1,0 +1,61 @@
+name: Programmation quotidienne — 03h00 WAT
+
+# 03h00 WAT = 02h00 UTC. Le Cameroun est à UTC+1 toute l'année, sans heure
+# d'été : la conversion est donc constante et ne dérive pas au fil des saisons.
+#
+# Pourquoi 03h00 : la programmation doit être faite avant le premier créneau de
+# la journée (mardi 12h30). À 03h00 la veille est close, personne ne modifie le
+# dépôt, et le rapport est prêt quand l'équipe arrive.
+#
+# Cette routine NE PUBLIE PAS d'elle-même : elle programme chez Composio ce qui
+# a déjà franchi les contrôles. Un contenu sans BAP écrit ne passe jamais, quelle
+# que soit sa date.
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Essai à blanc — vérifie sans rien programmer"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  programmer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install pyyaml
+
+      - name: Halte si le dépôt est en PAUSE
+        run: |
+          if [ -f PAUSE ]; then
+            echo "⏸️  PLANNING EN PAUSE"
+            cat PAUSE
+            echo "Aucune programmation effectuée."
+            exit 0
+          fi
+
+      - name: État du dépôt et contrôles de publication
+        id: verif
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+        run: python3 scripts/programmer_publications.py --rapport-slack
+
+      # La programmation réelle chez Composio s'ajoute ici une fois le
+      # connecteur activé et les identifiants de la Page renseignés. Tant que ce
+      # n'est pas le cas, l'étape ci-dessus rend compte de ce QUI SERAIT
+      # programmé sans rien envoyer — c'est volontaire : mieux vaut une routine
+      # qui ne programme pas qu'une routine qui publie avec des identifiants
+      # inventés.
