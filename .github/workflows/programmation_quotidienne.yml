@@ -53,9 +53,24 @@ jobs:
           SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
         run: python3 scripts/programmer_publications.py --rapport-slack
 
-      # La programmation réelle chez Composio s'ajoute ici une fois le
-      # connecteur activé et les identifiants de la Page renseignés. Tant que ce
-      # n'est pas le cas, l'étape ci-dessus rend compte de ce QUI SERAIT
-      # programmé sans rien envoyer — c'est volontaire : mieux vaut une routine
-      # qui ne programme pas qu'une routine qui publie avec des identifiants
-      # inventés.
+      - name: Demande de publication pour Composio
+        run: |
+          python3 .claude/skills/composio-publie-aora/scripts/generer_prompt_composio.py \
+            --horizon 7 | tee demande_composio.txt
+
+      - name: Conserver la demande en artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: demande-composio
+          path: demande_composio.txt
+          retention-days: 14
+          if-no-files-found: ignore
+
+      # GitHub Actions n'a pas accès aux connecteurs MCP : ce runner ne peut pas
+      # appeler Composio lui-même. Il produit donc une demande complète, qu'un
+      # humain colle dans un chat Claude où Composio est activé — voir
+      # .claude/skills/composio-publie-aora/SKILL.md §2.
+      #
+      # Ce détour a un effet secondaire utile : quelqu'un voit passer chaque
+      # publication avant qu'elle parte. Sur un dispositif où rien ne se publie
+      # sans validation écrite, c'est une garantie de plus, pas une faiblesse.
