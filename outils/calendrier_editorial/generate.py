@@ -1,45 +1,62 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Génère le calendrier éditorial Excellence+ v3 — 5 mois actifs, août-décembre
-2026 (juillet achevé, retiré du plan actif — cf. STATUT_PROJET.md).
-Transcrit fidèlement les posts Facebook août/septembre donnés par
-l'utilisateur ; génère WhatsApp/Instagram/TikTok autour ; génère
-octobre-décembre systématiquement à partir des axes donnés. Décembre est
-positionné comme bilan mi-annuel du programme (pas un bilan de fin d'année
-calendaire).
+Génère le calendrier éditorial Excellence+ — v3, arbitrages du 30/07/2026.
+
+Règles appliquées (source : config/creneaux.json, qui fait foi) :
+  · 6 mois — août 2026 → janvier 2027 (janvier réintégré au programme)
+  · 3 publications par semaine AU TOTAL, tous canaux confondus
+    mardi 12h30 · jeudi 19h00 · samedi 10h00 WAT
+  · Facebook seul canal ouvert au lancement — les autres suivent
+  · Ciblage : Yaoundé dans son ensemble, plus le premium exclusif
+  · Aucune campagne Meta Ads au mois 1 (août)
+  · Piliers 40 / 35 / 25 mesurés sur la période entière
+
+Ce générateur produit le PLAN (date, canal, pilier, angle). Le texte de chaque
+publication est rédigé ensuite, publication par publication, et passe par le
+circuit BAT/BAP. Un calendrier n'est pas un stock de textes.
 """
 import codecs
 import datetime
 import json
 import os
 
-DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+ICI = os.path.dirname(os.path.abspath(__file__))
+DATA = os.path.join(ICI, "data")
+CONFIG = os.path.join(ICI, "..", "..", "config", "creneaux.json")
 os.makedirs(DATA, exist_ok=True)
 
 AUT, MET, PRE = "autorité_éducative", "methode_excellence", "la_preuve"
 
-FR_MONTHS = ["", "janvier", "février", "mars", "avril", "mai", "juin",
-             "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
-FR_MONTHS_SHORT = ["", "jan", "fév", "mar", "avr", "mai", "juin",
-                   "juil", "aoû", "sep", "oct", "nov", "déc"]
+FR_JOURS = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
+FR_MOIS = ["", "janvier", "février", "mars", "avril", "mai", "juin",
+           "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
+FR_MOIS_COURT = ["", "jan", "fév", "mar", "avr", "mai", "juin",
+                 "juil", "aoû", "sep", "oct", "nov", "déc"]
+
+# Index des jours ISO utilisés par les créneaux (lundi = 0)
+JOUR_INDEX = {nom: i for i, nom in enumerate(FR_JOURS)}
 
 
 def fr_date(d):
-    return "%d %s %d" % (d.day, FR_MONTHS[d.month], d.year)
+    return "%d %s %d" % (d.day, FR_MOIS[d.month], d.year)
 
 
-def fr_date_short(d):
-    return "%d %s" % (d.day, FR_MONTHS_SHORT[d.month])
+def fr_date_court(d):
+    return "%d %s" % (d.day, FR_MOIS_COURT[d.month])
 
 
-def month_id(d):
+def mois_id(d):
     return "%04d-%02d" % (d.year, d.month)
 
 
+def charger_config():
+    with codecs.open(CONFIG, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
 # ---------------------------------------------------------------------------
-# PLATEFORMES — couleurs natives (outil interne, usage fonctionnel de
-# reconnaissance de plateforme — pas un visuel de marque Excellence+/AORA)
+# Référentiels d'affichage
 # ---------------------------------------------------------------------------
 PLATFORMS = [
     {"id": "facebook", "nom": "Facebook", "icone": "\U0001F4D8", "couleur": "#1877F2"},
@@ -47,18 +64,16 @@ PLATFORMS = [
     {"id": "instagram", "nom": "Instagram", "icone": "\U0001F4F8", "couleur": "#E1306C"},
     {"id": "tiktok", "nom": "TikTok", "icone": "\U0001F3B5", "couleur": "#010101"},
 ]
-PLATFORMS_HORS_SCOPE = [
-    {"id": "youtube", "nom": "YouTube", "icone": "▶", "couleur": "#FF0000", "badge": "Activation oct. 2026"},
-    {"id": "linkedin", "nom": "LinkedIn", "icone": "in", "couleur": "#0A66C2", "badge": "Activation oct. 2026"},
-]
-PLATFORM_CODE = {"facebook": "FB", "whatsapp": "WA", "instagram": "IG", "tiktok": "TT",
-                  "youtube": "YT", "linkedin": "LI"}
 
 PILLARS = [
-    {"id": AUT, "nom": "Autorité", "nom_long": "Autorité éducative", "couleur": "#C2570F", "part": 40, "phare": True},
-    {"id": MET, "nom": "Méthode", "nom_long": "La méthode Excellence+", "couleur": "#1B2D5C", "part": 35, "phare": False},
-    {"id": PRE, "nom": "Preuve", "nom_long": "La preuve", "couleur": "#1B6B3C", "part": 25, "phare": False},
+    {"id": AUT, "nom": "Autorité", "nom_long": "Autorité éducative",
+     "couleur": "#C2570F", "part": 40, "phare": True},
+    {"id": MET, "nom": "Méthode", "nom_long": "La méthode Excellence+",
+     "couleur": "#1B2D5C", "part": 35, "phare": False},
+    {"id": PRE, "nom": "Preuve", "nom_long": "La preuve",
+     "couleur": "#1B6B3C", "part": 25, "phare": False},
 ]
+PILIER_PAR_NUM = {1: AUT, 2: MET, 3: PRE}
 
 STATUTS = [
     {"id": "a_rediger", "label": "À rédiger", "couleur": "#9CA0A8"},
@@ -68,391 +83,356 @@ STATUTS = [
     {"id": "publie", "label": "Publié", "couleur": "#22C55E"},
 ]
 
-MONTHS = [
-    {"id": "2026-08", "nom": "Août 2026", "sous_titre": "Mois 1 — Conversion intensive", "theme": "CONVERSION INTENSIVE",
-     "couleur": "#F37021", "priorite": True},
-    {"id": "2026-09", "nom": "Septembre 2026", "sous_titre": "Mois 2 — Fermeture", "theme": "FERMETURE & URGENCE",
-     "couleur": "#C0392B", "priorite": False},
-    {"id": "2026-10", "nom": "Octobre 2026", "sous_titre": "Mois 3 — Fidélisation", "theme": "FIDÉLISATION",
-     "couleur": "#27AE60", "priorite": False},
-    {"id": "2026-11", "nom": "Novembre 2026", "sous_titre": "Mois 4 — Autorité", "theme": "AUTORITÉ",
-     "couleur": "#142850", "priorite": False},
-    {"id": "2026-12", "nom": "Décembre 2026", "sous_titre": "Mois 5 — Bilan mi-annuel", "theme": "BILAN MI-ANNUEL",
-     "couleur": "#D4AC0D", "priorite": False},
-]
-MONTH_BY_ID = {m["id"]: m for m in MONTHS}
-
-META_ADS = [
-    {"id": "ADS-1", "nom": "Campagne META ADS 1 — CONVERSION", "periode": "4–24 août 2026", "budget": "30 000 FCFA",
-     "mois": "2026-08", "debut_iso": "2026-08-04", "fin_iso": "2026-08-24"},
-    {"id": "ADS-2", "nom": "Campagne META ADS 2 — FERMETURE", "periode": "8–20 septembre 2026", "budget": "10 000 FCFA",
-     "mois": "2026-09", "debut_iso": "2026-09-08", "fin_iso": "2026-09-20"},
-]
-
-KPI_PAR_MOIS = {
-    "2026-08": "5-8 messages WhatsApp/jour · 8-12 nouvelles inscriptions",
-    "2026-09": "6-10 inscriptions finales · verrouillage portefeuille rentrée",
+COULEUR_MOIS = {
+    "2026-08": "#F37021", "2026-09": "#C0392B", "2026-10": "#27AE60",
+    "2026-11": "#142850", "2026-12": "#D4AC0D", "2027-01": "#1B6B3C",
 }
 
 INTERDITS_NOTE = (
     "Ne jamais écrire « Excellence++ » (nom exact : Excellence+) · "
-    "ne jamais mentionner le headcount enseignants · ne jamais nommer Prepdia · "
-    "ne jamais mélanger budget AORA et budget Meta Ads · "
-    "ne jamais publier sans BAP écrit (bap_recu_le non vide) · "
-    "vocal WhatsApp non accepté comme BAP · "
-    "ne jamais mentionner la Fondation Zacharias Tanee Fomum dans un post réseaux."
+    "ne jamais mentionner le nombre d'enseignants · ne jamais nommer un concurrent · "
+    "ne jamais promettre la réussite — Excellence+ la mesure et la montre · "
+    "ne jamais chiffrer un tarif publiquement · "
+    "ne jamais laisser penser que le service est réservé aux quartiers aisés · "
+    "ne jamais publier sans BAP écrit reçu par email (bap_recu_le ET bap_email_ref) · "
+    "vocal ou message WhatsApp jamais accepté comme BAP · "
+    "ne jamais publier un mineur identifiable sans autorisation parentale archivée."
 )
 
+# ---------------------------------------------------------------------------
+# ANGLES par mois et par pilier.
+# Chaque mois a son thème ; chaque pilier y trouve sa déclinaison. Les angles
+# restent des intentions éditoriales — le texte final est rédigé au moment du
+# BAT, pas ici.
+# ---------------------------------------------------------------------------
+ANGLES = {
+    "2026-08": {  # Fondation et preuve
+        AUT: [
+            "Préparer la rentrée : trois gestes à commencer maintenant",
+            "Reprendre le rythme avant la reprise, pas après",
+            "Ce qu'un parent peut vérifier avant de choisir un accompagnement",
+            "Organiser le travail à la maison sans transformer le salon en salle de classe",
+            "Les questions à poser avant de confier son enfant à quelqu'un",
+        ],
+        MET: [
+            "Comment Excellence+ sélectionne et suit ses enseignants",
+            "Ce qui se passe pendant une séance à domicile",
+            "Le rôle de l'encadreur — ce que personne ne voit",
+            "Le bilan séquentiel : à quoi ça sert, ce qu'on y lit",
+            "Disponible de 06h à 24h — pourquoi cette amplitude",
+        ],
+        PRE: [
+            "93 % puis 97 % — deux ans, deux chiffres vérifiables",
+            "Un bulletin avant, un bulletin après",
+            "Ce qu'une famille accompagnée depuis deux ans en dit",
+            "Des résultats qu'on mesure et qu'on montre",
+        ],
+    },
+    "2026-09": {  # La rentrée
+        AUT: [
+            "Première semaine : les trois signaux qui comptent",
+            "Un enfant qui décroche ne le dit pas — il le montre",
+            "Les quinze premiers jours décident du trimestre",
+            "Classes d'examen : ce qui change cette année",
+            "Aider sans faire à sa place",
+        ],
+        MET: [
+            "Comment on construit un plan de travail en début d'année",
+            "Le premier rendez-vous avec une nouvelle famille",
+            "Adapter le rythme à l'élève, pas l'inverse",
+            "Suivre la progression semaine après semaine",
+            "Ce qu'on demande à un enseignant avant sa première séance",
+        ],
+        PRE: [
+            "Une rentrée réussie, racontée par une famille de Yaoundé",
+            "Du CM2 aux classes d'examen — le parcours d'un élève suivi",
+            "Ce qui a changé après un trimestre d'accompagnement",
+            "Témoignage : passer d'un bulletin subi à un bulletin choisi",
+        ],
+    },
+    "2026-10": {  # La méthode au quotidien
+        AUT: [
+            "Réviser efficacement : ce qui marche vraiment",
+            "Le mi-trimestre, moment idéal pour corriger le tir",
+            "Gérer la fatigue scolaire sans relâcher",
+            "Devoirs du soir : combien de temps, à quelle heure",
+            "Quand faut-il s'inquiéter d'une note en baisse",
+        ],
+        MET: [
+            "Une journée d'encadreur, du matin au soir",
+            "Comment on corrige une méthode qui ne fonctionne pas",
+            "Portrait d'enseignant : pourquoi il fait ce métier",
+            "Coulisses d'un suivi terrain à Yaoundé",
+            "La communication parent-enseignant-encadreur, en pratique",
+        ],
+        PRE: [
+            "Trois mois d'accompagnement, ce qui a bougé",
+            "Un élève, une progression, des preuves",
+            "Ce que les parents disent après un trimestre",
+            "Avant / après : lire une progression réelle",
+        ],
+    },
+    "2026-11": {  # Autorité éducative
+        AUT: [
+            "Préparer les examens de fin de trimestre",
+            "Méthode de révision intensive : la construire, pas l'improviser",
+            "Le premier bulletin 2026-2027 : comment le lire",
+            "Stress d'examen : ce qui aide, ce qui aggrave",
+            "Choisir ses priorités quand tout semble urgent",
+            "Le sommeil, variable oubliée de la réussite scolaire",
+        ],
+        MET: [
+            "Comment on prépare un élève à une classe d'examen",
+            "Réajuster un accompagnement en cours d'année",
+            "Ce qu'on mesure chez un élève, et pourquoi",
+            "Travailler avec les familles, pas seulement pour elles",
+        ],
+        PRE: [
+            "Mention Très Bien au BEPC — le chemin, pas seulement le résultat",
+            "Ce qu'un trimestre d'écart produit sur un bulletin",
+            "Témoignage d'un élève de classe d'examen",
+        ],
+    },
+    "2026-12": {  # Bilan et cap
+        AUT: [
+            "Faire le point à mi-parcours de l'année scolaire",
+            "Les vacances de fin d'année : repos ou révision ?",
+            "Préparer le second trimestre pendant les congés",
+            "Ce qu'on attend d'un enfant après un premier trimestre",
+        ],
+        MET: [
+            "Six mois d'accompagnement — ce que la méthode a corrigé",
+            "Comment on prépare la reprise de janvier",
+            "Bilan séquentiel de fin de trimestre : ce qu'il contient",
+            "Ce que l'équipe retient de ce premier trimestre",
+        ],
+        PRE: [
+            "Bilan mi-annuel : les résultats de la période",
+            "Merci aux familles qui nous ont fait confiance",
+            "Ce qu'une année d'accompagnement change concrètement",
+        ],
+    },
+    "2027-01": {  # Nouvel élan
+        AUT: [
+            "Reprendre après les congés sans tout recommencer",
+            "Second trimestre : le moment où l'écart se creuse ou se comble",
+            "Fixer des objectifs tenables pour la suite de l'année",
+            "Préparer les examens de fin d'année, dès janvier",
+            "Ce qui distingue un élève qui progresse d'un élève qui stagne",
+        ],
+        MET: [
+            "Nouvelle année, mêmes exigences : comment on repart",
+            "Ajuster un accompagnement au second trimestre",
+            "Ce qu'on met en place pour les classes d'examen",
+            "Notre façon de travailler, expliquée simplement",
+        ],
+        PRE: [
+            "Résultats du premier trimestre 2026-2027",
+            "Une famille raconte son année avec Excellence+",
+            "93 % puis 97 % — et la suite",
+        ],
+    },
+}
 
-def daterange(start, end):
-    d = start
-    while d <= end:
-        yield d
+FORMATS = {
+    AUT: ["Carrousel conseil", "Post pédagogique", "Question aux parents"],
+    MET: ["Coulisses", "Portrait d'enseignant", "Infographie de processus"],
+    PRE: ["Témoignage", "Chiffre-clé", "Avant / après anonymisé"],
+}
+
+# Meta Ads : aucune campagne au mois 1. Les fenêtres recommandées sont
+# septembre (rentrée) et janvier (reprise) — mais rien n'est engagé : le client
+# décide mois par mois, par email, 7 jours avant. Tant qu'aucune décision n'est
+# reçue, la liste reste vide. Ne rien y inscrire par anticipation.
+META_ADS = []
+
+
+def creneaux_de_la_periode(config):
+    """Développe les créneaux de config/creneaux.json sur toute la période."""
+    prog = config["programme"]
+    # On démarre à la première publication possible, pas au premier jour du
+    # contrat : rien ne peut partir avant que la chaîne visuel → BAT → BAP soit
+    # bouclée. Planifier des créneaux antérieurs reviendrait à afficher au
+    # client des publications que personne ne peut produire à temps.
+    debut = datetime.date.fromisoformat(
+        prog.get("premiere_publication") or prog["debut"]
+    )
+    fin = datetime.date.fromisoformat(prog["fin"])
+    grille = []
+    for canal, liste in config["creneaux"].items():
+        for c in liste:
+            grille.append((JOUR_INDEX[c["jour"]], c["heure"], c["pilier"], canal))
+
+    creneaux = []
+    d = debut
+    while d <= fin:
+        for jour_idx, heure, pilier_num, canal in grille:
+            if d.weekday() == jour_idx:
+                creneaux.append({
+                    "date": d, "heure": heure,
+                    "pilier_defaut": pilier_num, "plateforme": canal,
+                })
         d += datetime.timedelta(days=1)
+    creneaux.sort(key=lambda c: (c["date"], c["heure"]))
+    return creneaux
 
 
-def build_weeks(start, end):
-    """Retourne {iso_week_label: [dates]} et la liste ordonnée WEEKS avec mois dominant."""
-    weeks_seen = {}
-    for d in daterange(start, end):
-        iso_year, iso_week, _ = d.isocalendar()
-        weeks_seen.setdefault((iso_year, iso_week), []).append(d)
-    WEEKS = []
-    week_days = {}
-    for (iso_year, iso_week), days in sorted(weeks_seen.items()):
-        label = "S%d" % iso_week
-        m = month_id(days[len(days) // 2])
-        WEEKS.append({"id": label, "label": "Semaine %d" % iso_week,
-                       "dates": "%s – %s" % (fr_date_short(days[0]), fr_date(days[-1])),
-                       "mois": m,
-                       "debut_iso": days[0].isoformat(), "fin_iso": days[-1].isoformat()})
-        week_days[label] = days
-    return WEEKS, week_days
+def repartir_piliers(creneaux):
+    """Ajuste les piliers pour atteindre 40/35/25 sur la période entière.
+
+    Le pilier par défaut du créneau (mardi=Autorité, jeudi=Méthode,
+    samedi=Preuve) donne un tiers chacun. Pour atteindre la cible, on convertit
+    une partie des créneaux du pilier excédentaire vers le pilier déficitaire,
+    à intervalle régulier — jamais en bloc, sinon un mois entier bascule.
+    """
+    total = len(creneaux)
+    cible = {AUT: round(total * 0.40), MET: round(total * 0.35)}
+    cible[PRE] = total - cible[AUT] - cible[MET]
+
+    for c in creneaux:
+        c["pilier"] = PILIER_PAR_NUM[c["pilier_defaut"]]
+
+    def compte(p):
+        return sum(1 for c in creneaux if c["pilier"] == p)
+
+    # Preuve est le pilier le plus faible en cible : on lui retire d'abord.
+    for source in (PRE, MET):
+        surplus = compte(source) - cible[source]
+        if surplus <= 0:
+            continue
+        candidats = [c for c in creneaux if c["pilier"] == source]
+        pas = max(1, len(candidats) // surplus)
+        convertis = 0
+        for i in range(0, len(candidats), pas):
+            if convertis >= surplus:
+                break
+            if compte(AUT) < cible[AUT]:
+                candidats[i]["pilier"] = AUT
+                convertis += 1
+    return creneaux
 
 
-def d_of(days, iso_weekday):
-    match = [d for d in days if d.isoweekday() == iso_weekday]
-    return match[0] if match else None
-
-
-def make_id(platform, week_label, seq_counter):
-    key = (platform, week_label)
-    seq_counter[key] = seq_counter.get(key, 0) + 1
-    return "EXC-%s-2026-%s-%03d" % (PLATFORM_CODE[platform], week_label, seq_counter[key])
-
-
-def base_entry(entry_id, titre, pilier, plateforme, format_, date_obj, heure, mois, tags=None, meta_ads=None):
-    m = MONTH_BY_ID[mois]
-    return {
-        "id": entry_id,
-        "titre": titre,
-        "pilier": pilier,
-        "format": format_,
-        "plateforme": plateforme,
-        "mois": mois,
-        "date": "%s · %s WAT" % (fr_date(date_obj), heure),
-        "date_iso": date_obj.isoformat(),
-        "heure": heure,
-        "tags": tags or [],
-        "favori": False,
-        "statut": "a_rediger",
-        "meta_ads": meta_ads,
-        "resume": "%s. Pilier %s — mois « %s ». Statut à rédiger : aucun texte final, aucun BAT/BAP à ce stade." % (
-            titre,
-            {AUT: "Autorité éducative", MET: "La méthode Excellence+", PRE: "La preuve"}[pilier],
-            m["theme"]),
-        "notes": INTERDITS_NOTE,
-    }
-
-
-# ---------------------------------------------------------------------------
-# AOÛT / SEPTEMBRE — Facebook transcrit fidèlement (titre, pilier)
-# par semaine (S1..S4). "toute notre équipe" remplace tout chiffre headcount.
-# Juillet (achevé) a été retiré du plan actif — cf. STATUT_PROJET.md.
-# ---------------------------------------------------------------------------
-EXPLICIT_FB = {
-    "2026-08": [
-        [("🚨 Inscriptions rentrée 2026 ouvertes", AUT),
-         ("Nos formules rentrée", MET),
-         ("Témoignage Bac C 2025", PRE),
-         ("Sondage — Avez-vous commencé à organiser la rentrée ?", AUT)],
-        [("Choisir son répétiteur : 6 questions à poser", AUT),
-         ("Notre engagement rentrée 2026", MET),
-         ("Témoignage — une maman ET son élève", PRE),
-         ("Sondage — Quelle classe à la rentrée ?", AUT),
-         ("Post bonus — engagement", AUT)],
-        [("Classe d'examen : formules dédiées", MET),
-         ("Première séance Excellence+ : ce qui se passe", MET),
-         ("Témoignage — mention Très Bien au BEPC", PRE),
-         ("Tagguez un parent qui prépare la rentrée", AUT),
-         ("Carrousel Instagram adapté Facebook", MET)],
-        [("Ce qu'Excellence+ a accompli en 2025-2026", PRE),
-         ("Une journée d'enseignant", MET),
-         ("J-15 : les 5 dernières choses à prévoir", AUT),
-         ("⏰ Plus que 2 semaines avant la rentrée", AUT),
-         ("Post de relance inscriptions", AUT)],
-    ],
-    "2026-09": [
-        [("Message de la direction — « C'est la rentrée »", MET),
-         ("Toute notre équipe est prête", MET),
-         ("5 premières semaines : ce qu'on peut attendre d'un enfant", AUT),
-         ("Comment se passe la 1ère semaine pour vos enfants ?", AUT)],
-        [("1ère semaine difficile ? 3 signes qu'il faut agir maintenant", AUT),
-         ("Inscriptions encore ouvertes jusqu'au 20 septembre", AUT),
-         ("Témoignage — une famille nouvelle en 2026", PRE)],
-        [("Avant que le retard ne s'installe : agir dans les 15 premiers jours", AUT),
-         ("⏰ Dernières inscriptions", AUT),
-         ("Témoignage vidéo — succès rentrée 2025", PRE)],
-        [("Premier mois d'école : 3 signaux à surveiller", AUT),
-         ("🔔 Inscriptions fermées le 28 septembre", AUT),
-         ("Merci aux familles qui nous ont fait confiance", PRE),
-         ("Rentrée 2026 Excellence+ en chiffres", PRE)],
-    ],
-}
-
-FB_DAYS_4 = [1, 3, 5, 7]        # lun/mer/ven/dim
-FB_DAYS_5 = [1, 3, 5, 6, 7]     # lun/mer/ven/sam/dim
-
-WA_THEMES = {
-    "2026-08": ["Rappel inscriptions — priorité abonnés", "Témoignage vidéo", "Photo coulisses pré-rentrée"],
-    "2026-09": ["Photo terrain — cours en action", "Message de la direction", "Relance ciblée"],
-}
-WA_DAYS = [2, 4, 6]  # mar/jeu/sam
-WA_PILIER_BY_THEME_IDX = {0: PRE, 1: AUT, 2: MET}  # approx: témoignage=preuve, rappel=autorité, coulisses=méthode
-
-IG_DAYS = [3, 6]  # mer/sam
-TT_DAYS = [5, 7]  # ven/dim
-
-IG_RUBRIQUES_JAS = [
-    ("Carrousel — {theme}, ce qu'il faut savoir", AUT),
-    ("Post engageant — {theme}, votre avis ?", AUT),
-    ("Carrousel — dans les coulisses de la rentrée, semaine {n}", MET),
-    ("Reels — un conseil en 30 secondes ({n})", AUT),
-]
-TT_RUBRIQUES_JAS = [
-    ("Script 60s — un conseil rapide sur {theme_lower}, semaine {n}", AUT),
-    ("Vidéo tendance — coulisses du suivi ({n})", MET),
-]
-
-MONTH_THEME_LOWER = {
-    "2026-08": "la conversion intensive",
-    "2026-09": "la fermeture des inscriptions",
-}
-
-
-# ---------------------------------------------------------------------------
-# OCTOBRE / NOVEMBRE / DÉCEMBRE — axes donnés (pas de posts explicites),
-# génération systématique ancrée sur ces axes exacts.
-# ---------------------------------------------------------------------------
-AXES_OND = {
-    "2026-10": {
-        "facebook": ["Coulisses de l'accompagnement en cours", "Portrait enseignant",
-                     "Vie de la communauté Excellence+", "Conseil suivi mi-trimestre",
-                     "Témoignage élève en cours d'année"],
-        "whatsapp": ["Message exclusif abonnés", "Conseil hebdo", "Sondage satisfaction"],
-        "pilote": True,  # YouTube + LinkedIn premiers contenus pilote
-    },
-    "2026-11": {
-        "facebook": ["Conseil examens de fin de trimestre", "Méthode de révision intensive",
-                     "Préparer le premier bulletin 2026-2027", "Contenu pédagogique à valeur forte"],
-        "whatsapp": ["Conseil hebdo", "Rappel méthode", "Message direct abonnés"],
-        "pilote": False,
-    },
-    "2026-12": {
-        "facebook": ["Bilan mi-annuel du programme Excellence+ × AORA", "Perspectives second semestre 2027",
-                     "Témoignage de fin d'année", "Remerciements aux familles", "Teaser programme janvier 2027"],
-        "whatsapp": ["Message chaleureux de fin d'année", "Bilan mi-annuel pour les abonnés", "Vœux"],
-        "pilote": False,
-    },
-}
-AXES_PILIER_GUESS = {
-    "Coulisses de l'accompagnement en cours": MET, "Portrait enseignant": MET,
-    "Vie de la communauté Excellence+": MET, "Conseil suivi mi-trimestre": AUT,
-    "Témoignage élève en cours d'année": PRE, "Conseil examens de fin de trimestre": AUT,
-    "Méthode de révision intensive": AUT, "Préparer le premier bulletin 2026-2027": AUT,
-    "Contenu pédagogique à valeur forte": AUT, "Bilan mi-annuel du programme Excellence+ × AORA": PRE,
-    "Perspectives second semestre 2027": MET, "Témoignage de fin d'année": PRE,
-    "Remerciements aux familles": PRE, "Teaser programme janvier 2027": MET,
-    "Message exclusif abonnés": MET, "Conseil hebdo": AUT, "Sondage satisfaction": AUT,
-    "Rappel méthode": AUT, "Message direct abonnés": MET,
-    "Message chaleureux de fin d'année": PRE, "Bilan mi-annuel pour les abonnés": PRE, "Vœux": PRE,
-}
+def construire_semaines(creneaux):
+    semaines, vues = [], {}
+    for c in creneaux:
+        iso_annee, iso_sem, _ = c["date"].isocalendar()
+        cle = (iso_annee, iso_sem)
+        vues.setdefault(cle, []).append(c["date"])
+    for (iso_annee, iso_sem), dates in sorted(vues.items()):
+        lundi = min(dates) - datetime.timedelta(days=min(dates).weekday())
+        dimanche = lundi + datetime.timedelta(days=6)
+        semaines.append({
+            "id": "S%d" % iso_sem,
+            "iso_annee": iso_annee,
+            "label": "Semaine %d" % iso_sem,
+            "dates": "%s – %s" % (fr_date_court(lundi), fr_date(dimanche)),
+            "debut_iso": lundi.isoformat(),
+            "fin_iso": dimanche.isoformat(),
+            "mois": mois_id(dates[len(dates) // 2]),
+        })
+    return semaines
 
 
 def main():
-    start = datetime.date(2026, 8, 1)
-    end = datetime.date(2026, 12, 31)
-    WEEKS, week_days = build_weeks(start, end)
-    weeks_by_month = {}
-    for w in WEEKS:
-        weeks_by_month.setdefault(w["mois"], []).append(w)
+    config = charger_config()
+    prog = config["programme"]
+    themes = config["themes_mensuels"]
 
-    entries = []
-    seq = {}
+    creneaux = repartir_piliers(creneaux_de_la_periode(config))
 
-    def add(entry):
-        entries.append(entry)
+    mois_ordonnes = sorted(themes.keys())
+    MONTHS = []
+    for i, mid in enumerate(mois_ordonnes, start=1):
+        annee, mois = int(mid[:4]), int(mid[5:])
+        MONTHS.append({
+            "id": mid,
+            "nom": "%s %d" % (FR_MOIS[mois].capitalize(), annee),
+            "sous_titre": "Mois %d — %s" % (i, themes[mid]),
+            "theme": themes[mid].upper(),
+            "couleur": COULEUR_MOIS.get(mid, "#1B2D5C"),
+            "priorite": mid == "2026-09",  # la rentrée est le pic de l'année
+        })
+    MOIS_PAR_ID = {m["id"]: m for m in MONTHS}
 
-    # ---- Août / Septembre : Facebook explicite ----
-    for mois, weeks_content in EXPLICIT_FB.items():
-        weeks = weeks_by_month[mois]
-        for wi, week_posts in enumerate(weeks_content):
-            if wi >= len(weeks):
-                break
-            w = weeks[wi]
-            days = week_days[w["id"]]
-            day_pattern = FB_DAYS_5 if len(week_posts) >= 5 else FB_DAYS_4
-            for pi, (titre, pilier) in enumerate(week_posts):
-                if pi >= len(day_pattern):
-                    break
-                date_obj = d_of(days, day_pattern[pi])
-                if not date_obj:
-                    continue
-                eid = make_id("facebook", w["id"], seq)
-                add(base_entry(eid, titre, pilier, "facebook", "Image + texte / Carrousel",
-                                date_obj, "18:30", mois, tags=["facebook", pilier]))
+    codes = {"facebook": "FB", "whatsapp": "WA", "instagram": "IG", "tiktok": "TT"}
+    compteurs, curseurs, entrees = {}, {}, []
 
-    # ---- Août / Septembre : WhatsApp (rotation des 3 thèmes donnés) ----
-    for mois, themes in WA_THEMES.items():
-        for w in weeks_by_month[mois]:
-            days = week_days[w["id"]]
-            for ti, theme in enumerate(themes):
-                date_obj = d_of(days, WA_DAYS[ti])
-                if not date_obj:
-                    continue
-                heure = ["07:30", "12:00", "08:00"][ti]
-                pilier = WA_PILIER_BY_THEME_IDX[ti]
-                titre = "%s — semaine du %s" % (theme, fr_date_short(days[0]))
-                eid = make_id("whatsapp", w["id"], seq)
-                add(base_entry(eid, titre, pilier, "whatsapp", "Texte court",
-                                date_obj, heure, mois, tags=["whatsapp", pilier]))
+    for c in creneaux:
+        mid = mois_id(c["date"])
+        pilier = c["pilier"]
+        pool = ANGLES[mid][pilier]
+        cle = (mid, pilier)
+        idx = curseurs.get(cle, 0)
+        curseurs[cle] = idx + 1
+        angle = pool[idx % len(pool)]
+        # Au-delà du premier tour dans un pool, on marque le rappel plutôt que
+        # de laisser deux créneaux porter un titre identique.
+        if idx >= len(pool):
+            angle = "%s — angle %d" % (angle, idx // len(pool) + 1)
 
-    # ---- Août / Septembre : Instagram + TikTok (générés, ancrés sur le thème du mois) ----
-    for mois in ("2026-08", "2026-09"):
-        theme_lower = MONTH_THEME_LOWER[mois]
-        for wk_i, w in enumerate(weeks_by_month[mois]):
-            days = week_days[w["id"]]
-            for ii, iso_wd in enumerate(IG_DAYS):
-                date_obj = d_of(days, iso_wd)
-                if not date_obj:
-                    continue
-                tmpl, pilier = IG_RUBRIQUES_JAS[(ii + wk_i) % len(IG_RUBRIQUES_JAS)]
-                titre = tmpl.format(theme=theme_lower.capitalize(), theme_lower=theme_lower, n=wk_i + 1)
-                eid = make_id("instagram", w["id"], seq)
-                add(base_entry(eid, titre, pilier, "instagram", "Carrousel",
-                                date_obj, "09:00" if ii == 0 else "19:00", mois, tags=["instagram", pilier]))
-            for ti, iso_wd in enumerate(TT_DAYS):
-                date_obj = d_of(days, iso_wd)
-                if not date_obj:
-                    continue
-                tmpl, pilier = TT_RUBRIQUES_JAS[ti % len(TT_RUBRIQUES_JAS)]
-                titre = tmpl.format(theme=theme_lower, theme_lower=theme_lower, n=wk_i + 1)
-                eid = make_id("tiktok", w["id"], seq)
-                add(base_entry(eid, titre, pilier, "tiktok", "Vidéo 60s",
-                                date_obj, "17:00" if ti == 0 else "20:00", mois, tags=["tiktok", pilier]))
+        code = codes[c["plateforme"]]
+        n = compteurs.get(code, 0) + 1
+        compteurs[code] = n
+        eid = "EXC-%s-%s-%03d" % (code, c["date"].strftime("%Y"), n)
 
-    # ---- Octobre / Novembre / Décembre : axes donnés, rotation systématique ----
-    LAP_SUFFIX = ["", " — suite", " — le point cette semaine", " — nouvel angle", " — on y revient"]
+        formats = FORMATS[pilier]
+        m = MOIS_PAR_ID[mid]
+        entrees.append({
+            "id": eid,
+            "titre": angle,
+            "pilier": pilier,
+            "format": formats[idx % len(formats)],
+            "plateforme": c["plateforme"],
+            "mois": mid,
+            "date": "%s · %s WAT" % (fr_date(c["date"]), c["heure"]),
+            "date_iso": c["date"].isoformat(),
+            "jour": FR_JOURS[c["date"].weekday()],
+            "heure": c["heure"],
+            "tags": [c["plateforme"], pilier],
+            "favori": False,
+            "statut": "a_rediger",
+            "meta_ads": None,
+            "resume": "%s. Pilier %s — mois « %s ». Angle planifié : le texte "
+                      "définitif est rédigé au moment du BAT, puis validé par "
+                      "email avant publication." % (
+                          angle,
+                          {AUT: "Autorité éducative", MET: "La méthode Excellence+",
+                           PRE: "La preuve"}[pilier],
+                          m["theme"]),
+            "notes": INTERDITS_NOTE,
+        })
 
-    def with_lap(text, i, pool_len):
-        lap = i // pool_len
-        return text + LAP_SUFFIX[lap % len(LAP_SUFFIX)]
+    semaines = construire_semaines(creneaux)
+    kpi = {m["id"]: "3 publications/semaine · pilier dominant selon le créneau"
+           for m in MONTHS}
 
-    for mois, axes in AXES_OND.items():
-        fb_axes = axes["facebook"]
-        wa_axes = axes["whatsapp"]
-        fb_i = wa_i = 0
-        for w in weeks_by_month[mois]:
-            days = week_days[w["id"]]
-            for wd in FB_DAYS_4:
-                date_obj = d_of(days, wd)
-                if not date_obj:
-                    continue
-                axe_base = fb_axes[fb_i % len(fb_axes)]
-                axe = with_lap(axe_base, fb_i, len(fb_axes))
-                pilier = AXES_PILIER_GUESS.get(axe_base, AUT)
-                eid = make_id("facebook", w["id"], seq)
-                add(base_entry(eid, axe, pilier, "facebook", "Image + texte / Carrousel",
-                                date_obj, "18:30", mois, tags=["facebook", pilier]))
-                fb_i += 1
-            for wd in WA_DAYS:
-                date_obj = d_of(days, wd)
-                if not date_obj:
-                    continue
-                axe_base = wa_axes[wa_i % len(wa_axes)]
-                axe = with_lap(axe_base, wa_i, len(wa_axes))
-                pilier = AXES_PILIER_GUESS.get(axe_base, MET)
-                eid = make_id("whatsapp", w["id"], seq)
-                add(base_entry(eid, axe, pilier, "whatsapp", "Texte court",
-                                date_obj, "12:00", mois, tags=["whatsapp", pilier]))
-                wa_i += 1
-            for ii, wd in enumerate(IG_DAYS):
-                date_obj = d_of(days, wd)
-                if not date_obj:
-                    continue
-                pilier = [AUT, MET][ii % 2]
-                ig_idx = fb_i + ii
-                titre = "Carrousel — %s" % with_lap(fb_axes[ig_idx % len(fb_axes)].lower(), ig_idx, len(fb_axes))
-                eid = make_id("instagram", w["id"], seq)
-                add(base_entry(eid, titre,
-                                pilier, "instagram", "Carrousel", date_obj,
-                                "09:00" if ii == 0 else "19:00", mois, tags=["instagram", pilier]))
-            for ti, wd in enumerate(TT_DAYS):
-                date_obj = d_of(days, wd)
-                if not date_obj:
-                    continue
-                pilier = [MET, PRE][ti % 2]
-                tt_idx = fb_i + ti + 1
-                titre = "Vidéo — %s" % with_lap(fb_axes[tt_idx % len(fb_axes)].lower(), tt_idx, len(fb_axes))
-                eid = make_id("tiktok", w["id"], seq)
-                add(base_entry(eid, titre,
-                                pilier, "tiktok", "Vidéo 45-60s", date_obj,
-                                "17:00" if ti == 0 else "20:00", mois, tags=["tiktok", pilier]))
-
-    # ---- Octobre : contenus pilote YouTube + LinkedIn (activation progressive) ----
-    oct_weeks = weeks_by_month["2026-10"]
-    if oct_weeks:
-        last_week = oct_weeks[-1]
-        days = week_days[last_week["id"]]
-        date_yt = d_of(days, 3) or days[0]
-        date_li = d_of(days, 5) or days[-1]
-        eid = make_id("youtube", last_week["id"], seq)
-        add(base_entry(eid, "Contenu pilote — présentation de la méthode Excellence+", MET,
-                        "youtube", "Vidéo", date_yt, "18:00", "2026-10", tags=["youtube", "pilote"]))
-        eid = make_id("linkedin", last_week["id"], seq)
-        add(base_entry(eid, "Contenu pilote — positionnement institutionnel Excellence+", MET,
-                        "linkedin", "Post texte", date_li, "09:00", "2026-10", tags=["linkedin", "pilote"]))
-
-    entries.sort(key=lambda e: (e["date_iso"], e["plateforme"]))
-
-    with codecs.open(os.path.join(DATA, "entries.json"), "w", encoding="utf-8") as f:
-        json.dump(entries, f, ensure_ascii=False, indent=2)
-    with codecs.open(os.path.join(DATA, "weeks.json"), "w", encoding="utf-8") as f:
-        json.dump(WEEKS, f, ensure_ascii=False, indent=2)
-    with codecs.open(os.path.join(DATA, "months.json"), "w", encoding="utf-8") as f:
-        json.dump(MONTHS, f, ensure_ascii=False, indent=2)
-    with codecs.open(os.path.join(DATA, "pillars.json"), "w", encoding="utf-8") as f:
-        json.dump(PILLARS, f, ensure_ascii=False, indent=2)
-    with codecs.open(os.path.join(DATA, "platforms.json"), "w", encoding="utf-8") as f:
-        json.dump(PLATFORMS, f, ensure_ascii=False, indent=2)
-    with codecs.open(os.path.join(DATA, "platforms_hors_scope.json"), "w", encoding="utf-8") as f:
-        json.dump(PLATFORMS_HORS_SCOPE, f, ensure_ascii=False, indent=2)
-    with codecs.open(os.path.join(DATA, "statuts.json"), "w", encoding="utf-8") as f:
-        json.dump(STATUTS, f, ensure_ascii=False, indent=2)
-    with codecs.open(os.path.join(DATA, "meta_ads.json"), "w", encoding="utf-8") as f:
-        json.dump(META_ADS, f, ensure_ascii=False, indent=2)
-    with codecs.open(os.path.join(DATA, "kpi.json"), "w", encoding="utf-8") as f:
-        json.dump(KPI_PAR_MOIS, f, ensure_ascii=False, indent=2)
+    sorties = {
+        "entries.json": entrees,
+        "weeks.json": semaines,
+        "months.json": MONTHS,
+        "pillars.json": PILLARS,
+        "platforms.json": PLATFORMS,
+        "platforms_hors_scope.json": [],
+        "statuts.json": STATUTS,
+        "meta_ads.json": META_ADS,
+        "kpi.json": kpi,
+    }
+    for nom, obj in sorties.items():
+        with codecs.open(os.path.join(DATA, nom), "w", encoding="utf-8") as f:
+            json.dump(obj, f, ensure_ascii=False, indent=2)
 
     from collections import Counter
-    c = Counter(e["pilier"] for e in entries)
-    total = len(entries)
-    print("Total entrées :", total)
+    total = len(entrees)
+    cpt = Counter(e["pilier"] for e in entrees)
+    print("Période      : %s → %s (%d mois)" % (prog["debut"], prog["fin"], len(MONTHS)))
+    print("Publications : %d  (3/semaine, tous canaux confondus)" % total)
     for p in (AUT, MET, PRE):
-        print("  %s : %d (%.1f%%)" % (p, c[p], 100.0 * c[p] / total))
-    print("Semaines :", len(WEEKS))
-    print("Par plateforme :", dict(Counter(e["plateforme"] for e in entries)))
-    print("Par mois :", dict(Counter(e["mois"] for e in entries)))
+        cible = {AUT: 40, MET: 35, PRE: 25}[p]
+        print("  %-22s %3d  (%.1f%%  cible %d%%)" % (p, cpt[p], 100.0 * cpt[p] / total, cible))
+    print("Par plateforme :", dict(Counter(e["plateforme"] for e in entrees)))
+    print("Par mois       :", dict(Counter(e["mois"] for e in entrees)))
+    print("Titres uniques : %d / %d" % (len({e["titre"] for e in entrees}), total))
+    print("Campagnes Meta Ads :", len(META_ADS), "(aucune au mois 1 — décision client mois par mois)")
 
 
 if __name__ == "__main__":
