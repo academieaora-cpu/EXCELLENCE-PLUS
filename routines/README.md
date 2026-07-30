@@ -6,23 +6,21 @@ séparément — c'est pour cela qu'elles ne sont pas fondues en une seule.
 | # | Routine | Quand | Ce qu'elle fait | Connecteurs |
 |---|---|---|---|---|
 | **1** | [Programmation](routine1_programmation.md) | tous les jours · 03h00 WAT | Enregistre les BAP (Gmail + dépôts manuels via `traiter_bap.py`), applique les 8 portes, **programme chez Composio**, écrit l'identifiant en retour | Composio · Slack · Gmail (lecture) |
-| **2** | [Production](routine2_production.md) | jours ouvrés · 07h00 WAT | Écrit les textes manquants, brieffe les visuels, mesure l'avance | Slack |
-| **3** | [BAT hebdomadaire](routine3_bat_hebdomadaire.md) | mercredi · 09h00 WAT | Constitue le lot, **rédige un brouillon** Gmail pour Laurence | Gmail · Slack |
+| **2** | [Production](routine2_production.md) | tous les jours · 05h00 WAT | Écrit les textes manquants, brieffe les visuels, mesure l'avance | Slack |
+| **3** | [BAT quotidien](routine3_bat_quotidien.md) | tous les jours · 07h00 WAT | Constitue le lot du jour, **rédige un brouillon** Gmail pour Laurence | Gmail · Slack |
 
-## L'enchaînement sur une semaine
+## L'enchaînement quotidien
 
 ```
-lundi     07h00  R2 écrit les textes qui manquent, brieffe les visuels
-mardi     03h00  R1 programme ce qui est prêt · 12h30 publication
-mercredi  07h00  R2 produit  ·  09h00  R3 prépare le BAT du lot S+2
-jeudi     03h00  R1 programme · 19h00 publication
-vendredi  07h00  R2 produit — dernier passage avant le week-end
-samedi    03h00  R1 programme · 10h00 publication
-dimanche         aucune routine
+03h00  R1 enregistre les BAP, programme chez Composio ce qui est prêt
+05h00  R2 écrit les textes qui manquent, brieffe les visuels, mesure l'avance
+07h00  R3 constitue le lot du jour et prépare le brouillon BAT pour Laurence
 ```
 
-Le samedi est couvert : la Routine 1 tourne tous les jours, y compris le week-end. Seule la
-production (R2) s'arrête, parce qu'elle demande une équipe disponible derrière.
+Les trois routines tournent désormais tous les jours, y compris le week-end. L'idempotence de
+chacune évite le travail en double : R1 se fie à `composio_id`/`programme_le`, R3 exclut les
+publications déjà à `statut: BAT_soumis`. Un jour sans rien de nouveau à traiter produit
+simplement un rapport court, pas une erreur.
 
 ## Ce qui n'est PAS une routine
 
@@ -58,7 +56,15 @@ porte étroite plutôt que levés :
 
 ## Ordre de mise en service
 
-Ne planifiez pas les trois le même jour.
+L'ordre par défaut recommandé était R2 seule quelques jours, puis R3, puis R1 en dernier — pour
+voir chacune tourner avant de lui confier la suivante. **Décision du 30 juillet 2026 : les trois
+ont été planifiées le même jour, à la demande explicite de l'équipe**, sans le passage à la main
+préalable pour R1 décrit ci-dessous. Conséquence à surveiller au premier passage : si R1 bloque
+sur un identifiant manquant (Page Facebook, WhatsApp) ou sur l'action Composio introuvable, la
+première alerte arrivera à 03h00, pas avant.
+
+Ce que la mise en service séquentielle donnait, pour référence si l'une des trois est
+redémarrée seule après une pause :
 
 1. **R2 d'abord**, seule pendant deux ou trois jours. Elle ne publie rien : le risque est nul et
    vous voyez le stock monter.

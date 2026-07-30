@@ -7,18 +7,22 @@
 
 ```
 Nom       : Excellence+ — Pilote quotidien
-Cadence   : Jours ouvrés (lundi → vendredi)
-Heure     : 07h00 WAT  (06h00 UTC)
+Cadence   : Chaque jour
+Heure     : 05h00 WAT  (04h00 UTC)
 Dépôt     : academieaora-cpu/EXCELLENCE-PLUS · branche main
 Type      : Routine distante
 Connecteurs requis : Slack
 ```
 
-**Pourquoi 07h00** — le rapport arrive avant que la journée soit prise. L'équipe a la journée
-entière pour monter les visuels demandés.
+**Pourquoi 05h00** — avant R1 (03h00) c'était trop tôt pour ce que R1 vient de programmer ; après
+R3, trop tard pour que le lot du jour profite d'une production fraîche. 05h00 laisse le rapport
+arriver avant que l'équipe commence sa journée, avec deux heures d'avance sur le BAT de 07h00.
 
-**Pourquoi jours ouvrés seulement** — les créneaux du samedi sont programmés dès le vendredi.
-Faire tourner la routine le week-end ne couvrirait rien de plus.
+**Pourquoi tous les jours et pas seulement en semaine** — passage quotidien décidé pour rester
+aligné avec R1 et R3, qui tournent désormais tous les jours elles aussi. Un dimanche sans visuel
+neuf dans `approuves/` ne produit qu'un rapport court ("rien à faire") — coût nul, cohérence du
+dispositif gagnée. Si le week-end s'avère systématiquement improductif (personne pour monter les
+visuels), revenir à jours ouvrés plutôt que laisser tourner un passage qui ne sert jamais à rien.
 
 **Pourquoi séparée de la Routine 1** — la production (écrire des textes, briefer des visuels)
 et la programmation (envoyer chez Composio) échouent pour des raisons différentes et se

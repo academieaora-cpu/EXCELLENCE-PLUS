@@ -118,7 +118,11 @@ Pour chaque publication déclarée PRÊTE à l'étape 3, et uniquement celles-l�
 Écris dans le front-matter de chaque fichier programmé à l'étape 4 :
   composio_id   : l'identifiant retourné
   programme_le  : la date-heure de programmation
-  etat          : PROGRAMME
+Ne touche pas au champ statut : il reste BAP_recu jusqu'à la publication
+réelle — SOP-001 ne connaît pas d'état intermédiaire "programmé". C'est la
+présence de composio_id/programme_le qui fait foi pour la porte
+d'idempotence (cf. scripts/programmer_publications.py, fonction qui renvoie
+DEJA_PROGRAMME).
 Un seul commit pour l'étape 2 ("bap: N validation(s) enregistrée(s) —
 AAAA-MM-JJ") et un seul commit pour l'étape 5 ("programmation: N
 publication(s) — AAAA-MM-JJ"). Sans cette écriture, la porte d'idempotence ne
