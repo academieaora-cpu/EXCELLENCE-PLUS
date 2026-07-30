@@ -1,0 +1,40 @@
+name: Alerte BAP reçu
+
+# Se déclenche quand un humain renseigne `bap_recu_le` dans un fichier de contenu
+# et pousse sur main. C'est le seul signal fiable de validation client : la règle
+# absolue veut qu'un humain ayant l'email sous les yeux renseigne ce champ
+# lui-même (brand_guidelines §11). Le commit qui porte ce geste EST l'événement.
+#
+# Sur main uniquement : un BAP devient officiel quand il arrive sur main. Écouter
+# aussi les branches de travail ferait partir deux alertes pour une seule
+# validation.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'contenu/**/*.md'
+  workflow_dispatch:
+
+jobs:
+  notifier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Historique complet : le script compare le fichier avant/après le push.
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install pyyaml
+
+      - name: Détecter les BAP nouvellement reçus
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          python3 scripts/notifier_bap.py \
+            --avant "${{ github.event.before }}" \
+            --apres "${{ github.sha }}"
