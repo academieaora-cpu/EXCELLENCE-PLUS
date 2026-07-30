@@ -411,6 +411,17 @@ Alerte Slack confirmation → statut : publié → archivage
 
 **⚠️  Point de blocage absolu** : `bap_recu_le = null` → publication impossible, quelle que soit la date et l'heure programmées.
 
+**Qui renseigne `bap_recu_le`** (ajout du 30 juillet 2026) — Laurence ou Stéphane à la main,
+en lisant l'email de M. NDOMMIE ; ou `scripts/traiter_bap.py`, automatiquement, mais dans un
+seul cas précis : un fichier de preuve déposé dans `validation/BAP/` — soit par Laurence
+directement, soit par la Routine 1 après avoir elle-même repéré un email de validation Gmail
+sans aucune ambiguïté sur la publication concernée. Dans les deux cas c'est le script, jamais
+une automatisation en direct, qui recontrôle liste rouge et `A_REMPLIR` puis écrit le champ —
+et c'est aussi lui, sur la base de cette même preuve, qui déplace le visuel correspondant vers
+`visuels/approuves/`. Une correspondance douteuse (date non reconnaissable, plusieurs
+publications possibles) n'est jamais tranchée automatiquement : elle reste signalée à un
+humain. Détail complet : `routines/routine1_programmation.md` étape 2.
+
 ⚠️ **Nuance non résolue (source : AORA_SOP001_v1, Étape 15)** — le SOP-001 officiel
 définit BAT (« Bon À Tirer ») et BAP (« Bon À Publier ») comme **deux approbations à
 usages distincts**, pas nécessairement séquentielles pour un même livrable : BAT avant
@@ -436,3 +447,13 @@ Ajouts : ciblage Meta Ads par zone (§3), règle des 2 rounds de corrections (§
 Renforcés (pas modifiés) : blocage headcount (§6), circuit BAT/BAP (§14) — deux points
 signalés comme non résolus plutôt que tranchés unilatéralement. Détail complet dans le
 rapport de mise à jour livré en session.
+
+---
+
+**Mis à jour le 30 juillet 2026** — source : demande directe de l'équipe (automatisation de
+l'enregistrement des BAP). Ajout en §14 : qui a le droit d'écrire `bap_recu_le` et de déplacer
+un visuel vers `approuves/`, et à quelle condition précise (`scripts/traiter_bap.py`, sur la
+base d'un fichier BAP vérifié uniquement). Rien d'autre modifié — ce n'est pas un assouplissement
+de la règle « pas de publication sans BAP écrit » (§11, inchangée), seulement une précision sur
+le mécanisme d'enregistrement. Détail complet : `routines/routine1_programmation.md`,
+`scripts/traiter_bap.py`.
