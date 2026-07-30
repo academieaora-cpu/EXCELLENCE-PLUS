@@ -5,7 +5,7 @@ séparément — c'est pour cela qu'elles ne sont pas fondues en une seule.
 
 | # | Routine | Quand | Ce qu'elle fait | Connecteurs |
 |---|---|---|---|---|
-| **1** | [Programmation](routine1_programmation.md) | tous les jours · 03h00 WAT | Applique les 8 portes, **programme chez Composio**, écrit l'identifiant en retour | Composio · Slack · Gmail (lecture) |
+| **1** | [Programmation](routine1_programmation.md) | tous les jours · 03h00 WAT | Enregistre les BAP (Gmail + dépôts manuels via `traiter_bap.py`), applique les 8 portes, **programme chez Composio**, écrit l'identifiant en retour | Composio · Slack · Gmail (lecture) |
 | **2** | [Production](routine2_production.md) | jours ouvrés · 07h00 WAT | Écrit les textes manquants, brieffe les visuels, mesure l'avance | Slack |
 | **3** | [BAT hebdomadaire](routine3_bat_hebdomadaire.md) | mercredi · 09h00 WAT | Constitue le lot, **rédige un brouillon** Gmail pour Laurence | Gmail · Slack |
 
@@ -26,22 +26,35 @@ production (R2) s'arrête, parce qu'elle demande une équipe disponible derrièr
 
 ## Ce qui n'est PAS une routine
 
-**La détection d'un BAP reçu** est déjà automatique et n'a pas besoin de routine : le workflow
-GitHub `notif_bap.yml` se déclenche au push et alerte Slack au moment où un humain renseigne
-`bap_recu_le`. Un `git push` est un signal plus fiable et plus immédiat qu'un passage horaire.
+**La détection d'un BAP reçu** est déjà automatique et n'a pas besoin de routine dédiée : le
+workflow GitHub `notif_bap.yml` se déclenche au push et alerte Slack au moment où `bap_recu_le`
+est renseigné — qu'il l'ait été à la main ou par `scripts/traiter_bap.py` (étape 2 de la
+Routine 1). Un `git push` est un signal plus fiable et plus immédiat qu'un passage horaire.
 
-**Le dépôt d'un visuel dans `approuves/`** reste un geste humain. Aucune routine ne le fait,
-aucune ne le contourne. C'est la signature de validation du visuel — l'automatiser reviendrait
-à supprimer le contrôle.
+**Le dépôt d'un visuel dans `approuves/`** n'est plus un geste exclusivement humain depuis que
+`scripts/traiter_bap.py` existe (voir [routine1_programmation.md](routine1_programmation.md)
+étape 2) — mais ce n'est toujours pas un geste que les routines exécutent librement. Une seule
+porte y donne accès : un fichier BAP vérifié dans `validation/BAP/`, déposé à la main par
+Laurence OU écrit par la Routine 1 après lecture d'un email de validation Gmail sans aucune
+ambiguïté sur la publication concernée. Dans les deux cas, c'est le script — jamais une routine
+directement — qui contrôle et déplace. Rien d'autre ne fait bouger un fichier vers `approuves/`.
 
 ## Les trois interdits communs
 
 Ils figurent dans chaque prompt, et ce n'est pas de la redondance : une routine dont les
-garde-fous vivent ailleurs finit par s'en écarter sans que personne le voie.
+garde-fous vivent ailleurs finit par s'en écarter sans que personne le voie. Pour R2 et R3, qui
+n'ont aucun rôle dans le traitement des BAP, ces interdits restent **absolus, sans exception**.
+Pour R1, dont l'étape 2 existe précisément pour ce traitement, ils sont resserrés à une seule
+porte étroite plutôt que levés :
 
-1. **Jamais renseigner `bap_recu_le` ni `bap_email_ref`** — même en ayant l'email sous les yeux.
-2. **Jamais déplacer un fichier dans `visuels/approuves/`.**
-3. **Jamais envoyer un email au client** — brouillon uniquement.
+1. **Jamais renseigner `bap_recu_le` ni `bap_email_ref` à la main.** R1 ne le fait jamais
+   directement non plus — seul `scripts/traiter_bap.py`, appelé en étape 2, en a le droit, et
+   seulement sur la base d'un fichier BAP vérifié.
+2. **Jamais déplacer un fichier dans `visuels/approuves/` à la main.** Même règle : seul
+   `scripts/traiter_bap.py` le fait, jamais une routine directement, jamais sur une simple
+   lecture d'email non formalisée en fichier BAP.
+3. **Jamais envoyer un email au client** — brouillon uniquement. Sans exception, pour les trois
+   routines.
 
 ## Ordre de mise en service
 
