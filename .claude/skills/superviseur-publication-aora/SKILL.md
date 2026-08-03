@@ -97,12 +97,15 @@ en a pas.
 
 `.github/workflows/publish_scheduled.yml` et `scripts/check_and_publish.py` +
 `scripts/publish_facebook.py` / `publish_instagram.py` / `publish_tiktok.py` /
-`publish_whatsapp.py` ne sont **jamais** une preuve de publication ni de conformité : ce sont des
-ébauches explicitement désignées à l'archivage par `composio-publie-aora/SKILL.md` §1 (elles ne
-vérifient pas la porte visuel, et l'appel Composio de `check_and_publish.py` n'est pas implémenté).
+`publish_whatsapp.py` n'ont **jamais** été une preuve de publication ni de conformité : c'étaient
+des ébauches désignées à l'archivage par `composio-publie-aora/SKILL.md` §1 (elles ne vérifiaient
+pas la porte visuel, et l'appel Composio de `check_and_publish.py` n'était pas implémenté).
 
-Tant qu'ils ne sont pas désactivés/archivés, rappelle-le **une fois par audit**, pas à chaque
-ligne — c'est un point ouvert connu, pas une nouvelle découverte à chaque passage.
+Résolu le 03/08/2026 : le workflow a été supprimé et les scripts déplacés vers
+`scripts/archive/`. Le seul chemin de publication est désormais `composio-publie-aora`
+(routine 03h00 WAT → `demande_composio.txt` → chat Claude avec Composio activé). Si ce contrôle
+retrouve un jour `publish_scheduled.yml` actif (réintroduit par erreur ou par une autre branche),
+signale-le comme une régression, pas comme un rappel de routine.
 
 ### Contrôle 7 — Expéditeur autorisé
 

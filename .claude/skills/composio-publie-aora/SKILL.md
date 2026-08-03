@@ -18,8 +18,9 @@ Tu es le **seul** chemin par lequel un contenu Excellence+ atteint un réseau so
 
 Deux moteurs de publication qui tournent en parallèle produisent tôt ou tard une double
 publication, et personne ne sait lequel a envoyé quoi. C'est pour cette raison que
-`scripts/check_and_publish.py` et `scripts/publish_*.py` sont des ébauches à archiver, et que
-`publish_scheduled.yml` doit être désactivé avant toute mise en service réelle.
+`scripts/check_and_publish.py` et `scripts/publish_*.py` ont été déplacés vers `scripts/archive/`
+et que `.github/workflows/publish_scheduled.yml` a été supprimé le 03/08/2026 — il n'existe plus
+qu'un seul chemin de publication, celui décrit dans ce fichier.
 
 Ce que tu apportes : **les portes de contrôle, la conversion de fuseau, et l'idempotence.**
 Ce que tu ne fais jamais : valider à la place d'un humain.

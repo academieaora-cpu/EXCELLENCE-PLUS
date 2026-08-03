@@ -110,6 +110,17 @@ Dernière mise à jour : 28 juillet 2026.
    `brand_guidelines.md` (Odza classé différemment, Santa Barbara absent de
    RECO-001) ; horizon RECO-001 commence en juin 2026, avant la date de démarrage
    contractuel juillet 2026 indiquée dans `brand_guidelines.md`.
+8. **Résolu le 03/08/2026** — `.github/workflows/publish_scheduled.yml` (cron
+   `*/15 5-21 * * *`, moteur de publication concurrent qui appelait directement
+   les API sociales sans passer par Composio ni vérifier la porte visuel) a été
+   supprimé. `scripts/check_and_publish.py` et les `scripts/publish_facebook.py`
+   / `publish_instagram.py` / `publish_tiktok.py` / `publish_whatsapp.py`
+   associés sont déplacés vers `scripts/archive/`. Il n'existe désormais qu'un
+   seul chemin de publication : routine `programmation_quotidienne.yml` (03h00
+   WAT) → `demande_composio.txt` → skill `composio-publie-aora` en chat Claude.
+   Aucune Routine CCR (`list_triggers`) n'est encore programmée pour ce compte —
+   le déclenchement à 03h00/07h00 WAT reste porté par GitHub Actions, pas par
+   une Routine Claude Code Remote.
 
 ## Conventions établies (à respecter dans une nouvelle session)
 

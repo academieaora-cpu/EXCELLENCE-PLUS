@@ -9,7 +9,7 @@
 | 3 | Double porte | état réel du dépôt (front-matter + `visuels/approuves/`) | `composio_id` présent sans BAP écrit et/ou sans visuel approuvé |
 | 4 | Idempotence | front-matter de tous les posts | même `composio_id` sur deux fichiers |
 | 5 | Vocabulaire | front-matter (`statut`, `publie_le`) | rapport dit « publié » sans `publie_le` renseigné |
-| 6 | Automatismes concurrents | `.github/workflows/publish_scheduled.yml` | encore actif → jamais une preuve, rappel une fois par audit |
+| 6 | Automatismes concurrents | `.github/workflows/publish_scheduled.yml` | supprimé le 03/08/2026 — s'il réapparaît, c'est une régression |
 | 7 | Expéditeur autorisé | `config/comptes.json` → `client.emails_autorises` | BAP transcrit d'une adresse absente de la liste |
 | 8 | Formule de validation | `config/validation_formules.json` | email demandé/reçu avec « BAP VALIDÉ » au lieu de la formule exacte |
 | 9 | Numéros WhatsApp | `config/contacts.json` | numéro France (+33) utilisé comme contact dans un post |
@@ -24,9 +24,9 @@
 - `config/creneaux.json` : contenait encore Mardi 12h30/Jeudi 19h00/Samedi 10h00 (version du
   30/07) au 03/08, alors même que le calendrier annoncé au client est déjà Lundi 06h00/Mercredi
   12h00/Samedi 06h00. Le patch corrige ceci, sous réserve du push.
-- `publish_scheduled.yml` : actif (cron `*/15 5-21 * * *`), appelle `check_and_publish.py` dont
-  l'appel Composio n'est pas implémenté et qui ne vérifie pas la porte visuel. Désactivation
-  recommandée par `composio-publie-aora/SKILL.md` §1, pas encore faite au moment de l'écriture.
+- `publish_scheduled.yml` : supprimé le 03/08/2026 (était actif, cron `*/15 5-21 * * *`, appelait
+  `check_and_publish.py` dont l'appel Composio n'était pas implémenté et qui ne vérifiait pas la
+  porte visuel). `check_and_publish.py` et les `publish_*.py` déplacés vers `scripts/archive/`.
 - `contenu/facebook/EXC-FB-2026-001.md` : `statut: draft`, `date_publication: 2026-08-11` (mardi —
   cohérent avec l'ANCIEN calendrier, pas avec le nouveau) ; `visuel_ref` pointe vers un fichier qui
   n'existe pas dans `visuels/approuves/` (seulement un `.gitkeep`). Ces deux écarts ne sont pas
