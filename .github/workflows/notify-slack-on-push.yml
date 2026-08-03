@@ -1,0 +1,40 @@
+name: Notifier Slack — confirmation indépendante BAP/BAT/visuels
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "validation/BAP/**"
+      - "validation/BAT/**"
+      - "visuels/approuves/**"
+
+jobs:
+  notifier:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Déterminer quel dossier a été touché et notifier Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          FICHIERS=$(git diff --name-only HEAD~1 HEAD)
+          AUTEUR="${{ github.actor }}"
+
+          echo "$FICHIERS" | grep -q '^validation/BAP/' && \
+            MESSAGE="📥 [confirmé par commit] BAP archivé — par $AUTEUR"
+
+          echo "$FICHIERS" | grep -q '^validation/BAT/' && \
+            MESSAGE="📥 [confirmé par commit] Dossier BAT créé — par $AUTEUR"
+
+          echo "$FICHIERS" | grep -q '^visuels/approuves/' && \
+            MESSAGE="📥 [confirmé par commit] Visuel promu vers approuves/ — par $AUTEUR"
+
+          if [ -n "$MESSAGE" ]; then
+            curl -s -X POST -H 'Content-type: application/json' \
+              --data "{\"text\":\"$MESSAGE\n$(echo "$FICHIERS" | sed 's/^/• /')\"}" \
+              "$SLACK_WEBHOOK_URL"
+          fi
