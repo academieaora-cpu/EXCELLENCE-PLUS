@@ -27,10 +27,11 @@
   "horizon_jours": 14,
 
   "creneaux": {
+    "_maj": "02/08/2026 — remplace l'ancien triplet Mardi 12h30 / Jeudi 19h00 / Samedi 10h00 (arbitrage 30/07/2026). À confirmer si une re-validation client par email est requise avant mise en production (calendrier éditorial déjà transmis).",
     "facebook": [
-      { "jour": "mardi",  "heure": "12:30", "pilier": 1, "intention": "Conseil de fond — pause déjeuner, pic mobile chez les actifs" },
-      { "jour": "jeudi",  "heure": "19:00", "pilier": 2, "intention": "Méthode et coulisses — après le travail, avant les devoirs" },
-      { "jour": "samedi", "heure": "10:00", "pilier": 3, "intention": "Preuve et témoignages — matinée week-end, cellule familiale réunie" }
+      { "jour": "lundi",   "heure": "06:00", "pilier": 1, "intention": "Conseil de fond — tout début de semaine, avant le départ à l'école/au travail" },
+      { "jour": "mercredi", "heure": "12:00", "pilier": 2, "intention": "Méthode et coulisses — pause méridienne, milieu de semaine" },
+      { "jour": "samedi",  "heure": "06:00", "pilier": 3, "intention": "Preuve et témoignages — tout début de matinée week-end" }
     ]
   },
 

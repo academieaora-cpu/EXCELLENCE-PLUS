@@ -21,8 +21,22 @@
     ],
     "cibles_autorisees": ["accroche", "chiffre_cle"],
     "styles": {
-      "accroche": "gras",
-      "chiffre_cle": "gras"
+      "accroche": {
+        "style_yaytext": "gras_serif",
+        "casse": "majuscule",
+        "_note": [
+          "« Gras sérif » = variante Unicode Mathematical Bold (serif) de",
+          "YayText — rendu plus formel/imprimé pour le titre en majuscule.",
+          "Le texte est mis en MAJUSCULE d'abord, puis stylé en gras sérif.",
+          "Exclus explicitement : gras sans-serif, script/cursif,",
+          "Fraktur/gothique, double-struck (tableau noir), circled, monospace —",
+          "aucune de ces variantes ne convient à une marque éducative sérieuse."
+        ]
+      },
+      "chiffre_cle": {
+        "style_yaytext": "gras_serif",
+        "casse": "normale"
+      }
     },
     "jamais_mettre_en_forme": [
       "numero_whatsapp",
