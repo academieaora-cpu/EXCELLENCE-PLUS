@@ -1,0 +1,25 @@
+{
+  "client": {
+    "nom": "Excellence+ Éducation",
+    "contact": "M. NDOMMIE GOAP Saturnin",
+    "emails_autorises": [
+      "excellencecontact91@gmail.com"
+    ],
+    "_role_emails_autorises": [
+      "Seule(s) adresse(s) dont une réponse peut faire office de BAT ou de BAP —",
+      "y compris la validation d'un visuel avant promotion vers",
+      "visuels/approuves/. Aucune autre adresse, même envoyée « au nom de »",
+      "M. NDOMMIE, n'est recevable (condition 1, phase 2 de la routine 03h00)."
+    ]
+  },
+  "aora": {
+    "email_envoi_bat": "academieaora@gmail.com"
+  },
+  "_note": [
+    "Adresse client confirmée le 03/08/2026, source : flyer officiel Excellence+",
+    "(contact Yaoundé-Cradat). Toute réponse de validation (texte ET visuel)",
+    "n'est recevable que si elle provient exactement d'une adresse listée dans",
+    "client.emails_autorises. Ne pas ajouter d'adresse voisine, de transfert,",
+    "ou d'alias sans preuve écrite."
+  ]
+}

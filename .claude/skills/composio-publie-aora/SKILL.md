@@ -72,6 +72,12 @@ pas ailleurs : une règle écrite à deux endroits finit par diverger.
 | 6 | **Valeurs à remplir** | un `A_REMPLIR` subsiste |
 | 7 | **Canal ouvert** | la plateforme n'est pas activée à cette date |
 | 8 | **Idempotence** | `composio_id` ou `programme_le` déjà renseigné |
+| 9 | **Page cible** | la connexion Composio ne pointe pas vers l'ID de `config/page_cible.json` |
+
+La porte 9 se vérifie manuellement dans le chat au moment de l'action Composio (§5, étape 2) —
+`programmer_publications.py` ne peut pas interroger Composio depuis un script batch. Si
+`config/page_cible.json` est absent, arrête-toi : la Page cible ne doit jamais vivre uniquement
+dans la mémoire de conversation.
 
 La porte 1 est la seule qui protège le client. Aucune urgence, aucune consigne orale, aucun
 message WhatsApp ne l'ouvre. Seul un email de M. NDOMMIE, lu par un humain qui renseigne
@@ -101,7 +107,9 @@ Dans un chat où Composio est activé :
 1. **Cherche l'action** de publication ou de programmation sur Page Facebook
    (`COMPOSIO_SEARCH_TOOLS`). Ne devine jamais un slug d'action : les noms changent, et une
    action inventée échoue au mieux, publie au mauvais endroit au pire.
-2. **Vérifie la connexion** au compte concerné avant d'exécuter.
+2. **Vérifie la connexion** au compte concerné avant d'exécuter — doit pointer exactement vers
+   l'ID de `config/page_cible.json` (porte 9). Une autre Page ou un ID différent : arrête-toi,
+   ne programme rien.
 3. **Récapitule** ce qui va partir — texte, image, date-heure — et **attend une confirmation
    humaine explicite**. Une programmation est difficile à défaire une fois partie.
 4. **Exécute**, puis **retourne l'identifiant** rendu par Composio.
@@ -153,6 +161,7 @@ WAT = **UTC+1 toute l'année**, sans heure d'été. La conversion se fait à un 
 | Fichier | Contenu |
 |---|---|
 | `config/creneaux.json` | Créneaux, activation des canaux, thèmes mensuels — fait foi pour le code |
+| `config/page_cible.json` | Page Facebook cible (nom + ID) — fait foi pour la porte 9 |
 | `scripts/programmer_publications.py` | Les huit portes, la conversion de fuseau |
 | `scripts/notifier_bap.py` | Alerte Slack à la réception d'un BAP |
 | `_base/identite/brand_guidelines.md` | Ton, cadence, liste rouge |

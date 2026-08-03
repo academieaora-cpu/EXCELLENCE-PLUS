@@ -1,0 +1,35 @@
+{
+  "_lisez_moi": [
+    "Formules recevables comme validation formelle (BAT ou BAP), comparées en",
+    "minuscules et sans accents par la routine avant de transcrire quoi que ce",
+    "soit dans validation/BAP/. C'est la condition 2 sur 4 — les trois autres",
+    "(expéditeur exact, objet identifié, aucune réserve) s'appliquent en plus,",
+    "jamais à sa place.",
+    "",
+    "⚠️ Incohérence à corriger ailleurs dans le dispositif : les modèles email du",
+    "skill community-manager-aora (references/bat-publication.md) demandent au",
+    "client de répondre « BAT VALIDÉ » / « BAP VALIDÉ ». Ces mentions NE SONT",
+    "PAS dans la liste ci-dessous et ne seront donc pas reconnues par la",
+    "routine. Tant que l'un des deux n'est pas aligné sur l'autre, les emails",
+    "envoyés à M. NDOMMIE doivent explicitement lui demander la formule",
+    "ci-dessous, pas celle du template."
+  ],
+
+  "bap": {
+    "formules_recevables": [
+      "je valide ce contenu pour publication."
+    ]
+  },
+
+  "bat": {
+    "formules_recevables": [
+      "je valide ce document pour impression / mise en production."
+    ]
+  },
+
+  "mots_disqualifiants": [
+    "mais", "sauf", "sous réserve", "à condition", "peux-tu", "pourrais-tu",
+    "modifier", "changer", "corriger", "remplacer", "attendre", "plus tard",
+    "sans le", "retirer"
+  ]
+}

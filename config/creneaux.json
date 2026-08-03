@@ -10,7 +10,16 @@
     "",
     "Le champ pilier de chaque créneau est un DÉFAUT, pas une règle figée : la",
     "répartition 40/35/25 se mesure sur 30 jours glissants, pas sur la semaine.",
-    "Le pilier réel de chaque post vit dans le front-matter du fichier .md."
+    "Le pilier réel de chaque post vit dans le front-matter du fichier .md.",
+    "",
+    "⚠️ MODIFIÉ LE 02/08/2026 : jours et heures changés (Mardi/Jeudi/Samedi",
+    "→ Lundi/Mercredi/Samedi). Statut de re-validation client par email : NON",
+    "CONFIRMÉ au moment de ce patch — le calendrier éditorial a déjà été",
+    "transmis à M. NDOMMIE, mais aucune confirmation écrite de sa part sur ce",
+    "changement précis de jours/heures n'est archivée dans validation/BAP/.",
+    "Tout post calé sur les nouveaux créneaux doit être signalé comme point",
+    "ouvert dans le rapport de la routine 3h00 tant que cette confirmation",
+    "n'existe pas."
   ],
 
   "programme": {
@@ -27,12 +36,22 @@
   "horizon_jours": 14,
 
   "creneaux": {
-    "_maj": "02/08/2026 — remplace l'ancien triplet Mardi 12h30 / Jeudi 19h00 / Samedi 10h00 (arbitrage 30/07/2026). À confirmer si une re-validation client par email est requise avant mise en production (calendrier éditorial déjà transmis).",
     "facebook": [
-      { "jour": "lundi",   "heure": "06:00", "pilier": 1, "intention": "Conseil de fond — tout début de semaine, avant le départ à l'école/au travail" },
-      { "jour": "mercredi", "heure": "12:00", "pilier": 2, "intention": "Méthode et coulisses — pause méridienne, milieu de semaine" },
-      { "jour": "samedi",  "heure": "06:00", "pilier": 3, "intention": "Preuve et témoignages — tout début de matinée week-end" }
+      { "jour": "lundi",    "heure": "06:00", "pilier": 1, "intention": "Conseil de fond — avant le départ à l'école, moment de préparation matinale" },
+      { "jour": "mercredi", "heure": "12:00", "pilier": 2, "intention": "Méthode et coulisses — pause déjeuner, milieu de semaine" },
+      { "jour": "samedi",   "heure": "06:00", "pilier": 3, "intention": "Preuve et témoignages — début de matinée week-end" }
     ]
+  },
+
+  "_historique_creneaux": {
+    "2026-07-30": {
+      "facebook": [
+        { "jour": "mardi",  "heure": "12:30", "pilier": 1 },
+        { "jour": "jeudi",  "heure": "19:00", "pilier": 2 },
+        { "jour": "samedi", "heure": "10:00", "pilier": 3 }
+      ],
+      "_note": "Version annulée le 02/08/2026. Conservée ici pour traçabilité, ne plus utiliser."
+    }
   },
 
   "canaux": {

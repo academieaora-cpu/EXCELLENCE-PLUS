@@ -1,12 +1,13 @@
 {
   "_lisez_moi": [
-    "Page Facebook unique de destination pour toute publication/programmation",
-    "Composio Excellence+. Ne jamais publier ni programmer ailleurs.",
-    "Source de vérité : ce fichier, pas la mémoire de conversation ni un rapport Slack."
+    "Page de destination unique pour toute programmation Composio. Vérifier à",
+    "chaque exécution que la connexion Composio pointe exactement vers cet",
+    "identifiant avant toute action — si Composio propose une autre Page,",
+    "arrêter et signaler, ne jamais programmer sur une supposition."
   ],
   "facebook": {
     "nom": "Excellence+ Éducation",
-    "url": "https://web.facebook.com/profile.php?id=61584305458367",
-    "id": "61584305458367"
+    "id": "61584305458367",
+    "url": "https://web.facebook.com/profile.php?id=61584305458367"
   }
 }

@@ -1,14 +1,13 @@
 {
   "_lisez_moi": [
-    "Contacts officiels Excellence+ à utiliser dans les publications.",
-    "Source : flyer officiel 'Home Tutoring' (excellencecontact91@gmail.com).",
-    "Ne jamais mettre en forme Unicode (config/mise_en_forme.json → jamais_mettre_en_forme).",
-    "Le numéro France (+33) n'est PAS un contact WhatsApp pour les posts — usage interne/autre."
+    "Numéros affichables comme contact WhatsApp dans un post ou un visuel.",
+    "Source : flyer officiel Excellence+ (Home Tutoring, Yaoundé-Cradat)."
   ],
-  "whatsapp": {
-    "numeros": ["+237 699 403 969", "+237 679 941 300"],
-    "format_cta_defaut": "📲 Écrivez-nous sur WhatsApp : +237 699 403 969 ou +237 679 941 300"
-  },
-  "email": "excellencecontact91@gmail.com",
-  "adresse": "Yaoundé - Cradat"
+  "whatsapp_posts": [
+    "+237 699 403 969",
+    "+237 679 941 300"
+  ],
+  "whatsapp_exclus": {
+    "+33 753 117 352": "Numéro France — jamais utilisé comme contact dans un post Excellence+."
+  }
 }

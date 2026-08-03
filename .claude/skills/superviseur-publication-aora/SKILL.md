@@ -9,9 +9,8 @@ description: >-
   de la Page Facebook Excellence+. Aussi sur demande : « supervise cette publication », « audit la
   routine », « vérifie que c'est conforme », « est-ce que c'était la bonne page », « qu'est-ce qui a
   été publié aujourd'hui ». Ne publie jamais, ne rédige jamais : relit l'état réel du dépôt — jamais
-  la mémoire de conversation — et signale tout écart : Page cible, créneaux (tout post daté),
-  double porte BAP+visuel, idempotence, vocabulaire programmé/publié, contacts WhatsApp, style
-  Unicode du titre (gras sérif), fiabilité des automatismes concurrents.
+  la mémoire de conversation — et signale tout écart : Page cible, créneaux, double porte
+  BAP+visuel, idempotence, vocabulaire programmé/publié, fiabilité des automatismes concurrents.
 ---
 
 # SUPERVISEUR PUBLICATION — AORA × Excellence+
@@ -32,12 +31,12 @@ conversation sur ce que dit un fichier de config. Tu relis le fichier, à chaque
 
 ---
 
-## 2 · Les huit contrôles
+## 2 · Les neuf contrôles
 
-Les contrôles 2, 3, 4, 6, 7 sont implémentés dans `scripts/verifier_conformite.py` — lecture seule,
-ne modifie rien. Les contrôles 1, 5, 8 se vérifient par lecture directe des fichiers/skills cités —
-ne les déduis jamais d'un rapport Slack ou d'un souvenir de conversation : ce sont eux qui peuvent
-se tromper, pas le fichier.
+Implémentés dans `scripts/verifier_conformite.py` pour les points vérifiables sur le dépôt
+(3, 4, 7, 9 côté fichier). Les points 1, 2, 5, 6, 8 — et la moitié « France exclue » du point 9 —
+se vérifient par lecture directe des fichiers cités — ne les déduis jamais d'un rapport Slack ou
+d'un souvenir de conversation : ce sont eux qui peuvent se tromper, pas le fichier.
 
 ### Contrôle 1 — Page Facebook cible
 
@@ -56,11 +55,7 @@ d'un échange précédent. Les créneaux ont déjà changé une fois (Mardi 12h3
 10h00 du 30/07/2026 → Lundi 06h00/Mercredi 12h00/Samedi 06h00 du 02/08/2026) ; rien ne dit qu'ils
 ne changeront pas à nouveau.
 
-Le script vérifie **tout post daté** (`date_publication` + `heure_publication` renseignés),
-pas seulement ceux déjà programmés — une dérive de calendrier se rattrape mieux avant le BAP
-qu'après un `composio_id`. Si le rapport programme ou signale un post à un jour/heure absent du
-fichier : **⚠️ CRITIQUE**, même si le post est encore en `draft`.
-
+Si le rapport programme ou signale un post à un jour/heure absent du fichier : signale l'écart.
 Si le fichier porte une note `_maj` indiquant une re-validation client en attente : rappelle-le
 une fois, sans le répéter à chaque ligne du rapport.
 
@@ -98,32 +93,7 @@ corrige l'affirmation, ne la laisse pas passer même si l'intention derrière es
 qui confond les deux finit par faire croire à toute l'équipe qu'un contrôle existe alors qu'il n'y
 en a pas.
 
-### Contrôle 6 — Contacts WhatsApp
-
-Relis `config/contacts.json`. Le script extrait tout numéro présent dans le corps d'un post et le
-compare à `whatsapp.numeros`. Deux écarts possibles :
-- un placeholder `A_REMPLIR_NUMERO_WHATSAPP` encore présent → **⚠️ à corriger**, rien ne partira
-  de toute façon (Porte 6 de `programmer_publications.py` le bloquerait), mais autant le signaler
-  tôt ;
-- un numéro qui **n'est pas** dans la liste approuvée (ex. le numéro France +33, ou une faute de
-  frappe) → **⚠️ CRITIQUE** : un mauvais contact client dans un post publié ne se corrige pas après
-  coup sans que le client l'ait vu passer.
-
-Si `config/contacts.json` est absent : signale-le une fois, ce contrôle ne peut pas s'exécuter.
-
-### Contrôle 7 — Style du titre (gras sérif + majuscule)
-
-Relis `config/mise_en_forme.json` → `facebook.styles.accroche.style_yaytext`. Valeur actuelle :
-**gras_serif** (Mathematical Bold Unicode), texte en majuscule — pas gras sans-serif, pas script,
-pas Fraktur, pas double-struck.
-
-Ce contrôle est **best-effort** : il regarde la première ligne du corps d'un post et, si elle
-contient des caractères Unicode stylés, détecte à quelle famille ils appartiennent (plage de
-caractères Mathematical Alphanumeric Symbols). S'ils ne correspondent pas à la valeur du fichier
-de config : **⚠️ à corriger**, pas critique — c'est un écart de charte, pas un risque pour le
-client. Si le post n'est pas encore stylé (texte brut, brouillon) : silence, rien à signaler.
-
-### Contrôle 8 — Fiabilité des automatismes concurrents
+### Contrôle 6 — Fiabilité des automatismes concurrents
 
 `.github/workflows/publish_scheduled.yml` et `scripts/check_and_publish.py` +
 `scripts/publish_facebook.py` / `publish_instagram.py` / `publish_tiktok.py` /
@@ -133,6 +103,34 @@ vérifient pas la porte visuel, et l'appel Composio de `check_and_publish.py` n'
 
 Tant qu'ils ne sont pas désactivés/archivés, rappelle-le **une fois par audit**, pas à chaque
 ligne — c'est un point ouvert connu, pas une nouvelle découverte à chaque passage.
+
+### Contrôle 7 — Expéditeur autorisé
+
+Relis `config/comptes.json` → `client.emails_autorises`. Valeur attendue actuelle :
+**excellencecontact91@gmail.com**, seule adresse dont une réponse peut faire office de BAT ou de
+BAP — texte **et** visuel. Si le fichier est absent ou vide : **⚠️ CRITIQUE** — la routine 03h00 ne
+peut alors valider aucun email, même reçu de bonne foi de la bonne personne. Si un rapport audité
+transcrit un BAP reçu d'une adresse différente : **⚠️ CRITIQUE**, quelle que soit la ressemblance
+avec l'adresse attendue.
+
+### Contrôle 8 — Formule de validation
+
+Relis `config/validation_formules.json`. La formule BAP attendue est *« Je valide ce contenu pour
+publication. »* — pas « BAP VALIDÉ ».
+
+⚠️ Écart connu, non résolu au moment de l'écriture de ce skill : les modèles email de
+`community-manager-aora` (`references/bat-publication.md`) demandent au client de répondre
+« BAT VALIDÉ » / « BAP VALIDÉ », deux formules absentes de `validation_formules.json`. Tant que ce
+n'est pas aligné, vérifie — quand le corps d'un email cité dans un rapport est visible — qu'il
+demande bien la formule de `validation_formules.json`, pas celle du template. Signale l'écart une
+fois par audit, pas à chaque ligne.
+
+### Contrôle 9 — Numéros WhatsApp
+
+Relis `config/contacts.json`. Numéros attendus dans un post : **+237 699 403 969** et
+**+237 679 941 300**. Le numéro France (+33 753 117 352) ne doit **jamais** apparaître comme
+contact dans un post ou un visuel Excellence+ — s'il y figure : **⚠️ CRITIQUE**. Si le fichier est
+absent : signale le risque qu'un post soit rédigé avec un numéro halluciné ou obsolète.
 
 ---
 
@@ -163,23 +161,14 @@ Court, greffé après le rapport audité — jamais un document séparé qu'on d
 
 ```
 🔍 SUPERVISION — conforme
-   Page ✅ · Créneaux ✅ · Double porte ✅ · Idempotence ✅ · Contacts ✅ · Style titre ✅
+   Page ✅ · Créneaux ✅ · Double porte ✅ · Idempotence ✅
+   Expéditeur ✅ · Formule BAP ✅ · WhatsApp ✅
    (publish_scheduled.yml toujours actif — rappel, pas une nouvelle alerte)
+   (écart connu : gabarit community-manager-aora demande « BAP VALIDÉ », pas
+   la formule de validation_formules.json — rappel, pas une nouvelle alerte)
 ```
 
-**Cas avec écart (exemple réel constaté le 02/08/2026) :**
-
-```
-🔍 SUPERVISION — 1 écart(s)
-   ⚠️ CRITIQUE — EXC-FB-2026-001 : daté mardi 12:30, mais config/creneaux.json
-      ne contient plus ce créneau depuis le 02/08 (Lundi 06h/Mercredi 12h/
-      Samedi 06h). Le post a été créé sur l'ancien calendrier.
-   → Recommandation : corriger date_publication/heure_publication avant tout
-     BAT — ne pas laisser un post partir en validation client sur un créneau
-     qui n'existe plus.
-```
-
-**Autre cas, sur la double porte :**
+**Cas avec écart :**
 
 ```
 🔍 SUPERVISION — 2 écart(s)
@@ -240,32 +229,18 @@ Contenu proposé, même esprit que `config/creneaux.json` :
 }
 ```
 
-Même logique pour `config/contacts.json` (contrôle 6) — au 02/08/2026, ce fichier a été créé en
-local dans la même session que ce skill, mais **pas encore poussé sur `main`**. Tant qu'il n'y est
-pas, traite l'absence comme un point ouvert à signaler une fois, pas un blocage répété :
-
-```json
-{
-  "whatsapp": {
-    "numeros": ["+237 699 403 969", "+237 679 941 300"],
-    "format_cta_defaut": "📲 Écrivez-nous sur WhatsApp : +237 699 403 969 ou +237 679 941 300"
-  },
-  "email": "excellencecontact91@gmail.com",
-  "adresse": "Yaoundé - Cradat"
-}
-```
-
 ---
 
 ## 7 · Fichiers de référence
 
 | Fichier | Contenu |
 |---|---|
-| `scripts/verifier_conformite.py` | Contrôles 2, 3, 4, 6, 7 — lecture seule, ne modifie rien |
-| `references/checklist-supervision.md` | Version courte des huit contrôles, pour relecture rapide |
+| `scripts/verifier_conformite.py` | Double porte, idempotence, expéditeur, formule, WhatsApp — lecture seule, ne modifie rien |
+| `references/checklist-supervision.md` | Version courte des neuf contrôles, pour relecture rapide |
+| `config/comptes.json` | Adresse(s) client autorisée(s) — fait foi pour le contrôle 7 |
+| `config/validation_formules.json` | Formule BAP exacte — fait foi pour le contrôle 8 |
+| `config/contacts.json` | Numéros WhatsApp autorisés — fait foi pour le contrôle 9 |
 
 ---
 
-*ACADÉMIE AORA · SUP-PUB-001 · v1.1 — 02/08/2026 · Contrat AORA-CCC-005*
-*v1.1 : ajout contrôles 6 (contacts WhatsApp) et 7 (style du titre gras sérif) ; contrôle créneaux
-étendu à tout post daté, plus seulement les posts déjà programmés.*
+*ACADÉMIE AORA · SUP-PUB-001 · v1.0 — 02/08/2026 · Contrat AORA-CCC-005*
