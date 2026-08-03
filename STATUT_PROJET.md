@@ -63,11 +63,24 @@ Dernière mise à jour : 28 juillet 2026.
    (chiffre sourcé dans `brand_guidelines.md`, utilisé dans LE-EXC-001) vs
    « 30-76 ans » (dicté littéralement par l'utilisateur dans PE-EXC-001).
    Même statut : à trancher, pas corrigé silencieusement.
-3. **`calendrier/calendrier_editorial.json`** (fichier source d'origine, semaine
-   32) traite le **4 août 2026 comme un lundi — c'est en réalité un mardi**
-   (le vrai lundi est le 3 août). Toutes les versions ultérieures du calendrier
-   (y compris CE-EXC-001) utilisent les vraies semaines ISO et ignorent cette
-   erreur, mais le fichier JSON source lui-même n'a jamais été corrigé.
+3. **Résolu le 03/08/2026** — tous les calendriers ont été recalés sur le
+   dispositif du 30/07-02/08/2026 (3 publications/semaine, Facebook seul au
+   lancement, config/creneaux.json fait foi) et sur la vraie première semaine
+   ISO (semaine 33, lundi 10 → dimanche 16 août 2026 — pas la semaine 32,
+   04 → 10 août, encore moins le 4 août traité comme un lundi) :
+   `calendrier/semaine_active.json`, `calendrier/calendrier_editorial.json`,
+   `calendrier/calendrier_editorial_aout_2026.html` corrigés à la main ;
+   CE-EXC-001 et CC-EXC-001 régénérés via leurs pipelines respectifs
+   (`outils/calendrier_editorial/generate.py` lit déjà `config/creneaux.json`
+   depuis la v3 du 30/07 — il suffisait de relancer le pipeline après la mise
+   à jour du fichier de créneaux, pas de le réécrire).
+   **Point ouvert découvert au passage** : `calendrier/calendrier_editorial_aout_2026.html`
+   a un bug préexistant, antérieur à cette correction — `window.ENTRIES` n'est
+   jamais assigné depuis la constante `ENTRIES` (seul `window.ENTRIES = window.ENTRIES || []`
+   existe), donc la page n'a jamais affiché aucune donnée depuis sa création.
+   Le contenu est maintenant correct mais reste invisible à l'affichage. Ce
+   fichier est une première itération non maintenue, supersedée par CE-EXC-001 —
+   à archiver ou corriger si quelqu'un doit un jour s'en servir réellement.
 4. Aucun post n'a encore de `bap_recu_le` renseigné nulle part dans le repo —
    normal à ce stade (rien n'est encore validé/publié), mais rappel que la
    règle absolue « jamais publier sans BAP » s'applique dès le premier post

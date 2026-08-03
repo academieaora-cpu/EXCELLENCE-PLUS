@@ -1,64 +1,53 @@
 {
+  "_lisez_moi": [
+    "Corrigé le 03/08/2026 — ce fichier était resté sur la version d'avant",
+    "l'arbitrage du 30/07/2026 (5 posts multi-canaux datés du 04 au 08/08,",
+    "avec le 4 août traité comme un lundi alors que c'est un mardi). Le",
+    "dispositif réel est désormais 3 publications/semaine AU TOTAL, Facebook",
+    "seul au lancement — vérité machine : config/creneaux.json. Ce fichier",
+    "n'est lu par aucun script (le pipeline outils/calendrier_editorial/",
+    "génère directement depuis config/creneaux.json) ; il documente la",
+    "première semaine réelle pour référence humaine seulement.",
+    "Première publication : lundi 10/08/2026 06h00 — ISO semaine 33."
+  ],
   "client": "Excellence+",
   "periode": "Août 2026",
-  "genere_le": "2026-07-28",
+  "genere_le": "2026-08-03",
   "valide_par_client": false,
   "date_soumission_client": null,
   "posts": [
     {
-      "id": "EXC-FB-2026-W32-001",
+      "id": "EXC-FB-2026-001",
       "plateforme": "facebook",
-      "date": "2026-08-04",
-      "heure_wat": "18:30",
+      "date": "2026-08-10",
+      "heure_wat": "06:00",
       "pilier": "autorité_éducative",
-      "theme": "Inscriptions rentrée 2026 ouvertes",
+      "theme": "Préparer la rentrée : trois gestes à commencer maintenant",
       "format": "image_texte",
       "statut": "draft",
-      "fichier": "contenu/facebook/2026-08-04_inscriptions-rentree.md"
+      "fichier": "contenu/facebook/EXC-FB-2026-001.md"
     },
     {
-      "id": "EXC-WA-2026-W32-001",
-      "plateforme": "whatsapp",
-      "date": "2026-08-05",
-      "heure_wat": "08:00",
-      "pilier": "autorité_éducative",
-      "theme": "Rappel inscriptions — priorité abonnés",
-      "format": "texte_court",
-      "statut": "draft",
-      "fichier": "contenu/whatsapp/2026-08-05_rappel-inscriptions.md"
-    },
-    {
-      "id": "EXC-FB-2026-W32-002",
+      "id": "EXC-FB-2026-002",
       "plateforme": "facebook",
-      "date": "2026-08-06",
-      "heure_wat": "18:30",
+      "date": "2026-08-12",
+      "heure_wat": "12:00",
       "pilier": "methode_excellence",
-      "theme": "Nos formules rentrée — carrousel",
+      "theme": "Comment Excellence+ sélectionne et suit ses enseignants",
       "format": "carrousel",
-      "statut": "draft",
-      "fichier": "contenu/facebook/2026-08-06_formules-rentree.md"
+      "statut": "a_rediger",
+      "fichier": "contenu/facebook/EXC-FB-2026-002.md"
     },
     {
-      "id": "EXC-IG-2026-W32-001",
-      "plateforme": "instagram",
-      "date": "2026-08-07",
-      "heure_wat": "19:00",
-      "pilier": "la_preuve",
-      "theme": "Témoignage Bac C 2025",
-      "format": "carrousel",
-      "statut": "draft",
-      "fichier": "contenu/instagram/2026-08-07_temoignage-bac-c.md"
-    },
-    {
-      "id": "EXC-TT-2026-W32-001",
-      "plateforme": "tiktok",
-      "date": "2026-08-08",
-      "heure_wat": "17:00",
-      "pilier": "methode_excellence",
-      "theme": "Script : comment on suit un élève en temps réel",
-      "format": "video_60s",
-      "statut": "draft",
-      "fichier": "contenu/tiktok/2026-08-08_suivi-eleve-script.md"
+      "id": "EXC-FB-2026-003",
+      "plateforme": "facebook",
+      "date": "2026-08-15",
+      "heure_wat": "06:00",
+      "pilier": "autorité_éducative",
+      "theme": "Reprendre le rythme avant la reprise, pas après",
+      "format": "image_texte",
+      "statut": "a_rediger",
+      "fichier": "contenu/facebook/EXC-FB-2026-003.md"
     }
   ]
 }

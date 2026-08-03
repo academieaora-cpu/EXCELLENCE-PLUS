@@ -1,14 +1,22 @@
 {
-  "semaine": "W32",
-  "du": "2026-08-04",
-  "au": "2026-08-10",
-  "objectif": "Ouverture officielle inscriptions rentrée 2026",
+  "_lisez_moi": [
+    "Corrigé le 03/08/2026 : l'ancienne semaine « W32 » (04→10/08) et ses 5 posts",
+    "multi-canaux dataient du dispositif d'avant l'arbitrage du 30/07/2026. Le",
+    "dispositif actuel est 3 publications/semaine AU TOTAL, Facebook seul au",
+    "lancement (voir config/creneaux.json, qui fait foi). La première publication",
+    "réelle est lundi 10/08/2026 06h00 — ISO semaine 33 (10→16/08), pas 32.",
+    "posts_a_produire ci-dessous vient directement de la sortie de",
+    "outils/calendrier_editorial/generate.py pour cette semaine — ne pas",
+    "réinventer des identifiants manuellement."
+  ],
+  "semaine": "W33",
+  "du": "2026-08-10",
+  "au": "2026-08-16",
+  "objectif": "Fondation et preuve",
   "posts_a_produire": [
-    "EXC-FB-2026-W32-001",
-    "EXC-WA-2026-W32-001",
-    "EXC-FB-2026-W32-002",
-    "EXC-IG-2026-W32-001",
-    "EXC-TT-2026-W32-001"
+    "EXC-FB-2026-001",
+    "EXC-FB-2026-002",
+    "EXC-FB-2026-003"
   ],
   "posts_en_bat": [],
   "posts_bap_recu": [],
