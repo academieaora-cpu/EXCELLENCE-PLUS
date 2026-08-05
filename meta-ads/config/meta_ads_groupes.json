@@ -1,0 +1,44 @@
+{
+  "_lisez_moi": [
+    "AVERTISSEMENT TECHNIQUE : la publication automatisée dans un Groupe Facebook via API",
+    "est restreinte par Meta (permission publish_to_groups, revue Meta requise, quasiment",
+    "jamais accordée à une app tierce). Ne pas présenter cette fonctionnalité comme acquise",
+    "au client tant que la faisabilité n'est pas confirmée groupe par groupe.",
+    "Statut par défaut : experimental=true, publication_auto_disponible=false."
+  ],
+
+  "_ce_que_experimental_true_declenche": [
+    "Tant que experimental vaut true, publier_groupe_facebook.py reste en SIMULATION :",
+    "il construit et affiche ce qui partirait, et n'appelle aucune API, quel que soit",
+    "le flag passé en ligne de commande. Le drapeau EXPERIMENTAL est en dur dans le",
+    "script — le passer à false suppose d'éditer le code ET ce fichier, volontairement.",
+    "",
+    "Le circuit Groupes est organique, pas payant : il ne dépense rien. Il est logé ici",
+    "parce qu'il partage la surface d'API Meta, pas parce qu'il consomme du budget.",
+    "Il ne doit jamais être présenté au client comme une livraison acquise (interdiction 7)."
+  ],
+
+  "_pour_passer_un_groupe_en_auto": [
+    "publication_auto_disponible ne passe à true qu'après preuve technique réelle,",
+    "documentée dans preuve_faisabilite du groupe concerné — pas une supposition,",
+    "pas un 'ça devrait marcher'. Éléments attendus dans la preuve :",
+    "  - app_id de l'app Meta utilisée et propriétaire de cette app",
+    "  - date d'obtention de la permission publish_to_groups",
+    "  - référence de la revue Meta (App Review) qui l'a accordée",
+    "  - confirmation que l'app est installée dans le groupe par un admin du groupe",
+    "  - date et identifiant d'un post de test réellement passé par l'API",
+    "Sans ces cinq éléments, le groupe reste en fallback manuel : un humain publie."
+  ],
+
+  "experimental": true,
+  "groupes": [],
+
+  "_gabarit_entree_groupe": {
+    "nom": "— nom exact du groupe —",
+    "group_id": null,
+    "admin_excellence_plus": null,
+    "publication_auto_disponible": false,
+    "preuve_faisabilite": null,
+    "fallback": "publication manuelle par un humain — mode par défaut"
+  }
+}

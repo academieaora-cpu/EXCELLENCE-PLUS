@@ -1,0 +1,78 @@
+{
+  "_lisez_moi": [
+    "Ciblage géographique et démographique des campagnes Meta Ads Excellence+.",
+    "Modèle retenu : 4 zones pondérées couvrant tout Yaoundé — le ciblage",
+    "'zones premium seules' ne s'applique plus.",
+    "Ce fichier ne duplique aucun fichier existant : il n'y a PAS de config/zones.json",
+    "ni d'équivalent côté contenu organique (vérifié au 05/08/2026). Il n'y a donc",
+    "pas de doublon de source de vérité à signaler — mais il n'y a pas non plus de",
+    "source antérieure d'où reprendre des valeurs exactes. Voir _quartiers_non_resolus."
+  ],
+
+  "ciblage_utilisable": false,
+  "_ciblage_utilisable": [
+    "Drapeau machine. false = construire_campagne.py refuse de construire un ad set,",
+    "parce qu'un ad set sans périmètre géographique résolu ciblerait par défaut plus",
+    "large que prévu — c'est-à-dire dépenserait hors cible. Passe à true seulement",
+    "quand chaque zone ci-dessous a une liste quartiers non vide et que le conflit",
+    "documenté dans _quartiers_non_resolus est tranché par écrit."
+  ],
+
+  "zones": {
+    "A": { "libelle": "Zone affluente",             "ponderation_pct": 25, "quartiers": [] },
+    "B": { "libelle": "Cœur urbain",                "ponderation_pct": 35, "quartiers": [] },
+    "C": { "libelle": "Périphérie en croissance",   "ponderation_pct": 30, "quartiers": [] },
+    "D": { "libelle": "Zones extérieures",          "ponderation_pct": 10, "quartiers": [] }
+  },
+  "_somme_ponderations_attendue_pct": 100,
+
+  "_quartiers_non_resolus": [
+    "⚠️ Les pondérations 25/35/30/10 et les libellés des 4 zones proviennent de la",
+    "consigne de construction du pipeline. La répartition des quartiers de Yaoundé",
+    "entre ces 4 zones N'EXISTE nulle part dans le dépôt et n'a pas été inventée ici.",
+    "",
+    "Ce que le dépôt contient réellement, et qui ne s'y superpose pas :",
+    "",
+    "1. _base/identite/brand_guidelines.md §3 — 'zones géographiques premium' :",
+    "   Bastos · Odza · Omnisport · Santa Barbara  (4 quartiers, sans pondération)",
+    "",
+    "2. _base/identite/brand_guidelines.md §3 — 'ciblage Meta Ads par zone',",
+    "   source RECO-001 section 04, en TROIS zones et non quatre :",
+    "     Zone Premium        Bastos, Mballa II, Nsimeyong, Omnisport",
+    "     Zone Cœur de cible  Essos, Mvog-Mbi, Bonamoussadi, Mendong",
+    "     Zone Extension      Simbock, Odza, Nkolbisson, Biyem-Assi",
+    "",
+    "Conflit déjà documenté et NON TRANCHÉ dans brand_guidelines.md §3 et",
+    "STATUT_PROJET.md point 7 :",
+    "   - Odza est 'premium' dans la liste 1 et 'Extension' (la moins prioritaire)",
+    "     dans la liste 2 ;",
+    "   - Santa Barbara ne figure dans aucune des trois zones RECO-001.",
+    "brand_guidelines.md exige explicitement : « avant tout nouveau paramétrage",
+    "Meta Ads, confirmer avec l'équipe laquelle fait foi pour Odza et si Santa",
+    "Barbara doit être ajouté au ciblage Meta Ads. » C'est exactement le cas ici.",
+    "",
+    "S'ajoute un troisième écart : passer de 3 zones RECO-001 à 4 zones pondérées",
+    "n'est pas un simple renommage — aucune correspondance 3→4 n'est documentée.",
+    "Remplir quartiers[] à partir des listes ci-dessus serait une décision",
+    "éditoriale déguisée en recopie. Elle appartient à l'équipe, pas au code."
+  ],
+
+  "demographie": {
+    "age_min": null,
+    "age_max": null,
+    "_age_non_resolu": [
+      "Deuxième incohérence documentée, STATUT_PROJET.md point 2, non tranchée :",
+      "brand_guidelines.md §3 dit '35 à 70 ans' (chiffre sourcé), PE-EXC-001 dit",
+      "'30-76 ans' (dicté). Tant que l'équipe n'a pas tranché, ces champs restent",
+      "null et construire_campagne.py refuse de construire le ciblage.",
+      "Une tranche d'âge fausse ne casse rien visiblement — elle dépense juste le",
+      "budget sur les mauvaises personnes, sans que rien ne le signale."
+    ],
+    "cible": "Parents d'élèves à Yaoundé — collège prioritaire (4e, 3e, BEPC), lycée en secondaire",
+    "_source_cible": "_base/identite/brand_guidelines.md §3 — libellé, pas paramètre API"
+  },
+
+  "langues": ["fr"],
+  "pays": ["CM"],
+  "ville_pivot": "Yaoundé"
+}

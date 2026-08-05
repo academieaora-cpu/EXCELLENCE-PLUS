@@ -20,6 +20,11 @@ FORBIDDEN_TERMS_EXCEPTIONS = {
     "CLAUDE.md",
     "_base/identite/brand_guidelines.md",
     "_base/identite/plateforme_marque.md",
+    # Documentation qui ÉNONCE l'interdiction, au même titre que les trois
+    # fichiers ci-dessus. L'exception vaut pour la doc, jamais pour un gabarit
+    # de contenu ou de créatif : le corps d'un gabarit finit copié dans un vrai
+    # livrable, et le terme interdit avec lui.
+    "meta-ads/README.md",
 }
 
 

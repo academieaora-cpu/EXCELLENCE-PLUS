@@ -1,0 +1,52 @@
+{
+  "_lisez_moi": [
+    "Source de vérité unique pour les identifiants Meta. Ne jamais publier",
+    "ou programmer vers un identifiant absent de ce fichier."
+  ],
+
+  "_criticite": [
+    "Porte 4. C'est la porte la plus coûteuse en cas d'erreur : un post organique",
+    "parti sur la mauvaise Page se supprime, un budget parti sur le mauvais compte",
+    "publicitaire ne se rattrape pas. Toute divergence entre l'objet de campagne",
+    "construit et ce fichier arrête l'exécution, sans tentative d'appel API.",
+    "",
+    "ad_account_id et instagram_actor_id sont NULL et doivent le rester tant qu'un",
+    "humain n'a pas fourni la valeur réelle. Ce sont des identifiants Meta existants,",
+    "à obtenir de M. NDOMMIE ou du Business Manager AORA — jamais à deviner, jamais",
+    "à découvrir par un appel d'API qui listerait les comptes accessibles : un compte",
+    "atteignable n'est pas un compte autorisé, et c'est précisément la confusion que",
+    "cette porte existe pour empêcher.",
+    "",
+    "Format attendu pour ad_account_id : chaîne 'act_<chiffres>' ou les chiffres seuls.",
+    "Format attendu pour instagram_actor_id : chaîne de chiffres (compte IG rattaché",
+    "à la Page, visible dans le Business Manager)."
+  ],
+
+  "ad_account_id": null,
+  "page_id": "61584305458367",
+  "page_nom": "Excellence+ Éducation",
+  "instagram_actor_id": null,
+  "devise_compte": null,
+
+  "_devise_compte": [
+    "Devise du compte publicitaire, telle que Meta l'a fixée à sa création",
+    "(elle n'est plus modifiable ensuite). Attendu ici : « XAF ».",
+    "",
+    "Ce n'est pas un détail comptable, c'est un facteur 100 sur le budget réel.",
+    "L'API Marketing attend les budgets dans l'unité mineure de la devise du",
+    "compte : pour une devise à 2 décimales (EUR, USD), 50 000 s'envoie 5000000 ;",
+    "pour une devise sans décimale comme le XAF, 50 000 s'envoie 50000.",
+    "Se tromper de convention, c'est dépenser 100 fois trop ou 100 fois trop peu",
+    "— dans un sens comme dans l'autre, personne ne s'en aperçoit avant la",
+    "facture. construire_campagne.py refuse donc de construire un budget tant que",
+    "ce champ est null, et n'applique aucun multiplicateur par défaut.",
+    "À renseigner en lisant la devise réelle du compte, pas en la supposant."
+  ],
+
+  "_coherence_page_id": [
+    "page_id est identique à config/page_cible.json → facebook.id (61584305458367),",
+    "la Page qui fait déjà foi côté organique. verifier_activation.py compare les",
+    "deux fichiers à chaque exécution et refuse d'ouvrir la porte 4 s'ils divergent :",
+    "deux fichiers qui se contredisent sur la Page cible valent une valeur absente."
+  ]
+}
