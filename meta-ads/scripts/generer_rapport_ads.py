@@ -46,7 +46,7 @@ from verifier_activation import (  # noqa: E402
     toutes_ouvertes,
     verifier_portes,
 )
-from verifier_conformite_ads import PREFIXE_GABARIT, campagnes  # noqa: E402
+from verifier_conformite_ads import PREFIXE_GABARIT, campagnes, trous_silencieux  # noqa: E402
 
 API_VERSION = "v21.0"
 
@@ -191,6 +191,17 @@ def main() -> int:
         lignes.append("      campagne ne peut être dite « en ligne ».")
         lignes.append("")
 
+    # Trous silencieux — même fonction que verifier_conformite_ads.py, jamais
+    # une seconde définition : c'est ce qui garantit que le rapport du matin et
+    # l'audit disent la même chose sur ce point.
+    trous = trous_silencieux(repo, aujourdhui)
+    if trous:
+        lignes.append(f"   🕳️  TROUS SILENCIEUX ({len(trous)}) — quelque chose a été "
+                      f"commencé puis laissé sans suite :")
+        for t in trous:
+            lignes.append(f"      · {t}")
+        lignes.append("")
+
     # Rappel de séparation budgétaire — deux systèmes de suivi, jamais un seul tableau.
     lignes.append("   Le budget média Meta Ads ci-dessus est distinct du forfait de "
                   "gestion AORA")
@@ -209,6 +220,7 @@ def main() -> int:
             "scenario_retenu": scenario,
             "campagnes": {d: [str(m.get("id")) for _, m in v] for d, v in par_dossier.items()},
             "gabarits_ignores": gabarits,
+            "trous_silencieux": trous,
             "confirmations_api": confirmations,
             "_vocabulaire": {
                 "programmee": "créée dans Meta, diffusion future",

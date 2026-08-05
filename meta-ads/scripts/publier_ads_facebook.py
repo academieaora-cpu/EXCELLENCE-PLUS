@@ -41,6 +41,7 @@ from construire_campagne import (  # noqa: E402
     BudgetRefuse,
     ConfigurationIncomplete,
     CreatifRefuse,
+    PostNonBoostable,
     construire,
     enregistrer_cle,
     lire_registre,
@@ -217,7 +218,7 @@ def publier(repo: Path, chemin_brief: Path, plateforme: str, executer: bool,
 
     try:
         objets = construire(repo, chemin_brief)
-    except (BudgetRefuse, CreatifRefuse, ConfigurationIncomplete) as err:
+    except (BudgetRefuse, CreatifRefuse, ConfigurationIncomplete, PostNonBoostable) as err:
         print(f"\n⛔ {type(err).__name__} — {err}\n", file=sys.stderr)
         print("   Aucun appel API tenté.\n", file=sys.stderr)
         return 1

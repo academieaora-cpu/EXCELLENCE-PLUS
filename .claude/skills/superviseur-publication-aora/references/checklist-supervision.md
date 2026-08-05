@@ -13,6 +13,7 @@
 | 7 | Expéditeur autorisé | `config/comptes.json` → `client.emails_autorises` | BAP transcrit d'une adresse absente de la liste |
 | 8 | Formule de validation | `config/validation_formules.json` | email demandé/reçu avec « BAP VALIDÉ » au lieu de la formule exacte |
 | 9 | Numéros WhatsApp | `config/contacts.json` | numéro France (+33) utilisé comme contact dans un post |
+| 10 | Volet Meta Ads (05/08/2026) | `meta-ads/scripts/verifier_conformite_ads.py` (exécuter, pas relire) | audit payant en écart, ou trou silencieux détecté — voir SKILL.md §2 Contrôle 10 |
 
 ## Dernier état constaté (03/08/2026 — à mettre à jour, pas à recopier tel quel indéfiniment)
 

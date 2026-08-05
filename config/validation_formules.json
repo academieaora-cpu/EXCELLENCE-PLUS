@@ -27,6 +27,28 @@
     ]
   },
 
+  "bab": {
+    "_lisez_moi": [
+      "Ajouté le 05/08/2026 pour meta-ads-publie-aora. BAB = Bon À Budgétiser —",
+      "autorisation du SCÉNAIRE et du MONTANT Meta Ads, distincte du BAP contenu",
+      "(meta-ads/config/meta_ads_budgets.json le documente déjà : 'ne jamais les",
+      "confondre'). Formule volontairement différente de celle du BAP : un email",
+      "qui dit seulement 'je valide' sans préciser LEQUEL (contenu ou budget) ne",
+      "doit lever aucune des deux portes.",
+      "",
+      "⚠️ AUCUN GABARIT D'EMAIL N'ENVOIE ENCORE CETTE FORMULE À M. NDOMMIE.",
+      "Le gabarit BAB vit dans le skill community-manager-aora, qui n'est pas un",
+      "fichier de ce dépôt (skill de compte, hors périmètre git) — je ne peux pas",
+      "le vérifier ni le corriger d'ici. Tant que personne n'a confirmé que",
+      "l'email de demande BAB demande explicitement cette phrase, aucune réponse",
+      "client ne doit être traitée comme une BAB valide, même si l'intention est",
+      "claire. Même prudence que l'écart connu BAT/BAP ci-dessus."
+    ],
+    "formules_recevables": [
+      "je valide ce budget pour activation."
+    ]
+  },
+
   "mots_disqualifiants": [
     "mais", "sauf", "sous réserve", "à condition", "peux-tu", "pourrais-tu",
     "modifier", "changer", "corriger", "remplacer", "attendre", "plus tard",

@@ -90,12 +90,44 @@ un budget autorisé.
 | Script | Rôle |
 |---|---|
 | `verifier_activation.py` | Les 4 portes. Point de vérité unique, appelé en tête de tous les autres |
-| `construire_campagne.py` | Construit campaign/adset/ad. **Dry-run par défaut**, `--executer` explicite |
+| `construire_campagne.py` | Construit campaign/adset/ad — **campagne neuve ou boost**. Dry-run par défaut, `--executer` explicite |
+| `booster_post_organique.py` | **Propose** des boosts pour des posts organiques publiés — écrit dans `en_preparation/`, n'exécute rien |
 | `publier_ads_facebook.py` | Moteur d'exécution réelle : appels API, idempotence, échecs typés |
 | `publier_ads_instagram.py` | Importe le moteur ci-dessus, `plateforme="instagram"` — ne le recopie pas |
 | `publier_groupe_facebook.py` | **Expérimental**, simulation uniquement — voir ci-dessous |
-| `verifier_conformite_ads.py` | Audit des 9 contrôles organiques + 10e : plafond budgétaire. Lecture seule |
-| `generer_rapport_ads.py` | État des campagnes, vocabulaire strict |
+| `verifier_conformite_ads.py` | Audit de 10 contrôles + détection des trous silencieux. Lecture seule |
+| `generer_rapport_ads.py` | État des campagnes (neuves et boosts), vocabulaire strict, trous silencieux inclus |
+
+### Boost — promouvoir un post déjà publié
+
+`type_campagne: boost` dans un brief, avec `post_ref` pointant vers un post organique dont
+`publie_le` **et** `plateforme_post_id` sont renseignés. Le créatif publicitaire référence le post
+existant (`object_story_id`) — aucun texte n'est réécrit, aucun visuel neuf n'est requis, et le
+post organique n'est jamais retouché.
+
+`plateforme_post_id` n'est aujourd'hui renseigné **nulle part** dans le dépôt : le mécanisme qui
+confirmerait une mise en ligne réelle n'existe pas encore côté organique (voir
+`composio-publie-aora/SKILL.md` §2). Conséquence attendue : `booster_post_organique.py` ne
+proposera aucun boost tant que ce mécanisme manque. Ce n'est pas un bug, c'est une porte de plus.
+
+Le boost n'a **aucun chemin d'exécution qui lui soit propre** — une proposition suit exactement
+le même circuit qu'une campagne écrite à la main : `en_preparation/` → `git mv` humain vers
+`autorisees/` → `--executer` avec les 4 portes ouvertes. Le budget proposé suit une répartition
+dégressive du reliquat mensuel (jamais du plafond entier), qu'un humain peut ajuster avant
+d'autoriser.
+
+⚠️ Le boost n'est **pas automatique**, y compris quand les 4 portes sont ouvertes. Un modèle où le
+boost se déclenche seul sur cron a été envisagé puis écarté — voir
+`.claude/skills/meta-ads-publie-aora/SKILL.md` §3.
+
+### Trous silencieux
+
+Détection propre au payant, sans équivalent organique : quelque chose a été commencé puis laissé
+sans suite, sans qu'aucune alerte ne se déclenche d'elle-même — campagne autorisée jamais lancée,
+campagne active jamais confirmée, BAB déposée dans `validation/BAB_budget/` mais jamais reliée à
+`meta_ads_budgets.json`, proposition de boost oubliée en `en_preparation/`. Une seule fonction,
+`trous_silencieux()` dans `verifier_conformite_ads.py`, partagée par l'audit et le rapport
+quotidien — jamais deux définitions séparées.
 
 ### Vocabulaire — les quatre mots ne s'échangent pas
 
@@ -153,23 +185,30 @@ serait jamais déclenché.
 C'est la **Routine 4** du dispositif ([`routines/routine4_metaads.md`](../routines/routine4_metaads.md)),
 alignée sur les horaires des routines existantes :
 
-| Cron | Heure WAT | Aligné sur |
-|---|---|---|
-| `0 2 * * *` | 03h00, tous les jours | Routine 1 — `programmation_quotidienne.yml` |
-| `0 7 * * 1` | 08h00, lundi | `rapport_hebdo.yml` |
+| Cron | Heure WAT | Aligné sur | Ce qu'il fait |
+|---|---|---|---|
+| `0 2 * * *` | 03h00, tous les jours | Routine 1 — `programmation_quotidienne.yml` | Portes, audit, **propositions de boost** (commit encadré à `en_preparation/` seul) |
+| `15 6 * * *` | 07h15, tous les jours | 15 min après R2 (07h00) | Rapport quotidien posté sur Slack (`pilote-metaads-aora`) — lecture seule |
 
 Le périmètre payant se vérifie au moment où le périmètre organique se programme :
 une seule lecture du dispositif le matin, pas deux à des heures différentes qu'on
-finit par ne plus rapprocher.
+finit par ne plus rapprocher. Un passage hebdomadaire (lundi 08h00, calqué sur
+`rapport_hebdo.yml`) a existé un temps — remplacé le 05/08/2026 par le rapport
+quotidien de 07h15, qui couvre déjà le même besoin tous les jours plutôt qu'une
+fois par semaine.
 
-**Même horaire que R1, jamais le même fichier.** R1 engage du contenu, R4 engage de
-l'argent ; les fondre ferait qu'une erreur de configuration sur l'un exposerait
-l'autre. Secrets également distincts (`META_MARKETING_TOKEN`,
+**Même horaire que R1 à 03h00, jamais le même fichier.** R1 engage du contenu, R4
+engage de l'argent ; les fondre ferait qu'une erreur de configuration sur l'un
+exposerait l'autre. Secrets également distincts (`META_MARKETING_TOKEN`,
 `SLACK_WEBHOOK_URL_METAADS`).
 
-Les deux passages programmés **ne créent rien** : ils vérifient, auditent et
-construisent à blanc. L'exécution réelle n'existe que par `workflow_dispatch`
-manuel avec `executer: true`, et reste soumise aux quatre portes.
+Les deux passages programmés **ne créent et n'activent aucune campagne**. Le
+passage de 03h00 écrit des *propositions* de boost, jamais une campagne autorisée
+— la seule écriture qui existe dans tout le workflow, et elle est encadrée : le
+job vérifie après coup qu'aucun fichier hors de `campagnes/en_preparation/` n'a
+bougé, et refuse de committer dans le cas contraire. L'exécution réelle n'existe
+que par `workflow_dispatch` manuel avec `executer: true`, et reste soumise aux
+quatre portes, revérifiées par le script lui-même.
 
 ---
 

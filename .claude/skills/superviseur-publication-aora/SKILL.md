@@ -1,16 +1,19 @@
 ---
 name: superviseur-publication-aora
 description: >-
-  Audit des publications AORA × Excellence+, couche de contrôle au-dessus de composio-publie-aora
-  et pilote-quotidien-aora — jamais à leur place. S'active AUTOMATIQUEMENT dès qu'un rapport de
-  routine, une sortie de publication, ou un message Slack #excellence-plus apparaît : composio_id,
-  « programmé », « BAP enregistré », « visuel déplacé vers approuves/ », rapport de
-  pilote-quotidien-aora, demande_composio.txt, identifiant EXC-FB/EXC-IG/EXC-TT/EXC-WA, ou mention
-  de la Page Facebook Excellence+. Aussi sur demande : « supervise cette publication », « audit la
+  Audit des publications AORA × Excellence+, couche de contrôle au-dessus de composio-publie-aora,
+  pilote-quotidien-aora ET meta-ads-publie-aora — jamais à leur place. S'active AUTOMATIQUEMENT dès
+  qu'un rapport de routine, une sortie de publication, ou un message Slack #excellence-plus
+  apparaît : composio_id, « programmé », « BAP enregistré », « visuel déplacé vers approuves/ »,
+  rapport de pilote-quotidien-aora ou de pilote-metaads-aora, demande_composio.txt, identifiant
+  EXC-FB/EXC-IG/EXC-TT/EXC-WA, mention de la Page Facebook Excellence+, ou toute sortie touchant
+  meta-ads/ (campagne, boost, BAB). Aussi sur demande : « supervise cette publication », « audit la
   routine », « vérifie que c'est conforme », « est-ce que c'était la bonne page », « qu'est-ce qui a
-  été publié aujourd'hui ». Ne publie jamais, ne rédige jamais : relit l'état réel du dépôt — jamais
+  été publié aujourd'hui », « audit le volet Meta Ads », « y a-t-il des trous silencieux ». Ne
+  publie jamais, ne rédige jamais, ne crée aucune campagne : relit l'état réel du dépôt — jamais
   la mémoire de conversation — et signale tout écart : Page cible, créneaux, double porte
-  BAP+visuel, idempotence, vocabulaire programmé/publié, fiabilité des automatismes concurrents.
+  BAP+visuel, idempotence, vocabulaire programmé/publié, fiabilité des automatismes concurrents,
+  conformité du volet payant, trous silencieux.
 ---
 
 # SUPERVISEUR PUBLICATION — AORA × Excellence+
@@ -135,17 +138,56 @@ Relis `config/contacts.json`. Numéros attendus dans un post : **+237 699 403 96
 contact dans un post ou un visuel Excellence+ — s'il y figure : **⚠️ CRITIQUE**. Si le fichier est
 absent : signale le risque qu'un post soit rédigé avec un numéro halluciné ou obsolète.
 
+### Contrôle 10 — Volet Meta Ads (ajouté le 05/08/2026)
+
+Le payant a son propre audit, complet, déjà construit : `meta-ads/scripts/verifier_conformite_ads.py`
+(10 contrôles internes + détection des trous silencieux). **Tu ne réimplémentes rien de cet
+audit ici** — tu l'exécutes et tu en rapportes le verdict, exactement comme tu exécuterais
+`scripts/verifier_conformite.py` côté organique :
+
+```bash
+python3 meta-ads/scripts/verifier_conformite_ads.py
+python3 meta-ads/scripts/verifier_activation.py --tout
+```
+
+Ce que tu vérifies en plus, par lecture directe (ces deux points ne sont pas dans le script,
+parce qu'ils touchent la cohérence ENTRE l'organique et le payant, pas l'intérieur du payant
+seul) :
+
+- **`config/page_cible.json` et `meta-ads/config/meta_ads_comptes.json` doivent porter le même
+  `page_id`.** Le script le vérifie déjà en interne (porte 4), mais si un rapport audité affirme
+  une Page différente pour le payant que celle déjà établie côté organique : **⚠️ CRITIQUE**, même
+  raisonnement que le contrôle 1 — une divergence entre deux fichiers vaut une valeur absente.
+- **Un boost ne doit jamais être confondu avec une campagne neuve dans un rapport.** Un
+  `type_campagne: boost` référence un post déjà publié ; s'il apparaît décrit comme s'il avait un
+  créatif propre (visuel neuf, texte réécrit), signale l'écart — le texte d'un boost est
+  toujours celui du post organique référencé, jamais retouché.
+
+**Trous silencieux** — spécifique au payant, sans équivalent organique : quelque chose a été
+commencé puis laissé sans suite, sans qu'aucune alerte ne se déclenche d'elle-même (campagne
+autorisée jamais lancée, campagne active jamais confirmée, BAB déposée mais jamais reliée à
+`meta_ads_budgets.json`, proposition de boost oubliée en `en_preparation/`). Ce n'est pas une
+non-conformité — rien n'est mal configuré — donc ne l'annonce jamais comme un `⚠️ CRITIQUE` :
+c'est sa propre catégorie, `🕳️ TROU SILENCIEUX`, avec la même sévérité qu'un `⚠️` simple.
+
+Si `meta-ads/` est absent du dépôt audité (par exemple sur une branche qui ne l'a pas encore),
+signale-le une fois, ne le traite pas comme une régression du dispositif organique.
+
 ---
 
 ## 3 · Comment tu t'actives
 
 **Automatiquement**, dès que l'un de ces éléments devient visible dans la conversation :
 - un rapport Slack `#excellence-plus` (produit par `pilote-quotidien-aora` ou
-  `composio-publie-aora`)
+  `composio-publie-aora`), ou un rapport du fil Meta Ads dédié (`pilote-metaads-aora`)
 - une sortie de `programmer_publications.py`, `traiter_bap.py`, ou `generer_prompt_composio.py`
+  — ou côté payant, de `verifier_activation.py`, `construire_campagne.py`,
+  `booster_post_organique.py`, ou `generer_rapport_ads.py`
 - une mention de `composio_id`, `programme_le`, `bap_recu_le`, ou d'un identifiant `EXC-FB-*` /
-  `EXC-IG-*` / `EXC-TT-*` / `EXC-WA-*`
-- une question directe sur la conformité, la Page cible, les créneaux, ou ce qui a été publié
+  `EXC-IG-*` / `EXC-TT-*` / `EXC-WA-*` — ou côté payant, de `ad_account_id`, `type_campagne: boost`,
+  `autorisation_ecrite_ref`, ou d'un identifiant `BOOST-*`
+- une question directe sur la conformité, la Page cible, les créneaux, ce qui a été publié, ou
+  l'état du volet Meta Ads
 
 **Sur demande explicite**, avec les mêmes déclencheurs que la description : « supervise »,
 « audit », « vérifie que c'est conforme », etc.
@@ -166,6 +208,7 @@ Court, greffé après le rapport audité — jamais un document séparé qu'on d
 🔍 SUPERVISION — conforme
    Page ✅ · Créneaux ✅ · Double porte ✅ · Idempotence ✅
    Expéditeur ✅ · Formule BAP ✅ · WhatsApp ✅
+   Meta Ads ✅ — 4 portes fermées (attendu, mois 1 non activé), aucun trou silencieux
    (publish_scheduled.yml toujours actif — rappel, pas une nouvelle alerte)
    (écart connu : gabarit community-manager-aora demande « BAP VALIDÉ », pas
    la formule de validation_formules.json — rappel, pas une nouvelle alerte)
@@ -174,18 +217,21 @@ Court, greffé après le rapport audité — jamais un document séparé qu'on d
 **Cas avec écart :**
 
 ```
-🔍 SUPERVISION — 2 écart(s)
+🔍 SUPERVISION — 3 écart(s)
    ⚠️ CRITIQUE — EXC-FB-2026-014 : composio_id renseigné, aucun visuel dans
       visuels/approuves/ pour cet identifiant. Porte 2 non satisfaite.
    ⚠️ Vocabulaire — rapport indique « publié » pour EXC-FB-2026-013, mais
       publie_le est vide. Aucune confirmation de mise en ligne n'existe
       pour ce post — à corriger en « programmé ».
+   🕳️ TROU SILENCIEUX — BOOST-EXC-FB-2026-011 : proposition générée il y a
+      6 j, toujours en meta-ads/campagnes/en_preparation/, aucune décision.
    → Recommandation : ne rien programmer de plus avant d'avoir tranché le
      premier point.
 ```
 
 Toujours se terminer, s'il y a au moins un `⚠️ CRITIQUE`, par une recommandation d'arrêt claire —
-pas noyée dans la liste.
+pas noyée dans la liste. Un `🕳️ TROU SILENCIEUX` seul, sans `⚠️ CRITIQUE`, n'appelle pas cette
+recommandation d'arrêt — c'est un rappel à traiter, pas un blocage.
 
 ---
 
@@ -239,11 +285,13 @@ Contenu proposé, même esprit que `config/creneaux.json` :
 | Fichier | Contenu |
 |---|---|
 | `scripts/verifier_conformite.py` | Double porte, idempotence, expéditeur, formule, WhatsApp — lecture seule, ne modifie rien |
-| `references/checklist-supervision.md` | Version courte des neuf contrôles, pour relecture rapide |
+| `references/checklist-supervision.md` | Version courte des dix contrôles, pour relecture rapide |
 | `config/comptes.json` | Adresse(s) client autorisée(s) — fait foi pour le contrôle 7 |
-| `config/validation_formules.json` | Formule BAP exacte — fait foi pour le contrôle 8 |
+| `config/validation_formules.json` | Formules BAT/BAP/BAB exactes — fait foi pour le contrôle 8 |
 | `config/contacts.json` | Numéros WhatsApp autorisés — fait foi pour le contrôle 9 |
+| `meta-ads/scripts/verifier_conformite_ads.py` | Audit du volet payant + trous silencieux — fait foi pour le contrôle 10 |
+| `meta-ads/scripts/verifier_activation.py` | Les 4 portes Meta Ads — à exécuter, jamais à réciter de mémoire |
 
 ---
 
-*ACADÉMIE AORA · SUP-PUB-001 · v1.0 — 02/08/2026 · Contrat AORA-CCC-005*
+*ACADÉMIE AORA · SUP-PUB-001 · v1.1 — 05/08/2026 · Contrat AORA-CCC-005*

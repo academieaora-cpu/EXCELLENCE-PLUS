@@ -1,4 +1,4 @@
-name: Meta Ads — vérification quotidienne 03h00 WAT
+name: Meta Ads — vérification 03h00 + rapport 07h15 WAT
 
 # ─────────────────────────────────────────────────────────────────────────────
 # PÉRIMÈTRE : Meta Ads uniquement (budget média). Ce fichier ne doit JAMAIS être
@@ -15,38 +15,43 @@ name: Meta Ads — vérification quotidienne 03h00 WAT
 #   SLACK_BOT_TOKEN_METAADS      (alternative au webhook)
 #   SLACK_CHANNEL_METAADS        (avec le token de bot)
 #
-# CE WORKFLOW NE CRÉE AUCUNE CAMPAGNE SUR SON DÉCLENCHEMENT PROGRAMMÉ.
-# Le cron ne fait que vérifier les portes, auditer la conformité et construire en
-# dry-run. L'exécution réelle n'existe que par workflow_dispatch, avec un input
-# explicite, et reste soumise aux quatre portes — un humain déclenche, le code
-# vérifie. Un pipeline qui dépense sur minuterie est précisément ce que ce
-# dispositif refuse.
+# CE WORKFLOW NE CRÉE ET N'ACTIVE AUCUNE CAMPAGNE SUR SON DÉCLENCHEMENT PROGRAMMÉ.
+# Les deux passages programmés vérifient les portes, auditent la conformité,
+# PROPOSENT des boosts (écriture encadrée, voir plus bas) et rapportent — jamais
+# un appel réel à l'API Meta. L'exécution réelle n'existe que par workflow_dispatch,
+# avec un input explicite, et reste soumise aux quatre portes revérifiées par le
+# script lui-même — un humain déclenche, le code vérifie. Un pipeline qui dépense
+# sur minuterie est précisément ce que ce dispositif refuse.
 #
 # Fuseau : cron GitHub Actions = UTC. WAT = UTC+1 toute l'année (pas d'heure
 # d'été au Cameroun).
 #
 # HORAIRES — alignés sur les routines existantes, jamais sur un rythme propre :
 #
-#   0 2 * * *   03h00 WAT, tous les jours — même heure que la Routine 1
-#               (programmation_quotidienne.yml). Le périmètre payant se vérifie
-#               au même moment que le périmètre organique se programme : une
-#               seule lecture du dispositif le matin, pas deux à des heures
-#               différentes qu'on finit par ne plus rapprocher.
+#   0 2 * * *    03h00 WAT, tous les jours — même heure que la Routine 1
+#                (programmation_quotidienne.yml). Le périmètre payant se vérifie
+#                au même moment que le périmètre organique se programme. C'est
+#                aussi le SEUL passage qui écrit : portes, audit, et
+#                booster_post_organique.py, dont les propositions sont commitées
+#                — jamais un post Slack, personne n'est réveillé à cette heure.
 #
-#   0 7 * * 1   08h00 WAT, lundi — même heure que rapport_hebdo.yml. Le rapport
-#               de 03h00 s'écrit quand personne n'est réveillé ; celui-ci attend
-#               l'équipe à son arrivée en début de semaine.
+#   15 6 * * *   07h15 WAT, tous les jours — 15 minutes après R2 (production
+#                organique, 07h00 WAT). C'est le rapport quotidien de
+#                pilote-metaads-aora : lecture seule, posté sur Slack
+#                (--slack), rien n'est écrit dans le dépôt à cette heure.
 #
-# Ces deux passages ne créent rien : ils vérifient, auditent et construisent à
-# blanc. La fréquence n'est donc pas un enjeu de réactivité — un pipeline qui ne
-# dépense que sur déclenchement manuel n'a aucune raison de se réveiller toutes
-# les 15 minutes.
+# Une troisième heure a existé un temps (08h00 WAT le lundi, calquée sur
+# rapport_hebdo.yml) — retirée le 05/08/2026 : le rapport quotidien de 07h15
+# couvre déjà "le rapport arrive avec l'équipe", tous les jours et pas
+# seulement le lundi. La garder aurait doublé le même message dans le même
+# fil à moins d'une heure d'écart — exactement le genre de bruit qui fait
+# qu'une équipe arrête de lire un rapport.
 # ─────────────────────────────────────────────────────────────────────────────
 
 on:
   schedule:
     - cron: '0 2 * * *'
-    - cron: '0 7 * * 1'
+    - cron: '15 6 * * *'
   workflow_dispatch:
     inputs:
       campagne:
@@ -59,12 +64,15 @@ on:
         default: false
 
 permissions:
-  contents: read
+  # write : nécessaire pour que le passage de 03h00 committe les propositions de
+  # boost. Le champ d'écriture est encadré dans le code du job, pas seulement par
+  # cette permission — voir l'étape "Committer les propositions".
+  contents: write
 
 concurrency:
-  # Deux exécutions simultanées pourraient créer deux fois la même campagne.
-  # Le registre d'idempotence protège déjà, mais une file d'attente coûte moins
-  # cher qu'un doublon rattrapé après coup.
+  # Un seul run à la fois, y compris entre vérification programmée et exécution
+  # manuelle : les deux peuvent désormais committer (propositions / composio_id
+  # équivalent), une file d'attente coûte moins cher qu'une course entre deux push.
   group: meta-ads-publication
   cancel-in-progress: false
 
@@ -72,11 +80,6 @@ jobs:
   verifier:
     runs-on: ubuntu-latest
     steps:
-      # La Routine 1 (Composio, organique) tourne à la même heure et peut
-      # committer pendant que ce job a déjà fait son checkout. Sans effet ici :
-      # tout ce que ce workflow exécute est en lecture seule ou en dry-run, donc
-      # au pire il audite un arbre vieux de quelques minutes. Le jour où une
-      # étape écrirait dans le dépôt, il faudrait décaler — pas aujourd'hui.
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
@@ -86,27 +89,82 @@ jobs:
       - run: pip install pyyaml
 
       - name: Halte si le dépôt est en PAUSE
+        id: pause
         run: |
           if [ -f PAUSE ]; then
             echo "⏸️  DISPOSITIF EN PAUSE"
             cat PAUSE
             echo "Aucune vérification Meta Ads poursuivie."
-            exit 0
+            echo "en_pause=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "en_pause=false" >> "$GITHUB_OUTPUT"
           fi
 
       # continue-on-error : une porte fermée est l'information attendue, pas une
       # panne du job. Le rapport doit continuer à s'écrire pour que l'équipe
       # voie POURQUOI c'est fermé — un job rouge sans rapport n'apprend rien.
       - name: Portes d'activation Meta Ads
+        if: steps.pause.outputs.en_pause != 'true'
         continue-on-error: true
         run: python3 meta-ads/scripts/verifier_activation.py --tout | tee portes.txt
 
       - name: Audit de conformité
+        if: steps.pause.outputs.en_pause != 'true'
         continue-on-error: true
         run: python3 meta-ads/scripts/verifier_conformite_ads.py
 
+      # Propositions de boost — UNIQUEMENT au passage de 03h00. Le script n'écrit
+      # jamais lui-même une exécution : il dépose des briefs dans en_preparation/,
+      # exactement comme un humain le ferait à la main. Silence si rien à
+      # proposer (portes fermées, aucun post éligible) — ce n'est pas un échec.
+      - name: Propositions de boost (03h00 uniquement)
+        if: steps.pause.outputs.en_pause != 'true' && github.event.schedule == '0 2 * * *'
+        continue-on-error: true
+        run: python3 meta-ads/scripts/booster_post_organique.py --horizon 14 | tee propositions_boost.txt
+
+      # Écriture strictement encadrée : ce job a la permission contents:write,
+      # mais ne committe QUE des fichiers sous meta-ads/campagnes/en_preparation/.
+      # Si booster_post_organique.py a touché quoi que ce soit d'autre — ce qu'il
+      # n'est pas censé faire — le job échoue plutôt que de committer en silence.
+      # C'est la même philosophie que le plafond budgétaire : vérifier AVANT
+      # d'agir, jamais faire confiance après coup.
+      - name: Committer les propositions — jamais hors en_preparation/
+        if: steps.pause.outputs.en_pause != 'true' && github.event.schedule == '0 2 * * *'
+        run: |
+          TOUT=$(git status --porcelain)
+          HORS_PERIMETRE=$(echo "$TOUT" | grep -v 'meta-ads/campagnes/en_preparation/' || true)
+          if [ -n "$HORS_PERIMETRE" ]; then
+            echo "⛔ Des fichiers hors de meta-ads/campagnes/en_preparation/ ont été modifiés :"
+            echo "$HORS_PERIMETRE"
+            echo "Ce n'est jamais censé arriver — arrêt, rien n'est committé."
+            exit 1
+          fi
+          DANS_PERIMETRE=$(git status --porcelain meta-ads/campagnes/en_preparation/)
+          if [ -z "$DANS_PERIMETRE" ]; then
+            echo "Aucune proposition nouvelle — rien à committer."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add meta-ads/campagnes/en_preparation/
+          git commit -m "meta-ads: propositions de boost automatiques — $(date -u +%Y-%m-%d)"
+          git pull --rebase
+          git push
+
+      # --slack uniquement au passage de 07h15 : le rapport de 03h00 reste local
+      # (artefact ci-dessous), personne n'a besoin d'un ping à 3h du matin.
       - name: Rapport d'état
-        run: python3 meta-ads/scripts/generer_rapport_ads.py | tee rapport_metaads.txt
+        if: steps.pause.outputs.en_pause != 'true'
+        run: |
+          FLAG=""
+          if [ "${{ github.event.schedule }}" = "15 6 * * *" ]; then
+            FLAG="--slack"
+          fi
+          python3 meta-ads/scripts/generer_rapport_ads.py $FLAG | tee rapport_metaads.txt
+        env:
+          SLACK_WEBHOOK_URL_METAADS: ${{ secrets.SLACK_WEBHOOK_URL_METAADS }}
+          SLACK_BOT_TOKEN_METAADS: ${{ secrets.SLACK_BOT_TOKEN_METAADS }}
+          SLACK_CHANNEL_METAADS: ${{ secrets.SLACK_CHANNEL_METAADS }}
 
       # Dry-run : construit les objets sans rien envoyer. Utile pour voir qu'un
       # brief est prêt bien avant que les portes s'ouvrent.
@@ -139,5 +197,6 @@ jobs:
           path: |
             portes.txt
             rapport_metaads.txt
+            propositions_boost.txt
           retention-days: 14
           if-no-files-found: ignore

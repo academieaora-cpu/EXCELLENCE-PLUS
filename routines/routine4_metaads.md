@@ -1,31 +1,56 @@
-# ROUTINE 4 — Vérification Meta Ads
+# ROUTINE 4 — Vérification et propositions Meta Ads
 
 > **Cette routine ne dépense rien et ne crée aucune campagne.** Elle vérifie les quatre portes,
-> audite la conformité, et rapporte. La création d'une campagne reste un geste manuel explicite.
+> audite la conformité, **propose** des boosts (sans les autoriser), et rapporte. La création
+> d'une campagne — neuve ou boost — reste un geste manuel explicite, du premier au dernier pas.
 
 ## Paramétrage
 
 ```
 Nom       : Excellence+ — Vérification Meta Ads
-Cadence   : Chaque jour
-Heure     : 03h00 WAT  (02h00 UTC)  ← même heure que la Routine 1
-Passage supplémentaire : lundi 08h00 WAT (07h00 UTC) ← même heure que rapport_hebdo.yml
 Dépôt     : academieaora-cpu/EXCELLENCE-PLUS · branche main
-Type      : GitHub Actions — .github/workflows/publish_scheduled_metaads.yml
-Connecteurs requis : Slack (fil Meta Ads dédié) · Meta Marketing API en lecture seule
+Type      : GitHub Actions — .github/workflows/publish_scheduled_metaads.yml (PAS une Routine
+            Claude Code Remote — aucun appel LLM dans cette routine, uniquement des scripts
+            Python déterministes)
+Connecteurs requis : aucun (Slack via webhook/token en secret, pas via connecteur de chat)
+
+Deux passages quotidiens, deux rôles distincts :
+
+  03h00 WAT (02h00 UTC) ← même heure que la Routine 1
+    verifier_activation.py --tout · verifier_conformite_ads.py ·
+    booster_post_organique.py (écrit des propositions dans en_preparation/, commit
+    encadré à ce seul dossier) · rapport local (artefact, pas de Slack)
+
+  07h15 WAT (06h15 UTC) ← 15 min après R2 (production organique, 07h00 WAT)
+    generer_rapport_ads.py --slack — lecture seule, rien n'est écrit dans le dépôt.
+    C'est le rapport du skill pilote-metaads-aora, posté dans le fil Meta Ads dédié.
 ```
 
-**Pourquoi la même heure que R1** — le périmètre payant se vérifie au moment où le périmètre
-organique se programme. Une seule lecture du dispositif le matin, pas deux à des heures
-différentes qu'on finit par ne plus rapprocher. Le rapport de R4 attend l'équipe à côté de celui
-de R1.
+**Pourquoi la même heure que R1 pour le passage de 03h00** — le périmètre payant se vérifie au
+moment où le périmètre organique se programme. C'est aussi le seul moment où ce dispositif écrit
+quoi que ce soit dans le dépôt (les propositions de boost) — comme R1, qui committe à 03h00 avant
+que quiconque soit devant son écran.
 
-**Pourquoi un passage lundi 08h00** — le rapport de 03h00 s'écrit quand personne n'est réveillé.
-Celui du lundi arrive avec l'équipe, en même temps que le rapport hebdomadaire organique.
+**Pourquoi 07h15 et pas le lundi 08h00** — une version antérieure alignait un second passage sur
+`rapport_hebdo.yml` (lundi 08h00, hebdomadaire). Remplacé le 05/08/2026 par un rapport **quotidien**
+à 07h15, juste après R2 : l'équipe voit la production du jour et l'état Meta Ads dans la même
+fenêtre, tous les jours, pas seulement le lundi. Garder les deux aurait doublé le même message à
+moins d'une heure d'écart un lundi sur deux — le genre de bruit qui fait qu'on arrête de lire un
+rapport.
 
 **Pourquoi pas toutes les 15 minutes** — c'était la cadence du `publish_scheduled.yml` supprimé le
 03/08/2026. Un pipeline qui ne dépense que sur déclenchement manuel n'a aucune raison de se
 réveiller 68 fois par jour : la réactivité n'est pas l'enjeu, la traçabilité l'est.
+
+## Ce que le passage de 03h00 committe, et le garde-fou qui l'encadre
+
+`booster_post_organique.py` n'écrit que des fichiers `BOOST-*.md` dans
+`meta-ads/campagnes/en_preparation/` — jamais `autorisees/`, jamais un config, jamais un post
+organique. Le job GitHub Actions applique un second contrôle, indépendant du script : après
+exécution, il relit `git status --porcelain` en entier et refuse de committer quoi que ce soit
+si un seul fichier hors de ce dossier a bougé. Ce n'est pas une méfiance envers le script — c'est
+la même discipline que le plafond budgétaire : vérifier avant d'agir, jamais faire confiance
+après coup.
 
 ---
 
@@ -42,28 +67,46 @@ même qu'ils tournent à la même heure : **même horaire, jamais même fichier.
 
 ---
 
-## Ce que fait le passage automatique
+## Ce que fait chaque passage automatique
 
 ```
-1. Halte si PAUSE existe à la racine.
+TOUJOURS, d'abord :
+  0. Halte si PAUSE existe à la racine — si présent, aucune étape suivante ne
+     s'exécute (le job sort proprement, aucun fichier n'est produit).
 
-2. python3 meta-ads/scripts/verifier_activation.py --tout
-   Les quatre portes, évaluées toutes les quatre (--tout) pour que le rapport
-   dise POURQUOI c'est fermé, pas seulement QUE c'est fermé.
-   Une porte fermée n'est pas une panne du job : c'est l'information attendue.
+À 03h00 WAT ET à 07h15 WAT :
+  1. python3 meta-ads/scripts/verifier_activation.py --tout
+     Les quatre portes, évaluées toutes les quatre (--tout) pour que le rapport
+     dise POURQUOI c'est fermé, pas seulement QUE c'est fermé.
+     Une porte fermée n'est pas une panne du job : c'est l'information attendue.
 
-3. python3 meta-ads/scripts/verifier_conformite_ads.py
-   Les 9 contrôles du superviseur organique + le 10e, propre au payant :
-   plafond budgétaire jamais dépassé, y compris par le CUMUL de plusieurs
-   campagnes sous le plafond chacune.
+  2. python3 meta-ads/scripts/verifier_conformite_ads.py
+     Les 10 contrôles internes du script + la détection des trous silencieux
+     (campagne autorisée jamais lancée, active jamais confirmée, BAB non
+     reliée, proposition de boost oubliée).
 
-4. python3 meta-ads/scripts/generer_rapport_ads.py
-   Vocabulaire strict. « en ligne » n'est employé qu'après confirmation API.
+UNIQUEMENT à 03h00 WAT (github.event.schedule == '0 2 * * *') :
+  3. python3 meta-ads/scripts/booster_post_organique.py --horizon 14
+     Propose des boosts pour les posts organiques publiés éligibles. Silence
+     si rien à proposer — ce n'est jamais un échec.
 
-5. Artefacts conservés 14 jours : portes.txt, rapport_metaads.txt
+  4. Commit encadré : seuls des fichiers sous meta-ads/campagnes/en_preparation/
+     peuvent partir dans ce commit. Tout le reste fait échouer le job avant
+     tout git add — voir « le garde-fou qui l'encadre » ci-dessus.
+
+TOUJOURS, ensuite :
+  5. python3 meta-ads/scripts/generer_rapport_ads.py [--slack si 07h15]
+     Vocabulaire strict. « en ligne » n'est employé qu'après confirmation API.
+     --slack uniquement à 07h15 : le passage de 03h00 reste local (artefact),
+     personne n'a besoin d'un ping Slack à 3h du matin.
+
+  6. Artefacts conservés 14 jours : portes.txt, rapport_metaads.txt,
+     propositions_boost.txt (si le passage de 03h00 en a produit).
 ```
 
-Aucune de ces quatre étapes n'appelle l'API en écriture. Aucune ne peut dépenser.
+Aucune de ces étapes n'appelle l'API Meta en écriture. Aucune ne peut dépenser — la seule écriture
+qui existe dans tout ce parcours est le commit encadré de l'étape 4, et il ne peut toucher qu'un
+brief en attente d'autorisation, jamais une campagne active ni un centime.
 
 ---
 
@@ -79,6 +122,12 @@ Aucune de ces quatre étapes n'appelle l'API en écriture. Aucune ne peut dépen
 Le déclenchement programmé **ne peut pas** créer de campagne : l'étape d'exécution réelle est
 conditionnée à `github.event_name == 'workflow_dispatch'`. Et même là, le script revérifie les
 quatre portes lui-même — la garantie est dans le code, pas dans une expression YAML.
+
+**Nuance sur ce tableau, depuis l'ajout du boost (05/08/2026)** : *écrire une proposition* de
+boost dans `en_preparation/` EST automatique, à 03h00. Ce n'est pas une exception à ce tableau —
+c'est exactement ce que fait déjà un humain qui rédige un brief à la main : ça atterrit dans
+`en_preparation/`, un dossier qui, par construction, ne signifie rien d'autorisé. Ce que ce
+tableau protège reste intact : rien ne quitte `en_preparation/` sans le `git mv` d'un humain.
 
 ---
 

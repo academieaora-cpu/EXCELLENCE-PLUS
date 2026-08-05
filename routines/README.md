@@ -8,37 +8,53 @@ séparément — c'est pour cela qu'elles ne sont pas fondues en une seule.
 | **1** | [Programmation](routine1_programmation.md) | tous les jours · 03h00 WAT | Enregistre les BAP (Gmail + dépôts manuels via `traiter_bap.py`), applique les 8 portes, **programme chez Composio**, écrit l'identifiant en retour | Composio · Slack · Gmail (lecture) |
 | **2** | [Production](routine2_production.md) | jours ouvrés · 07h00 WAT | Écrit les textes manquants, brieffe les visuels, mesure l'avance | Slack |
 | **3** | [BAT hebdomadaire](routine3_bat_hebdomadaire.md) | mercredi · 09h00 WAT | Constitue le lot, **rédige un brouillon** Gmail pour Laurence | Gmail · Slack |
-| **4** | [Vérification Meta Ads](routine4_metaads.md) | tous les jours · 03h00 WAT<br>+ lundi · 08h00 WAT | Vérifie les 4 portes du payant, audite la conformité (10 contrôles), rapporte. **Ne crée et ne dépense rien** | Slack (fil Meta Ads) · Meta Marketing API (lecture) |
+| **4** | [Vérification + propositions Meta Ads](routine4_metaads.md) | tous les jours · 03h00 WAT<br>+ 07h15 WAT | 03h00 : vérifie les 4 portes, audite (10 contrôles + trous silencieux), **propose** des boosts (écrit dans `en_preparation/` uniquement). 07h15 : rapport quotidien Slack (`pilote-metaads-aora`). **Ne crée et ne dépense rien** | Slack (fil Meta Ads) · Meta Marketing API (lecture) |
+
+Trois skills complètent R4 pour ce qu'un script seul ne peut pas trancher : `meta-ads-publie-aora`
+(construire/exécuter une campagne ou un boost en chat), `verifier-validations-gmail-aora`
+(détecter une BAB par email, formule stricte), `pilote-metaads-aora` (le rapport de 07h15,
+documenté aussi comme skill pour un usage à la demande). Aucun des trois n'exécute une dépense
+de lui-même — voir chaque `SKILL.md` pour ses propres interdits.
 
 ## L'enchaînement sur une semaine
 
 ```
-lundi     03h00  R1 programme  ·  R4 vérifie le payant
+lundi     03h00  R1 programme  ·  R4 vérifie + propose des boosts
           07h00  R2 écrit les textes qui manquent, brieffe les visuels
-          08h00  R4 rapport Meta Ads de début de semaine
+          07h15  R4 rapport Meta Ads quotidien (Slack)
           06h00  publication (créneau pilier 1)
-mardi     03h00  R1 programme  ·  R4 vérifie
-mercredi  03h00  R1 programme  ·  R4 vérifie
-          07h00  R2 produit  ·  09h00  R3 prépare le BAT du lot S+2
+mardi     03h00  R1 programme  ·  R4 vérifie + propose
+          07h15  R4 rapport
+mercredi  03h00  R1 programme  ·  R4 vérifie + propose
+          07h00  R2 produit  ·  07h15  R4 rapport  ·  09h00  R3 prépare le BAT du lot S+2
           12h00  publication (créneau pilier 2)
-jeudi     03h00  R1 programme  ·  R4 vérifie
-vendredi  03h00  R1 programme  ·  R4 vérifie
-          07h00  R2 produit — dernier passage avant le week-end
-samedi    03h00  R1 programme  ·  R4 vérifie
+jeudi     03h00  R1 programme  ·  R4 vérifie + propose
+          07h15  R4 rapport
+vendredi  03h00  R1 programme  ·  R4 vérifie + propose
+          07h00  R2 produit — dernier passage avant le week-end  ·  07h15  R4 rapport
+samedi    03h00  R1 programme  ·  R4 vérifie + propose
+          07h15  R4 rapport
           06h00  publication (créneau pilier 3)
-dimanche  03h00  R1 programme  ·  R4 vérifie
+dimanche  03h00  R1 programme  ·  R4 vérifie + propose
+          07h15  R4 rapport
 ```
 
 Créneaux de publication : `config/creneaux.json` fait foi (lundi 06h00 · mercredi 12h00 ·
 samedi 06h00 depuis le 02/08/2026). Ne pas les relire ici : ce tableau est un rappel, pas la
 source de vérité.
 
-Le week-end est couvert : R1 et R4 tournent tous les jours. Seules la production (R2) et le BAT
-(R3) s'arrêtent, parce qu'ils demandent une équipe disponible derrière.
+Le week-end est couvert : R1 et R4 tournent tous les jours, les deux passages de R4 compris.
+Seules la production (R2) et le BAT (R3) s'arrêtent, parce qu'ils demandent une équipe disponible
+derrière.
 
-**R1 et R4 tournent à la même heure, dans deux workflows séparés.** Ce n'est pas un oubli de
-factorisation : R1 engage du contenu, R4 engage de l'argent. Les fondre ferait qu'une erreur de
+**R1 et R4 tournent à la même heure à 03h00, dans deux workflows séparés.** Ce n'est pas un oubli
+de factorisation : R1 engage du contenu, R4 engage de l'argent. Les fondre ferait qu'une erreur de
 configuration sur l'un exposerait l'autre. Même horaire, jamais même fichier.
+
+**Le rapport de 07h15 a remplacé un passage hebdomadaire du lundi 08h00** (calqué à l'origine sur
+`rapport_hebdo.yml`). Un rapport quotidien couvre déjà « l'équipe voit l'état Meta Ads en arrivant
+» tous les jours — garder les deux aurait doublé le même message un lundi sur deux, à moins d'une
+heure d'écart.
 
 ## Ce qui n'est PAS une routine
 
@@ -117,7 +133,10 @@ Ce qui manque, par ordre de blocage :
 - `instagram_actor_id` et `devise_compte` (même fichier) — le second vaut un facteur 100 sur le
   budget réel selon la devise du compte
 - une **BAB écrite** archivée dans `meta-ads/validation/BAB_budget/`, puis `scenario_retenu` et
-  `montant_mensuel_fcfa` renseignés
+  `montant_mensuel_fcfa` renseignés à la main (jamais par `verifier-validations-gmail-aora`, qui
+  s'arrête à la preuve — voir son `SKILL.md` §4) ; et d'abord, un gabarit email qui demande
+  explicitement la formule de `config/validation_formules.json → bab` — aucun gabarit du dépôt
+  ne l'envoie encore
 - **`scenarios_budget_metaads.pdf`**, absent du dépôt — la porte 2 refuse de s'ouvrir tant qu'il
   manque, même montant renseigné
 - le mois concerné passé à `"autorise": true` dans `meta_ads_activation.json` — geste humain

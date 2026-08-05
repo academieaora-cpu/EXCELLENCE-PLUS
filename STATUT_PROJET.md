@@ -5,16 +5,26 @@
 > si tu reprends ce projet dans une nouvelle session, lis ce fichier en premier
 > pour connaître l'état réel du repo sans avoir à tout re-déduire du git log.
 
-Dernière mise à jour : 5 août 2026.
+Dernière mise à jour : 5 août 2026 (session boost + skills Meta Ads).
 
 ## Branches
 
-- **Branche de travail courante** : `claude/meta-ads-publie-aora-ik6u82` (pipeline Meta Ads,
-  livrée et fusionnée dans `main` le 05/08/2026)
+- **Branche de travail courante** : `claude/meta-ads-publie-aora-ik6u82`. Premier lot (pipeline
+  4 portes) fusionné dans `main` le 05/08/2026 ; second lot (boost, 3 skills, trous silencieux,
+  cron 07h15) développé sur la même branche, **pas encore fusionné** au moment de la rédaction —
+  voir la table de livrables ci-dessous pour ce qui est poussé sur la branche vs. déjà sur `main`.
 - **Branche de travail précédente** : `claude/excellence-plus-repo-setup-rs7efy`
-- **`main`** : synchronisée avec la branche de travail (merge `--no-ff` après
-  chaque livraison confirmée par l'utilisateur). Les deux branches sont à jour
-  l'une par rapport à l'autre au moment de la rédaction de ce document.
+- ⚠️ **Branches distantes à ne PAS fusionner sans revue approfondie**, découvertes le 05/08/2026
+  en cherchant la source d'un document externe (voir vigilance §12) :
+  - `claude/routines-skills-integrations-mjrfwq` — un seul commit, qui **supprime** tout
+    `meta-ads/`, supprime le skill `superviseur-publication-aora` en entier, supprime
+    `config/comptes.json`/`contacts.json`/`page_cible.json`/`validation_formules.json`, et
+    **ressuscite** `.github/workflows/publish_scheduled.yml` + désarchive `scripts/publish_*.py`
+    — le moteur de publication concurrent supprimé le 03/08/2026 précisément parce qu'il
+    contournait la porte visuel. Ne jamais fusionner en l'état.
+  - `claude/appliquer-changeset-excellence-plus-ylnsd4` — supprime également tout `meta-ads/`
+    (sans réintroduire le moteur concurrent). Cause probable pour les deux : branché avant que
+    `meta-ads/` existe, jamais rebasé depuis.
 - Convention établie : développer sur la branche désignée, pousser, puis
   merger proprement vers `main` (jamais de force-push) quand une livraison est
   actée.
@@ -29,7 +39,7 @@ Dernière mise à jour : 5 août 2026.
 | **CC-EXC-001** | `rapports/calendrier_client_excellence_plus_aout_septembre.html` + `.pdf` | **Livrable client** — extrait août+septembre du calendrier ci-dessus, A4 **paysage**, trié par priorité de pilier (pas chronologique), langage client (pas de statut SOP-001), 89 publications, 9 pages, prêt pour soumission BAT. Twin livrable de CE-EXC-001 (même source de données). Voir `outils/calendrier_client/README.md`. |
 | **LE-EXC-001** | `rapports/ligne_editoriale_excellence_plus.html` + `.pdf` | Ligne éditoriale (7 sections), sourcée depuis `brand_guidelines.md` + `plateforme_marque.md`. Pas encore recalée sur 5 mois (voir vigilance §5). |
 | **PE-EXC-001** | `rapports/planification_editoriale_excellence_plus.html` + `.pdf` | Planification éditoriale (7 sections). **Version 1.1** — recalée sur 5 mois actifs (août-décembre), décembre repositionné bilan mi-annuel, forfait AORA (6 mois / 315 000 FCFA) laissé intact avec note distinguant durée contractuelle et fenêtre de production active. |
-| **MA-EXC-001** | `meta-ads/` + `.github/workflows/publish_scheduled_metaads.yml` + `routines/routine4_metaads.md` | **Pipeline Meta Ads (05/08/2026)** — miroir payant de `composio-publie-aora`. 4 portes bloquantes (activation temporelle · BAB budgétaire · BAP contenu + visuel · cohérence du compte), plafond budgétaire dur vérifié avant appel API, idempotence triple clé, conversion WAT→UTC, échecs typés. Groupes Facebook en simulation forcée. **État : verrouillé** — les 4 portes sont fermées, aucune campagne créable. Devenu **Routine 4**, à 03h00 WAT (même heure que R1) + lundi 08h00 WAT. Détail : `meta-ads/README.md`. |
+| **MA-EXC-001** | `meta-ads/` + `.github/workflows/publish_scheduled_metaads.yml` + `routines/routine4_metaads.md` + 3 skills | **Pipeline Meta Ads (05/08/2026, deux lots)** — miroir payant de `composio-publie-aora`. Lot 1 (fusionné `main`) : 4 portes bloquantes, plafond budgétaire dur, idempotence triple clé, WAT→UTC, échecs typés, Groupes en simulation forcée. Lot 2 (branche de travail, pas encore fusionné) : mode **boost** (`type_campagne: boost`, `object_story_id`, aucun chemin d'exécution propre — suit le même circuit qu'une campagne neuve), `booster_post_organique.py` (propose sans jamais exécuter, répartition dégressive du reliquat), détection des **trous silencieux** (fonction unique, partagée audit+rapport), 3 skills repo-locaux (`meta-ads-publie-aora`, `pilote-metaads-aora`, `verifier-validations-gmail-aora`), contrôle 10 ajouté à `superviseur-publication-aora`, formule BAB dans `validation_formules.json`. **État : verrouillé** — les 4 portes sont fermées, aucune campagne créable, `plateforme_post_id` renseigné nulle part donc aucun boost proposable non plus. **Routine 4** : 03h00 WAT (portes+audit+propositions, commit encadré à `en_preparation/` seul) + 07h15 WAT (rapport Slack quotidien, remplace l'ancien passage hebdomadaire du lundi 08h00). Détail : `meta-ads/README.md`, `routines/routine4_metaads.md`. |
 
 ## Outillage préservé dans le repo
 
@@ -153,6 +163,20 @@ Dernière mise à jour : 5 août 2026.
    l'API attend les budgets en unité mineure de la devise du compte, soit un facteur 100
    entre XAF et EUR/USD. **`ad_account_id` est l'action humaine la plus bloquante du
    dispositif Meta Ads.**
+12. **(05/08/2026) Document externe reçu, vérifié comme non présent dans le dépôt.** Un fichier
+   « CONCLUSION_dispositif_metaads_excellence_plus_20260805.md », récapitulatif d'une session
+   distincte, décrivait un pipeline plus large (skills `meta-ads-publie-aora`/`pilote-metaads-aora`/
+   `verifier-validations-gmail-aora`, `meta_api.py`, `booster_post_organique.py`, boost
+   automatique sur cron 15 min). Avant d'agir, vérification exhaustive : `git fetch --all`, toutes
+   les branches distantes, `list_pull_requests` (ouvertes et fermées), `search_code` sur les noms
+   de fichiers exacts — **rien de ce travail n'existait dans `academieaora-cpu/excellence-plus`**.
+   Le document était un résumé produit dans un environnement sandbox sans accès en écriture au
+   dépôt (le document le dit lui-même : « dépôts factices », « hors domaines autorisés du
+   sandbox »). Reconstruit à partir de la description, avec un désaccord tranché explicitement par
+   l'utilisateur : **le boost reste une proposition écrite (`en_preparation/`), jamais une
+   exécution automatique sur cron** — le modèle « boost auto dès portes ouvertes » du document
+   n'a pas été retenu. Cette recherche a aussi révélé les deux branches dangereuses listées dans
+   « Branches » ci-dessus — sans lien avec le document, découvertes en le cherchant.
 
 ## Conventions établies (à respecter dans une nouvelle session)
 
@@ -208,14 +232,19 @@ Colle ceci en premier message :
 > `rapports/`, pipelines de régénération dans `outils/calendrier_editorial/` et
 > `outils/calendrier_client/`.
 
-Rien d'autre n'est en attente à ce stade — tous les livrables demandés ont été
-poussés sur `main` et la branche de travail.
+Tous les livrables sont poussés sur la branche de travail `claude/meta-ads-publie-aora-ik6u82`.
+Le lot 1 Meta Ads (4 portes) est fusionné dans `main` ; le lot 2 (boost, 3 skills, trous
+silencieux, cron 07h15) est sur la branche de travail — voir « Branches » ci-dessus pour l'état
+exact avant de supposer que tout est déjà sur `main`.
 
-Sur les 11 points de vigilance ci-dessus, **aucun ne bloque la production
-éditoriale**. Trois bloquent en revanche le pipeline Meta Ads (points 9, 10, 11)
-— c'est voulu : le dispositif est conçu pour rester verrouillé tant qu'une valeur
+Sur les 12 points de vigilance ci-dessus, **aucun ne bloque la production
+éditoriale**. Trois bloquent le pipeline Meta Ads (points 9, 10, 11) — c'est
+voulu : le dispositif est conçu pour rester verrouillé tant qu'une valeur
 humaine manque, plutôt que de tourner sur une supposition. Le plus bloquant est
 `ad_account_id`, parce que c'est le seul qu'aucun arbitrage interne ne peut lever.
+Le point 12 n'est pas un blocage mais un rappel de vérification : avant de traiter
+tout futur document externe comme une source de code, vérifier qu'il en est
+vraiment une (branches, PR, recherche de code) plutôt que de le supposer.
 
 **Meta Ads reste par ailleurs non activé au mois 1 (août 2026) par contrat
 AORA-CCC-005** : même si les trois points ci-dessus étaient résolus demain, la

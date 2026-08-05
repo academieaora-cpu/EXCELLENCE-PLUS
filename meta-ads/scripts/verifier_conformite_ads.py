@@ -18,6 +18,20 @@ le plafond budgétaire.
   9  Numéros WhatsApp          numéros Cameroun uniquement, jamais le +33
  10  Plafond budgétaire        aucune campagne active ou programmée au-delà du plafond
 
+S'y ajoute la détection des TROUS SILENCIEUX — pas une non-conformité au sens
+strict (rien n'est mal configuré), mais un endroit où quelque chose a été
+commencé puis laissé sans suite, sans qu'aucune alerte ne se déclenche jamais
+d'elle-même :
+  a  autorisée jamais lancée   date_debut dépassée, aucune trace au registre d'idempotence
+  b  active jamais confirmée   dans actives/ sans statut_meta_confirme_le depuis N jours
+  c  BAB déposée non reliée    fichier dans BAB_budget/ que budgets.json ne référence pas
+  d  proposition de boost oubliée  brief BOOST-*.md en_preparation/ depuis N jours
+
+Fonction exportée : `trous_silencieux(repo, aujourdhui, seuil_jours)` — appelée
+ici ET par `generer_rapport_ads.py`. Une seule définition : un trou silencieux
+détecté différemment par les deux scripts finirait par ne plus vouloir dire
+la même chose.
+
 LECTURE SEULE. Ne modifie rien, ne publie rien, ne corrige rien. Il dit ce qui ne
 tient pas ; la décision reste humaine.
 
@@ -30,7 +44,9 @@ import json
 import re
 import sys
 import unicodedata
+from datetime import date
 from pathlib import Path
+from typing import Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from verifier_activation import (  # noqa: E402
@@ -99,9 +115,84 @@ def mois_couverts(meta: dict):
     return mois
 
 
+SEUIL_TROU_SILENCIEUX_JOURS = 3
+
+
+def _jours_depuis(date_iso: str, aujourdhui) -> Optional[int]:
+    try:
+        return (aujourdhui - date.fromisoformat(str(date_iso).strip()[:10])).days
+    except (ValueError, TypeError):
+        return None
+
+
+def trous_silencieux(repo: Path, aujourdhui=None, seuil_jours: int = SEUIL_TROU_SILENCIEUX_JOURS):
+    """Ce qui a été commencé puis laissé sans suite, sans qu'une alerte se déclenche.
+
+    Retourne une liste de chaînes descriptives. Ne lève jamais, ne modifie rien.
+    Appelée à la fois par ce script (audit) et par generer_rapport_ads.py (rapport
+    quotidien) — une seule définition, pour que « trou silencieux » veuille dire
+    la même chose des deux côtés.
+    """
+    aujourdhui = aujourdhui or date.today()
+    trous = []
+
+    registre, err_registre = lire_json(repo / "meta-ads" / "campagnes" / "registre_idempotence.json")
+    cles = (registre or {}).get("cles", {}) if not err_registre else {}
+    post_refs_lances = {v.get("post_ref") for v in cles.values() if v.get("post_ref")}
+    creatif_refs_lances = {v.get("creatif_ref") for v in cles.values() if v.get("creatif_ref")}
+
+    for dossier, chemin, meta, _ in campagnes(repo):
+        age = _jours_depuis(meta.get("date_debut"), aujourdhui)
+
+        # (a) autorisée jamais lancée
+        if dossier == "autorisees" and age is not None and age >= seuil_jours:
+            ref = meta.get("post_ref") or meta.get("creatif_ref")
+            si_lancee = ref in post_refs_lances or ref in creatif_refs_lances
+            if not si_lancee:
+                trous.append(
+                    f"{meta.get('id')} — autorisée, date_debut dépassée depuis {age} j "
+                    f"({meta.get('date_debut')}), absente du registre d'idempotence : "
+                    f"jamais lancée, ou --executer jamais relancé après un échec")
+
+        # (b) active jamais confirmée
+        if dossier == "actives" and est_vide(meta.get("statut_meta_confirme_le")):
+            reference = age if age is not None else _jours_depuis(meta.get("genere_le"), aujourdhui)
+            if reference is not None and reference >= seuil_jours:
+                trous.append(
+                    f"{meta.get('id')} — dans campagnes/actives/ depuis {reference} j sans "
+                    f"statut_meta_confirme_le : ni confirmée en ligne, ni redescendue vers "
+                    f"terminees/. Vocabulaire correct entre-temps : « programmée », pas « active »")
+
+        # (d) proposition de boost oubliée
+        if dossier == "en_preparation" and str(meta.get("id", "")).startswith("BOOST-"):
+            age_proposition = _jours_depuis(meta.get("genere_le"), aujourdhui)
+            if age_proposition is not None and age_proposition >= seuil_jours:
+                trous.append(
+                    f"{meta.get('id')} — proposition de boost générée il y a "
+                    f"{age_proposition} j, toujours en en_preparation/ : le post référencé "
+                    f"({meta.get('post_ref')}) se refroidit sans qu'une décision soit prise")
+
+    # (c) BAB déposée mais jamais reliée
+    budgets, err_budgets = lire_json(repo / "meta-ads" / "config" / "meta_ads_budgets.json")
+    ref_active = str((budgets or {}).get("autorisation_ecrite_ref") or "").strip() if not err_budgets else None
+    dossier_bab = repo / "meta-ads" / "validation" / "BAB_budget"
+    if dossier_bab.is_dir():
+        for f in sorted(dossier_bab.glob("*.md")):
+            chemin_relatif = str(f.relative_to(repo))
+            if chemin_relatif != ref_active:
+                trous.append(
+                    f"{f.name} — présent dans BAB_budget/ mais meta_ads_budgets.json → "
+                    f"autorisation_ecrite_ref ne le référence pas : la preuve existe, la "
+                    f"config n'a pas été mise à jour")
+
+    return trous
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Audit de conformité Meta Ads — lecture seule.")
     ap.add_argument("--repo", type=Path, default=Path("."))
+    ap.add_argument("--seuil-jours", type=int, default=SEUIL_TROU_SILENCIEUX_JOURS,
+                    help="Ancienneté (jours) à partir de laquelle un trou devient silencieux")
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args()
 
@@ -386,10 +477,17 @@ def main() -> int:
                     f"cumul des campagnes actives/autorisées sur {ym} = {montant} FCFA, "
                     f"au-dessus du plafond mensuel {plafond} FCFA")
 
+    # ── Trous silencieux ─────────────────────────────────────────────────────
+    # Neutre pour le code de sortie : rien n'est mal configuré, quelque chose a
+    # simplement été laissé sans suite. Une critique bloque ; un trou silencieux
+    # se signale.
+    trous = trous_silencieux(repo, seuil_jours=args.seuil_jours)
+
     # ── Sortie ───────────────────────────────────────────────────────────────
     if args.json:
         print(json.dumps({"critiques": critiques, "avertissements": avertissements,
-                          "infos": infos, "campagnes_examinees": len(liste)},
+                          "infos": infos, "trous_silencieux": trous,
+                          "campagnes_examinees": len(liste)},
                          ensure_ascii=False, indent=2))
         return 1 if critiques else 0
 
@@ -406,7 +504,11 @@ def main() -> int:
         print(f"\n   ⚠️ À corriger ({len(avertissements)})")
         for a in avertissements:
             print(f"      {a}")
-    if not critiques and not avertissements:
+    if trous:
+        print(f"\n   🕳️  TROUS SILENCIEUX ({len(trous)}) — seuil {args.seuil_jours} j")
+        for t in trous:
+            print(f"      {t}")
+    if not critiques and not avertissements and not trous:
         print("\n   ✅ Aucun écart détecté.")
     if critiques:
         print("\n   → Recommandation : ne rien créer ni activer avant d'avoir tranché "

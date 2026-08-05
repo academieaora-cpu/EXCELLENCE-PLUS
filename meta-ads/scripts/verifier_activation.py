@@ -261,6 +261,49 @@ def _visuel_approuve(repo: Path, creatif_ref: str, visuel_ref=None):
     return None
 
 
+def post_organique_boostable(repo: Path, post_ref: str):
+    """Éligibilité d'un post organique au boost. Retourne (ok, motif, meta_du_post).
+
+    Fonction partagée entre porte_3_creatif (mode boost) et construire_campagne.py
+    — une seule définition de ce qu'est un post "boostable", jamais deux.
+
+    Quatre conditions simultanées :
+      1. publie_le non vide — pas simplement composio_id/programme_le. Un post
+         PROGRAMMÉ n'est pas encore PUBLIÉ ; les confondre est exactement l'erreur
+         que le contrôle 5 de superviseur-publication-aora existe pour signaler.
+      2. plateforme_post_id non vide — l'identifiant réel du post chez Meta,
+         nécessaire pour construire object_story_id. Ce champ n'est aujourd'hui
+         renseigné nulle part dans le dépôt : le mécanisme qui confirmerait une
+         mise en ligne réelle n'existe pas encore (composio-publie-aora/SKILL.md
+         §2). Tant qu'il manque, AUCUN post n'est boostable — ce n'est pas un bug
+         de ce contrôle, c'est la porte qui tient.
+      3. plateforme dans {facebook, instagram} — seules boostables par la
+         Marketing API depuis ce pipeline.
+      4. ne_pas_booster n'est pas true — exclusion explicite, poste par poste.
+    """
+    if est_vide(post_ref):
+        return False, "post_ref non renseigné", None
+    chemin = repo / str(post_ref).strip().strip('"').strip("'")
+    if not chemin.is_file():
+        return False, f"post_ref « {post_ref} » introuvable", None
+    meta, _ = lire_front_matter(chemin)
+    if meta is None:
+        return False, f"{post_ref} : front-matter illisible", None
+    if est_vide(meta.get("publie_le")):
+        return False, (f"{post_ref} : publie_le vide — un post programmé mais non "
+                       f"confirmé publié ne peut pas être boosté"), None
+    if meta.get("ne_pas_booster") is True:
+        return False, f"{post_ref} : ne_pas_booster = true — exclusion explicite", None
+    plateforme = str(meta.get("plateforme", "")).strip().lower()
+    if plateforme not in ("facebook", "instagram"):
+        return False, (f"{post_ref} : plateforme « {plateforme} » non éligible au "
+                       f"boost (Facebook/Instagram uniquement)"), None
+    if est_vide(meta.get("plateforme_post_id")):
+        return False, (f"{post_ref} : plateforme_post_id vide — identifiant Meta réel "
+                       f"du post requis, jamais déduit de composio_id"), None
+    return True, "post organique publié, éligible", meta
+
+
 def porte_3_creatif(repo: Path, campagne: Path = None) -> Porte:
     if campagne is None:
         return Porte(3, "créatif validé (BAP contenu)", False,
@@ -271,6 +314,11 @@ def porte_3_creatif(repo: Path, campagne: Path = None) -> Porte:
     if meta is None:
         return Porte(3, "créatif validé (BAP contenu)", False,
                      f"{campagne.name} : front-matter illisible ou absent")
+
+    if str(meta.get("type_campagne", "")).strip().lower() == "boost":
+        ok, motif, _ = post_organique_boostable(repo, meta.get("post_ref"))
+        return Porte(3, "créatif validé (BAP contenu)", ok,
+                     f"{campagne.name} (boost) : {motif}")
 
     creatif_ref = str(meta.get("creatif_ref", "")).strip()
     if est_vide(creatif_ref):

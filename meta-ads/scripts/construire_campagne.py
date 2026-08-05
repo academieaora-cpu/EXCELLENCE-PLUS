@@ -40,6 +40,7 @@ from verifier_activation import (  # noqa: E402
     fcfa,
     lire_front_matter,
     lire_json,
+    post_organique_boostable,
     verifier_portes,
 )
 
@@ -69,6 +70,10 @@ class CreatifRefuse(ValueError):
 
 class ConfigurationIncomplete(ValueError):
     """Une valeur humaine manque — jamais remplacée par un défaut plausible."""
+
+
+class PostNonBoostable(ValueError):
+    """Le post organique référencé par un boost n'est pas éligible — voir motif."""
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -369,7 +374,26 @@ def construire(repo: Path, chemin_brief: Path) -> dict:
             "placement Instagram demandé mais instagram_actor_id null dans "
             "meta_ads_comptes.json")
 
-    valider_texte(repo, corps)
+    # Boost = promouvoir un post organique déjà publié, plutôt qu'un créatif
+    # neuf. Le texte, le "creatif_ref" et l'empreinte d'idempotence viennent du
+    # post référencé, jamais du brief lui-même — le brief ne fait que déclarer
+    # QUOI booster, QUAND, et avec QUEL budget.
+    est_boost = str(meta.get("type_campagne", "")).strip().lower() == "boost"
+    post_meta = None
+    if est_boost:
+        ok, motif, post_meta = post_organique_boostable(repo, meta.get("post_ref"))
+        if not ok:
+            raise PostNonBoostable(motif)
+        _, corps_post = lire_front_matter(repo / str(meta["post_ref"]).strip())
+        corps_effectif = corps_post
+        creatif_ref_effectif = f"boost:{meta['post_ref']}:{post_meta['plateforme_post_id']}"
+        nom_defaut = f"Boost — {post_meta.get('id', meta['post_ref'])}"
+    else:
+        corps_effectif = corps
+        creatif_ref_effectif = meta.get("creatif_ref")
+        nom_defaut = None
+
+    valider_texte(repo, corps_effectif)
     numero = valider_whatsapp(repo, meta.get("whatsapp_numero"))
     budget = valider_budget(repo, meta)
     ciblage = construire_ciblage(repo)
@@ -383,8 +407,8 @@ def construire(repo: Path, chemin_brief: Path) -> dict:
     if not est_vide(meta.get("date_fin")):
         fin_utc = heure_utc(str(meta["date_fin"]).strip(), meta.get("heure_fin", "23:59"))
 
-    nom = str(meta.get("nom") or meta.get("id") or chemin_brief.stem).strip()
-    empreinte = empreinte_creatif(meta, corps)
+    nom = str(meta.get("nom") or nom_defaut or meta.get("id") or chemin_brief.stem).strip()
+    empreinte = empreinte_creatif({**meta, "creatif_ref": creatif_ref_effectif}, corps_effectif)
     cle = cle_idempotence(str(ad_account), empreinte, lancement_utc)
 
     campagne = {
@@ -418,27 +442,39 @@ def construire(repo: Path, chemin_brief: Path) -> dict:
         adset["lifetime_budget"] = montant_api(budget["budget_total_fcfa"], devise)
 
     lien_wa = "https://wa.me/" + "".join(c for c in numero if c.isdigit())
-    story = {
-        "page_id": str(comptes["page_id"]),
-        "link_data": {
-            "message": corps.strip(),
-            "link": lien_wa,
-            "call_to_action": {
-                "type": "WHATSAPP_MESSAGE",
-                "value": {"app_destination": "WHATSAPP", "link": lien_wa},
-            },
-        },
-    }
-    if "instagram" in placements:
-        story["instagram_actor_id"] = str(comptes["instagram_actor_id"])
 
-    creatif = {"name": f"EXC+ · créatif {meta.get('creatif_ref')}", "object_story_spec": story}
+    if est_boost:
+        # object_story_id référence le post déjà publié : {page_id}_{post_id}.
+        # Aucun link_data neuf n'est construit — le contenu du post organique
+        # n'est jamais retouché, seulement enveloppé dans un objet publicitaire.
+        creatif = {
+            "name": f"EXC+ · boost {post_meta.get('id', '')}",
+            "object_story_id": f"{comptes['page_id']}_{post_meta['plateforme_post_id']}",
+        }
+    else:
+        story = {
+            "page_id": str(comptes["page_id"]),
+            "link_data": {
+                "message": corps_effectif.strip(),
+                "link": lien_wa,
+                "call_to_action": {
+                    "type": "WHATSAPP_MESSAGE",
+                    "value": {"app_destination": "WHATSAPP", "link": lien_wa},
+                },
+            },
+        }
+        if "instagram" in placements:
+            story["instagram_actor_id"] = str(comptes["instagram_actor_id"])
+        creatif = {"name": f"EXC+ · créatif {creatif_ref_effectif}", "object_story_spec": story}
+
     annonce = {"name": f"EXC+ · annonce {nom}", "status": "PAUSED"}
 
     return {
         "meta_brief": {
             "id": meta.get("id"),
-            "creatif_ref": meta.get("creatif_ref"),
+            "type_campagne": "boost" if est_boost else "campagne",
+            "creatif_ref": creatif_ref_effectif,
+            "post_ref": meta.get("post_ref") if est_boost else None,
             "fichier": str(chemin_brief),
             "numero_whatsapp": numero,
             "devise_compte": devise,
@@ -497,10 +533,11 @@ def main() -> int:
 
     try:
         objets = construire(repo, args.campagne)
-    except (BudgetRefuse, CreatifRefuse, ConfigurationIncomplete) as err:
+    except (BudgetRefuse, CreatifRefuse, ConfigurationIncomplete, PostNonBoostable) as err:
         etiquette = {"BudgetRefuse": "BUDGET REFUSÉ",
                      "CreatifRefuse": "CRÉATIF REFUSÉ",
-                     "ConfigurationIncomplete": "CONFIGURATION INCOMPLÈTE"}[type(err).__name__]
+                     "ConfigurationIncomplete": "CONFIGURATION INCOMPLÈTE",
+                     "PostNonBoostable": "POST NON BOOSTABLE"}[type(err).__name__]
         print(f"\n⛔ {etiquette} — {err}\n", file=sys.stderr)
         print("   Aucun objet construit, aucun appel API tenté.\n", file=sys.stderr)
         return 1
