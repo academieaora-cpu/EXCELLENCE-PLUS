@@ -1,4 +1,4 @@
-name: Meta Ads — vérification programmée
+name: Meta Ads — vérification quotidienne 03h00 WAT
 
 # ─────────────────────────────────────────────────────────────────────────────
 # PÉRIMÈTRE : Meta Ads uniquement (budget média). Ce fichier ne doit JAMAIS être
@@ -23,12 +23,30 @@ name: Meta Ads — vérification programmée
 # dispositif refuse.
 #
 # Fuseau : cron GitHub Actions = UTC. WAT = UTC+1 toute l'année (pas d'heure
-# d'été au Cameroun). 06h00–22h00 WAT correspond donc à 05h00–21h00 UTC.
+# d'été au Cameroun).
+#
+# HORAIRES — alignés sur les routines existantes, jamais sur un rythme propre :
+#
+#   0 2 * * *   03h00 WAT, tous les jours — même heure que la Routine 1
+#               (programmation_quotidienne.yml). Le périmètre payant se vérifie
+#               au même moment que le périmètre organique se programme : une
+#               seule lecture du dispositif le matin, pas deux à des heures
+#               différentes qu'on finit par ne plus rapprocher.
+#
+#   0 7 * * 1   08h00 WAT, lundi — même heure que rapport_hebdo.yml. Le rapport
+#               de 03h00 s'écrit quand personne n'est réveillé ; celui-ci attend
+#               l'équipe à son arrivée en début de semaine.
+#
+# Ces deux passages ne créent rien : ils vérifient, auditent et construisent à
+# blanc. La fréquence n'est donc pas un enjeu de réactivité — un pipeline qui ne
+# dépense que sur déclenchement manuel n'a aucune raison de se réveiller toutes
+# les 15 minutes.
 # ─────────────────────────────────────────────────────────────────────────────
 
 on:
   schedule:
-    - cron: '*/15 5-21 * * *'
+    - cron: '0 2 * * *'
+    - cron: '0 7 * * 1'
   workflow_dispatch:
     inputs:
       campagne:
@@ -54,6 +72,11 @@ jobs:
   verifier:
     runs-on: ubuntu-latest
     steps:
+      # La Routine 1 (Composio, organique) tourne à la même heure et peut
+      # committer pendant que ce job a déjà fait son checkout. Sans effet ici :
+      # tout ce que ce workflow exécute est en lecture seule ou en dry-run, donc
+      # au pire il audite un arbre vieux de quelques minutes. Le jour où une
+      # étape écrirait dans le dépôt, il faudrait décaler — pas aujourd'hui.
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5

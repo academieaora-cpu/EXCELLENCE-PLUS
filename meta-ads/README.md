@@ -143,17 +143,33 @@ la surface d'API Meta, pas parce qu'il consomme du budget.
 
 ---
 
-## Emplacement du workflow
+## Workflow et horaires
 
 Le workflow est à **`.github/workflows/publish_scheduled_metaads.yml`**, à la
 racine du dépôt — et non dans `meta-ads/.github/workflows/`. GitHub Actions ne lit
 les workflows qu'à la racine du dépôt : un fichier placé sous `meta-ads/` ne se
 serait jamais déclenché.
 
-Il est strictement séparé de `programmation_quotidienne.yml` (Composio, organique)
-et utilise des secrets distincts (`META_MARKETING_TOKEN`,
-`SLACK_WEBHOOK_URL_METAADS`). Les deux ne doivent jamais être fusionnés : l'un des
-deux périmètres engage de l'argent réel.
+C'est la **Routine 4** du dispositif ([`routines/routine4_metaads.md`](../routines/routine4_metaads.md)),
+alignée sur les horaires des routines existantes :
+
+| Cron | Heure WAT | Aligné sur |
+|---|---|---|
+| `0 2 * * *` | 03h00, tous les jours | Routine 1 — `programmation_quotidienne.yml` |
+| `0 7 * * 1` | 08h00, lundi | `rapport_hebdo.yml` |
+
+Le périmètre payant se vérifie au moment où le périmètre organique se programme :
+une seule lecture du dispositif le matin, pas deux à des heures différentes qu'on
+finit par ne plus rapprocher.
+
+**Même horaire que R1, jamais le même fichier.** R1 engage du contenu, R4 engage de
+l'argent ; les fondre ferait qu'une erreur de configuration sur l'un exposerait
+l'autre. Secrets également distincts (`META_MARKETING_TOKEN`,
+`SLACK_WEBHOOK_URL_METAADS`).
+
+Les deux passages programmés **ne créent rien** : ils vérifient, auditent et
+construisent à blanc. L'exécution réelle n'existe que par `workflow_dispatch`
+manuel avec `executer: true`, et reste soumise aux quatre portes.
 
 ---
 
