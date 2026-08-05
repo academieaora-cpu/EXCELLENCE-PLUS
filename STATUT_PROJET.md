@@ -5,11 +5,13 @@
 > si tu reprends ce projet dans une nouvelle session, lis ce fichier en premier
 > pour connaître l'état réel du repo sans avoir à tout re-déduire du git log.
 
-Dernière mise à jour : 28 juillet 2026.
+Dernière mise à jour : 5 août 2026.
 
 ## Branches
 
-- **Branche de travail désignée** : `claude/excellence-plus-repo-setup-rs7efy`
+- **Branche de travail courante** : `claude/meta-ads-publie-aora-ik6u82` (pipeline Meta Ads,
+  livrée et fusionnée dans `main` le 05/08/2026)
+- **Branche de travail précédente** : `claude/excellence-plus-repo-setup-rs7efy`
 - **`main`** : synchronisée avec la branche de travail (merge `--no-ff` après
   chaque livraison confirmée par l'utilisateur). Les deux branches sont à jour
   l'une par rapport à l'autre au moment de la rédaction de ce document.
@@ -27,6 +29,7 @@ Dernière mise à jour : 28 juillet 2026.
 | **CC-EXC-001** | `rapports/calendrier_client_excellence_plus_aout_septembre.html` + `.pdf` | **Livrable client** — extrait août+septembre du calendrier ci-dessus, A4 **paysage**, trié par priorité de pilier (pas chronologique), langage client (pas de statut SOP-001), 89 publications, 9 pages, prêt pour soumission BAT. Twin livrable de CE-EXC-001 (même source de données). Voir `outils/calendrier_client/README.md`. |
 | **LE-EXC-001** | `rapports/ligne_editoriale_excellence_plus.html` + `.pdf` | Ligne éditoriale (7 sections), sourcée depuis `brand_guidelines.md` + `plateforme_marque.md`. Pas encore recalée sur 5 mois (voir vigilance §5). |
 | **PE-EXC-001** | `rapports/planification_editoriale_excellence_plus.html` + `.pdf` | Planification éditoriale (7 sections). **Version 1.1** — recalée sur 5 mois actifs (août-décembre), décembre repositionné bilan mi-annuel, forfait AORA (6 mois / 315 000 FCFA) laissé intact avec note distinguant durée contractuelle et fenêtre de production active. |
+| **MA-EXC-001** | `meta-ads/` + `.github/workflows/publish_scheduled_metaads.yml` + `routines/routine4_metaads.md` | **Pipeline Meta Ads (05/08/2026)** — miroir payant de `composio-publie-aora`. 4 portes bloquantes (activation temporelle · BAB budgétaire · BAP contenu + visuel · cohérence du compte), plafond budgétaire dur vérifié avant appel API, idempotence triple clé, conversion WAT→UTC, échecs typés. Groupes Facebook en simulation forcée. **État : verrouillé** — les 4 portes sont fermées, aucune campagne créable. Devenu **Routine 4**, à 03h00 WAT (même heure que R1) + lundi 08h00 WAT. Détail : `meta-ads/README.md`. |
 
 ## Outillage préservé dans le repo
 
@@ -122,6 +125,35 @@ Dernière mise à jour : 28 juillet 2026.
    le déclenchement à 03h00/07h00 WAT reste porté par GitHub Actions, pas par
    une Routine Claude Code Remote.
 
+9. **(05/08/2026) `scenarios_budget_metaads.pdf` est absent du dépôt.** C'est pourtant
+   la seule source de vérité sur les montants des 4 scénarios (Essentiel 30k /
+   Standard 50k / Accéléré 75k / Objectif 50 100k FCFA). Les montants ne vivent
+   aujourd'hui que dans un commentaire de `meta-ads/config/meta_ads_budgets.json`,
+   sans document opposable derrière. **Traité comme une porte, pas comme une note** :
+   `verifier_activation.py` refuse d'ouvrir la porte 2 tant que le fichier manque,
+   même `scenario_retenu` et `montant_mensuel_fcfa` renseignés. Déposer le PDF (ou
+   son extraction .md) à la racine du dépôt lève ce point.
+10. **(05/08/2026) Ciblage Meta Ads — les 4 zones pondérées n'ont pas de quartiers.**
+   Le modèle retenu est 4 zones pondérées sur tout Yaoundé (A 25 % / B 35 % / C 30 % /
+   D 10 %), mais la répartition des quartiers entre ces zones n'existe nulle part dans
+   le dépôt : `brand_guidelines.md` §3 documente 3 zones RECO-001, avec le conflit Odza
+   (premium vs Extension) et Santa Barbara (absent de RECO-001) explicitement non
+   tranché — voir point 7. Passer de 3 zones à 4 n'est pas un renommage, aucune
+   correspondance n'est documentée. `meta_ads_ciblage.json` porte donc
+   `ciblage_utilisable: false` et des `quartiers: []` ; `construire_campagne.py` refuse
+   de construire un ad set. Même statut pour la tranche d'âge (35-70 vs 30-76, point 2).
+   **Rien n'a été inventé** — remplir ces listes est une décision d'équipe.
+11. **(05/08/2026) Trois identifiants Meta manquent** dans
+   `meta-ads/config/meta_ads_comptes.json` : `ad_account_id`, `instagram_actor_id`,
+   `devise_compte`. Ce sont des valeurs réelles à obtenir de M. NDOMMIE ou du Business
+   Manager AORA. Elles n'ont été ni devinées, ni découvertes par un listing d'API
+   (`ads_get_ad_accounts` était disponible en session et n'a délibérément pas été
+   appelé) : un compte atteignable n'est pas un compte autorisé, et c'est exactement la
+   confusion que la porte 4 existe pour empêcher. `devise_compte` n'est pas cosmétique —
+   l'API attend les budgets en unité mineure de la devise du compte, soit un facteur 100
+   entre XAF et EUR/USD. **`ad_account_id` est l'action humaine la plus bloquante du
+   dispositif Meta Ads.**
+
 ## Conventions établies (à respecter dans une nouvelle session)
 
 - **Format des livrables** : HTML autonome (aucune dépendance externe hormis
@@ -177,5 +209,14 @@ Colle ceci en premier message :
 > `outils/calendrier_client/`.
 
 Rien d'autre n'est en attente à ce stade — tous les livrables demandés ont été
-poussés sur `main` et la branche de travail. Les 6 points de vigilance
-ci-dessus sont les seuls sujets ouverts (aucun n'est bloquant).
+poussés sur `main` et la branche de travail.
+
+Sur les 11 points de vigilance ci-dessus, **aucun ne bloque la production
+éditoriale**. Trois bloquent en revanche le pipeline Meta Ads (points 9, 10, 11)
+— c'est voulu : le dispositif est conçu pour rester verrouillé tant qu'une valeur
+humaine manque, plutôt que de tourner sur une supposition. Le plus bloquant est
+`ad_account_id`, parce que c'est le seul qu'aucun arbitrage interne ne peut lever.
+
+**Meta Ads reste par ailleurs non activé au mois 1 (août 2026) par contrat
+AORA-CCC-005** : même si les trois points ci-dessus étaient résolus demain, la
+porte 1 resterait fermée jusqu'à une activation écrite pour septembre.

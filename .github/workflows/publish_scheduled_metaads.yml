@@ -1,0 +1,143 @@
+name: Meta Ads — vérification quotidienne 03h00 WAT
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PÉRIMÈTRE : Meta Ads uniquement (budget média). Ce fichier ne doit JAMAIS être
+# fusionné avec programmation_quotidienne.yml (pipeline organique Composio).
+#
+# Deux périmètres budgétaires distincts = deux workflows distincts = deux jeux de
+# secrets distincts. Si les deux partageaient un fichier, une erreur de
+# configuration sur l'un exposerait l'autre — et l'un des deux engage de l'argent
+# réel. La séparation est la protection.
+#
+# Secrets propres à ce workflow, jamais ceux de Composio :
+#   META_MARKETING_TOKEN         token Marketing API — distinct du token Composio
+#   SLACK_WEBHOOK_URL_METAADS    fil Slack dédié Meta Ads
+#   SLACK_BOT_TOKEN_METAADS      (alternative au webhook)
+#   SLACK_CHANNEL_METAADS        (avec le token de bot)
+#
+# CE WORKFLOW NE CRÉE AUCUNE CAMPAGNE SUR SON DÉCLENCHEMENT PROGRAMMÉ.
+# Le cron ne fait que vérifier les portes, auditer la conformité et construire en
+# dry-run. L'exécution réelle n'existe que par workflow_dispatch, avec un input
+# explicite, et reste soumise aux quatre portes — un humain déclenche, le code
+# vérifie. Un pipeline qui dépense sur minuterie est précisément ce que ce
+# dispositif refuse.
+#
+# Fuseau : cron GitHub Actions = UTC. WAT = UTC+1 toute l'année (pas d'heure
+# d'été au Cameroun).
+#
+# HORAIRES — alignés sur les routines existantes, jamais sur un rythme propre :
+#
+#   0 2 * * *   03h00 WAT, tous les jours — même heure que la Routine 1
+#               (programmation_quotidienne.yml). Le périmètre payant se vérifie
+#               au même moment que le périmètre organique se programme : une
+#               seule lecture du dispositif le matin, pas deux à des heures
+#               différentes qu'on finit par ne plus rapprocher.
+#
+#   0 7 * * 1   08h00 WAT, lundi — même heure que rapport_hebdo.yml. Le rapport
+#               de 03h00 s'écrit quand personne n'est réveillé ; celui-ci attend
+#               l'équipe à son arrivée en début de semaine.
+#
+# Ces deux passages ne créent rien : ils vérifient, auditent et construisent à
+# blanc. La fréquence n'est donc pas un enjeu de réactivité — un pipeline qui ne
+# dépense que sur déclenchement manuel n'a aucune raison de se réveiller toutes
+# les 15 minutes.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+    inputs:
+      campagne:
+        description: "Chemin du brief de campagne (meta-ads/campagnes/autorisees/…)"
+        type: string
+        required: false
+      executer:
+        description: "Exécution réelle — crée la campagne chez Meta si les 4 portes sont ouvertes"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  # Deux exécutions simultanées pourraient créer deux fois la même campagne.
+  # Le registre d'idempotence protège déjà, mais une file d'attente coûte moins
+  # cher qu'un doublon rattrapé après coup.
+  group: meta-ads-publication
+  cancel-in-progress: false
+
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    steps:
+      # La Routine 1 (Composio, organique) tourne à la même heure et peut
+      # committer pendant que ce job a déjà fait son checkout. Sans effet ici :
+      # tout ce que ce workflow exécute est en lecture seule ou en dry-run, donc
+      # au pire il audite un arbre vieux de quelques minutes. Le jour où une
+      # étape écrirait dans le dépôt, il faudrait décaler — pas aujourd'hui.
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install pyyaml
+
+      - name: Halte si le dépôt est en PAUSE
+        run: |
+          if [ -f PAUSE ]; then
+            echo "⏸️  DISPOSITIF EN PAUSE"
+            cat PAUSE
+            echo "Aucune vérification Meta Ads poursuivie."
+            exit 0
+          fi
+
+      # continue-on-error : une porte fermée est l'information attendue, pas une
+      # panne du job. Le rapport doit continuer à s'écrire pour que l'équipe
+      # voie POURQUOI c'est fermé — un job rouge sans rapport n'apprend rien.
+      - name: Portes d'activation Meta Ads
+        continue-on-error: true
+        run: python3 meta-ads/scripts/verifier_activation.py --tout | tee portes.txt
+
+      - name: Audit de conformité
+        continue-on-error: true
+        run: python3 meta-ads/scripts/verifier_conformite_ads.py
+
+      - name: Rapport d'état
+        run: python3 meta-ads/scripts/generer_rapport_ads.py | tee rapport_metaads.txt
+
+      # Dry-run : construit les objets sans rien envoyer. Utile pour voir qu'un
+      # brief est prêt bien avant que les portes s'ouvrent.
+      - name: Construction en dry-run
+        if: ${{ inputs.campagne != '' }}
+        continue-on-error: true
+        run: |
+          python3 meta-ads/scripts/construire_campagne.py \
+            --campagne "${{ inputs.campagne }}"
+
+      # Exécution réelle : jamais sur le cron, jamais sans input explicite, et
+      # même là, construire_campagne.py revérifie les quatre portes lui-même.
+      # Le `if` ci-dessous est une commodité, pas la garantie — la garantie est
+      # dans le code, où elle ne dépend pas d'une expression YAML.
+      - name: Exécution réelle (déclenchement manuel uniquement)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.executer && inputs.campagne != '' }}
+        env:
+          META_MARKETING_TOKEN: ${{ secrets.META_MARKETING_TOKEN }}
+          SLACK_WEBHOOK_URL_METAADS: ${{ secrets.SLACK_WEBHOOK_URL_METAADS }}
+          SLACK_BOT_TOKEN_METAADS: ${{ secrets.SLACK_BOT_TOKEN_METAADS }}
+          SLACK_CHANNEL_METAADS: ${{ secrets.SLACK_CHANNEL_METAADS }}
+        run: |
+          python3 meta-ads/scripts/publier_ads_facebook.py \
+            --campagne "${{ inputs.campagne }}" --executer
+
+      - name: Conserver le rapport en artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapport-metaads
+          path: |
+            portes.txt
+            rapport_metaads.txt
+          retention-days: 14
+          if-no-files-found: ignore

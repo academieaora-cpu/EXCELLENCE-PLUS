@@ -1,0 +1,36 @@
+{
+  "_lisez_moi": [
+    "Porte bloquante absolue. Aucune campagne Meta Ads ne peut être créée, programmée",
+    "ou activée tant que le mois concerné n'a pas 'autorise': true ci-dessous.",
+    "Mois 1 (août 2026) verrouillé par contrat AORA-CCC-005 : Meta Ads non activé.",
+    "Activation à la carte, au choix du client, à partir du mois 2 (septembre 2026)."
+  ],
+
+  "_regle_de_lecture": [
+    "La clé du mois courant est construite par le code : <mois_sans_accent>_<annee>,",
+    "en minuscules — aout_2026, septembre_2026, octobre_2026...",
+    "Trois valeurs possibles, une seule ouvre la porte :",
+    "  true  → mois activé, porte 1 ouverte",
+    "  false → mois explicitement refusé",
+    "  null  → non tranché — traité EXACTEMENT comme false par le code.",
+    "Un mois absent de ce fichier est également traité comme fermé : l'oubli ne doit",
+    "jamais valoir autorisation.",
+    "Passer un mois à true est un geste humain, au même titre que le git mv d'un",
+    "dossier de campagne vers autorisees/. Aucun script ne modifie ce fichier."
+  ],
+
+  "_source_verrouillage_mois_1": [
+    "Cohérent avec config/creneaux.json → publicite.meta_ads_mois_1 = false.",
+    "Si ces deux fichiers divergent un jour, c'est CE fichier qui commande le code",
+    "de meta-ads/ ; l'écart doit être signalé et corrigé, pas arbitré en silence."
+  ],
+
+  "aout_2026": {
+    "autorise": false,
+    "raison": "Mois 1 — non activé par défaut, contrat AORA-CCC-005"
+  },
+  "septembre_2026": {
+    "autorise": null,
+    "en_attente_de": "BAB écrit + choix scénario budgétaire"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "_lisez_moi": [
+    "Budget média Meta Ads. JAMAIS mélangé avec le forfait de gestion AORA",
+    "(référence facturation forfait : AORA-EXCPLUS-2026-001). Réglé séparément par",
+    "Excellence+, directement sur la plateforme Meta ou selon modalité écrite convenue.",
+    "Scénarios de référence uniques : scenarios_budget_metaads.pdf",
+    "(Essentiel 30k / Standard 50k / Accéléré 75k / Objectif 50 100k FCFA/mois)."
+  ],
+
+  "_source_absente": [
+    "⚠️ scenarios_budget_metaads.pdf (ni son équivalent .md extrait) n'existe PAS",
+    "dans le dépôt au 05/08/2026 — vérifié à la création de ce fichier.",
+    "Les quatre montants cités dans _lisez_moi ci-dessus proviennent de la consigne",
+    "de construction du pipeline, pas d'un document versionné et vérifiable.",
+    "Conséquence codée, pas seulement documentaire : verifier_activation.py refuse",
+    "d'ouvrir la porte 2 tant que ce fichier de référence est absent du dépôt,",
+    "même si scenario_retenu et montant_mensuel_fcfa sont renseignés. Un montant",
+    "sans source opposable n'est pas un budget autorisé.",
+    "Emplacement attendu : racine du dépôt, scenarios_budget_metaads.pdf ou .md."
+  ],
+
+  "_role_du_plafond": [
+    "montant_mensuel_fcfa est un PLAFOND DUR, pas une cible. Tout daily_budget ou",
+    "lifetime_budget construit au-delà est rejeté AVANT l'appel à l'API Meta.",
+    "Le dépassement 'temporaire pour tester' n'existe pas : toute modification de",
+    "plafond repasse par une nouvelle BAB écrite (interdiction 6)."
+  ],
+
+  "scenario_retenu": null,
+  "montant_mensuel_fcfa": null,
+  "mois_debut": null,
+  "autorisation_ecrite_ref": null,
+
+  "_autorisation_ecrite_ref": [
+    "Chemin relatif à la racine du dépôt, obligatoirement à l'intérieur de",
+    "meta-ads/validation/BAB_budget/, pointant vers la trace email de",
+    "M. NDOMMIE choisissant un scénario. Exemple :",
+    "  meta-ads/validation/BAB_budget/BAB-2026-09-standard.md",
+    "Le fichier doit exister : le code vérifie sa présence, pas seulement que le",
+    "champ est non-null. Aucune validation orale ou WhatsApp n'est recevable —",
+    "même règle que le BAP organique (SOP-001, protocole rétabli 30/07/2026).",
+    "Expéditeur recevable : voir config/comptes.json → client.emails_autorises."
+  ]
+}
