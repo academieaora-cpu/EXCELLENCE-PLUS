@@ -57,7 +57,12 @@ PLACEMENTS_REFUSES = {
 
 # Devises sans sous-unité : le montant s'envoie tel quel. Pour toutes les autres,
 # l'API attend l'unité mineure (×100). Voir meta_ads_comptes.json → _devise_compte.
-DEVISES_SANS_DECIMALE = {"XAF", "XOF", "JPY", "KRW", "CLP", "ISK", "VND"}
+# Liste complète des devises "zero-decimal" reconnues par l'API Meta Marketing —
+# élargie le 06/08/2026 (7 → 16) au-delà du strict nécessaire pour XAF, pour que
+# la reconnaissance de la devise ne soit jamais elle-même la source d'une erreur
+# si le compte publicitaire finit un jour dans une devise voisine (XOF).
+DEVISES_SANS_DECIMALE = {"XAF", "XOF", "BIF", "CLP", "DJF", "GNF", "JPY", "KMF",
+                         "KRW", "MGA", "PYG", "RWF", "UGX", "VND", "VUV", "XPF"}
 
 
 class BudgetRefuse(ValueError):

@@ -5,7 +5,36 @@
 > si tu reprends ce projet dans une nouvelle session, lis ce fichier en premier
 > pour connaître l'état réel du repo sans avoir à tout re-déduire du git log.
 
-Dernière mise à jour : 5 août 2026 (session boost + skills Meta Ads).
+Dernière mise à jour : 6 août 2026 (durcissement post-revue de code externe).
+
+## ⚠️ Alerte pour toute session future — matériel externe à ne PAS fusionner tel quel
+
+Le 06/08/2026, un fichier `boost_metaads.yml` et un zip contenant
+`meta-ads-publie-aora.skill`/`pilote-metaads-aora.skill` ont été soumis pour fusion. Après lecture
+complète du code (pas seulement des descriptions), leur mécanisme central s'est révélé être un
+**boost automatique réel** : `booster_post_organique.py --executer` sur cron `*/15 5-21 * * *`,
+qui **crée ET active** directement les campagnes (`client.activer(adset["id"])`,
+`client.activer(campagne["id"])`) — aucune étape de confirmation humaine par transaction, budget
+réel engagé toutes les 15 minutes, 16h/jour, dès que 3 des 4 portes (dont le budget) sont
+ouvertes. C'est exactement le modèle que l'équipe avait explicitement écarté juste avant
+(« garder le verrou actuel » — voir plus bas) au profit de propositions écrites, jamais d'exécution
+automatique. **Non fusionné.** Voir la conversation du 06/08/2026 pour la décision finale.
+Si un matériel similaire revient dans une session future : relire le code réel avant de faire
+confiance à une description, et vérifier explicitement s'il réintroduit une exécution automatique
+avant toute fusion — l'écart entre « ce qu'un document dit faire » et « ce que le code fait
+réellement » s'est déjà produit trois fois sur ce projet.
+
+Ce qui a été extrait et adopté du même lot, en revanche (code sûr, indépendant du désaccord
+d'exécution, vérifié et testé) :
+- `post_organique_boostable()` exige désormais `bap_recu_le`/`bap_email_ref` directement sur le
+  post organique, pas seulement `publie_le` comme proxy indirect.
+- Table de devises zero-decimal élargie (7 → 16) dans `construire_campagne.py`.
+- `verifier-validations-gmail-aora` couvre maintenant aussi le BAP créatif publicitaire dédié
+  (campagne autonome) avec promotion du visuel par hash SHA-256 — distinct du BAB, distinct du
+  boost (qui réutilise le BAP organique déjà existant, jamais un second aller-retour email).
+- `meta-ads-publie-aora` documente un protocole explicite d'exécution manuelle (§4bis) :
+  déclenchement `workflow_dispatch` uniquement, jamais `--executer` lancé directement depuis le
+  chat, jamais le token manipulé en session.
 
 ## Branches
 

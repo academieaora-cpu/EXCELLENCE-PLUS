@@ -267,19 +267,25 @@ def post_organique_boostable(repo: Path, post_ref: str):
     Fonction partagée entre porte_3_creatif (mode boost) et construire_campagne.py
     — une seule définition de ce qu'est un post "boostable", jamais deux.
 
-    Quatre conditions simultanées :
+    Cinq conditions simultanées :
       1. publie_le non vide — pas simplement composio_id/programme_le. Un post
          PROGRAMMÉ n'est pas encore PUBLIÉ ; les confondre est exactement l'erreur
          que le contrôle 5 de superviseur-publication-aora existe pour signaler.
-      2. plateforme_post_id non vide — l'identifiant réel du post chez Meta,
+      2. bap_recu_le ET bap_email_ref non vides, DIRECTEMENT sur ce post — vérifié
+         explicitement plutôt que supposé via publie_le. Un post publié devrait
+         déjà avoir franchi la porte BAP organique (programmer_publications.py
+         l'exige), mais faire dépendre l'éligibilité au boost d'une chaîne de
+         confiance indirecte est plus fragile qu'une vérification directe : les
+         deux coûtent le même prix à vérifier, seule la seconde ne suppose rien.
+      3. plateforme_post_id non vide — l'identifiant réel du post chez Meta,
          nécessaire pour construire object_story_id. Ce champ n'est aujourd'hui
          renseigné nulle part dans le dépôt : le mécanisme qui confirmerait une
          mise en ligne réelle n'existe pas encore (composio-publie-aora/SKILL.md
          §2). Tant qu'il manque, AUCUN post n'est boostable — ce n'est pas un bug
          de ce contrôle, c'est la porte qui tient.
-      3. plateforme dans {facebook, instagram} — seules boostables par la
+      4. plateforme dans {facebook, instagram} — seules boostables par la
          Marketing API depuis ce pipeline.
-      4. ne_pas_booster n'est pas true — exclusion explicite, poste par poste.
+      5. ne_pas_booster n'est pas true — exclusion explicite, poste par poste.
     """
     if est_vide(post_ref):
         return False, "post_ref non renseigné", None
@@ -292,6 +298,10 @@ def post_organique_boostable(repo: Path, post_ref: str):
     if est_vide(meta.get("publie_le")):
         return False, (f"{post_ref} : publie_le vide — un post programmé mais non "
                        f"confirmé publié ne peut pas être boosté"), None
+    if est_vide(meta.get("bap_recu_le")) or est_vide(meta.get("bap_email_ref")):
+        return False, (f"{post_ref} : bap_recu_le/bap_email_ref vide sur le post organique — "
+                       f"le BAP qui a autorisé la publication doit être vérifiable directement, "
+                       f"pas seulement supposé parce que publie_le est renseigné"), None
     if meta.get("ne_pas_booster") is True:
         return False, f"{post_ref} : ne_pas_booster = true — exclusion explicite", None
     plateforme = str(meta.get("plateforme", "")).strip().lower()
