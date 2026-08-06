@@ -107,18 +107,27 @@ post organique n'est jamais retouché.
 
 `plateforme_post_id` n'est aujourd'hui renseigné **nulle part** dans le dépôt : le mécanisme qui
 confirmerait une mise en ligne réelle n'existe pas encore côté organique (voir
-`composio-publie-aora/SKILL.md` §2). Conséquence attendue : `booster_post_organique.py` ne
-proposera aucun boost tant que ce mécanisme manque. Ce n'est pas un bug, c'est une porte de plus.
+`composio-publie-aora/SKILL.md` §2). Conséquence attendue : `booster_post_organique.py` ne boost
+aucun post, dans aucun de ses deux modes, tant que ce mécanisme manque. Ce n'est pas un bug,
+c'est une porte de plus.
 
-Le boost n'a **aucun chemin d'exécution qui lui soit propre** — une proposition suit exactement
-le même circuit qu'une campagne écrite à la main : `en_preparation/` → `git mv` humain vers
-`autorisees/` → `--executer` avec les 4 portes ouvertes. Le budget proposé suit une répartition
-dégressive du reliquat mensuel (jamais du plafond entier), qu'un humain peut ajuster avant
-d'autoriser.
+Deux modes, décision actée le 06/08/2026 (trace complète : `STATUT_PROJET.md`) :
 
-⚠️ Le boost n'est **pas automatique**, y compris quand les 4 portes sont ouvertes. Un modèle où le
-boost se déclenche seul sur cron a été envisagé puis écarté — voir
-`.claude/skills/meta-ads-publie-aora/SKILL.md` §3.
+- **Proposition** (`booster_post_organique.py --horizon N`, sans `--executer`) — écrit un brief
+  dans `en_preparation/`. Suit alors exactement le même circuit qu'une campagne écrite à la main :
+  `git mv` humain vers `autorisees/` → `--executer` avec les 4 portes ouvertes.
+- **Exécution automatique** (`booster_post_organique.py --executer`, exécuté par
+  `.github/workflows/boost_metaads.yml` toutes les 15 min, 6h–22h WAT) — **crée ET active
+  réellement** la campagne dès que ses 4 portes sont ouvertes, **sans confirmation humaine par
+  transaction**. Réutilise le moteur déjà testé de `publier_ads_facebook.py` (idempotence,
+  plafond vérifié avant l'appel, échecs typés) — un seul ajout, l'activation immédiate, jamais
+  utilisée par le chemin humain des campagnes neuves.
+
+⚠️ Ce n'est **pas** le comportement d'origine de ce pipeline (dry-run par défaut, jamais
+d'exécution automatique). Le changement a été examiné deux fois avant d'être câblé — une première
+fois refusé, une seconde fois reconfirmé sur description explicite et complète du comportement
+réel. Le budget proposé ou exécuté suit une répartition dégressive du reliquat mensuel (jamais du
+plafond entier).
 
 ### Trous silencieux
 
@@ -185,10 +194,18 @@ serait jamais déclenché.
 C'est la **Routine 4** du dispositif ([`routines/routine4_metaads.md`](../routines/routine4_metaads.md)),
 alignée sur les horaires des routines existantes :
 
+**`publish_scheduled_metaads.yml`** :
+
 | Cron | Heure WAT | Aligné sur | Ce qu'il fait |
 |---|---|---|---|
 | `0 2 * * *` | 03h00, tous les jours | Routine 1 — `programmation_quotidienne.yml` | Portes, audit, **propositions de boost** (commit encadré à `en_preparation/` seul) |
 | `15 6 * * *` | 07h15, tous les jours | 15 min après R2 (07h00) | Rapport quotidien posté sur Slack (`pilote-metaads-aora`) — lecture seule |
+
+**`boost_metaads.yml`** (nouveau, 06/08/2026 — fichier séparé, voir plus bas) :
+
+| Cron | Heure WAT | Ce qu'il fait |
+|---|---|---|
+| `*/15 5-21 * * *` | 6h–22h, toutes les 15 min | **Exécution réelle automatique** du boost — crée ET active, commit encadré à `campagnes/actives/` + registre d'idempotence seuls |
 
 Le périmètre payant se vérifie au moment où le périmètre organique se programme :
 une seule lecture du dispositif le matin, pas deux à des heures différentes qu'on
@@ -202,12 +219,12 @@ engage de l'argent ; les fondre ferait qu'une erreur de configuration sur l'un
 exposerait l'autre. Secrets également distincts (`META_MARKETING_TOKEN`,
 `SLACK_WEBHOOK_URL_METAADS`).
 
-Les deux passages programmés **ne créent et n'activent aucune campagne**. Le
-passage de 03h00 écrit des *propositions* de boost, jamais une campagne autorisée
-— la seule écriture qui existe dans tout le workflow, et elle est encadrée : le
-job vérifie après coup qu'aucun fichier hors de `campagnes/en_preparation/` n'a
-bougé, et refuse de committer dans le cas contraire. L'exécution réelle n'existe
-que par `workflow_dispatch` manuel avec `executer: true`, et reste soumise aux
+Les deux passages de `publish_scheduled_metaads.yml` **ne créent et n'activent aucune campagne
+neuve**. Le passage de 03h00 écrit des *propositions* de boost, jamais une campagne autorisée —
+et cette écriture est encadrée : le job vérifie après coup qu'aucun fichier hors de
+`campagnes/en_preparation/` n'a bougé, et refuse de committer dans le cas contraire. L'exécution
+réelle d'une **campagne neuve** n'existe que par `workflow_dispatch` manuel avec `executer: true`,
+et reste soumise aux
 quatre portes, revérifiées par le script lui-même.
 
 ---

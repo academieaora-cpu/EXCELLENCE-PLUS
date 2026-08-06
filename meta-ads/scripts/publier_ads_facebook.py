@@ -38,6 +38,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from construire_campagne import (  # noqa: E402
+    API_VERSION,
     BudgetRefuse,
     ConfigurationIncomplete,
     CreatifRefuse,
@@ -153,6 +154,19 @@ def _classer_erreur(charge: dict, statut: int):
     return ErreurMetaNonClassee(detail)
 
 
+def activer_objet(object_id: str, token: str) -> dict:
+    """POST status=ACTIVE sur un adset ou une campagne. Réutilise appeler() — même
+    backoff, même classement d'erreurs, aucun second chemin HTTP.
+
+    Cet appel fait partir de l'argent réel dès qu'il réussit. Appelé UNIQUEMENT par
+    le chemin automatique (booster_post_organique.py --executer) — jamais par le
+    chemin humain (§4bis de meta-ads-publie-aora/SKILL.md), qui laisse la campagne
+    en PAUSED pour qu'un humain l'active lui-même s'il le souhaite.
+    """
+    url = f"https://graph.facebook.com/{API_VERSION}/{object_id}"
+    return appeler(url, {"status": "ACTIVE"}, token)
+
+
 def appeler(url: str, charge: dict, token: str) -> dict:
     """POST Graph avec backoff plafonné sur rate limit uniquement.
 
@@ -201,7 +215,12 @@ def appeler(url: str, charge: dict, token: str) -> dict:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def publier(repo: Path, chemin_brief: Path, plateforme: str, executer: bool,
-            jour: date = None) -> int:
+            jour: date = None, activer_immediatement: bool = False) -> int:
+    """activer_immediatement=True fait partir la campagne en ACTIVE dans la même
+    exécution que sa création — jamais le comportement par défaut. Réservé au
+    chemin automatique (booster_post_organique.py --executer) ; le chemin humain
+    (construire_campagne.py / cette fonction appelée directement) doit toujours
+    laisser ce paramètre à False et créer en PAUSED, geste distinct pour l'humain."""
     repo = Path(repo).resolve()
 
     # Porte d'entrée — avant toute lecture de brief, avant tout appel.
@@ -272,6 +291,28 @@ def publier(repo: Path, chemin_brief: Path, plateforme: str, executer: bool,
         reponse_ad = appeler(objets["endpoints"]["ad"], annonce, token)
         identifiants["ad_id"] = reponse_ad.get("id")
 
+        active_reellement = False
+        if activer_immediatement:
+            # Deux appels distincts, dans cet ordre : l'adset porte le budget et le
+            # ciblage, la campagne porte l'objectif. Si le second échoue après que
+            # le premier a réussi, l'adset reste actif seul — Meta ne diffuse rien
+            # tant que la campagne parente ne l'est pas aussi, donc pas de dépense
+            # orpheline, mais l'état doit être reflété fidèlement (voir alerte).
+            appeler_activation_adset_ok = False
+            try:
+                activer_objet(identifiants["adset_id"], token)
+                appeler_activation_adset_ok = True
+                activer_objet(identifiants["campaign_id"], token)
+                active_reellement = True
+            except (TokenInvalide, BudgetRejeteParMeta, CreatifRefuseEnRevue,
+                   RateLimitPersistant, ErreurMetaNonClassee) as err:
+                partiel = " (adset activé, campagne non activée)" if appeler_activation_adset_ok else ""
+                alerter(f"⚠️ *Créée en PAUSED mais activation automatique échouée{partiel}*\n"
+                       f"`{objets['meta_brief']['id']}` — {err}\n"
+                       f"La campagne existe chez Meta, pas de dépense en cours. Activation "
+                       f"manuelle à faire si souhaité.")
+                print(f"\n⚠️ Créée mais activation automatique échouée — {err}\n", file=sys.stderr)
+
     except TokenInvalide as err:
         alerter(f"🔑 *Token Meta Marketing invalide ou expiré*\n`{err}`\n"
                 f"Campagne `{objets['meta_brief']['id']}` non créée. "
@@ -303,6 +344,7 @@ def publier(repo: Path, chemin_brief: Path, plateforme: str, executer: bool,
         print(f"\n⛔ Erreur non classée — {err}\n", file=sys.stderr)
         return 1
 
+    statut_a_la_creation = "ACTIVE (appel d'activation envoyé)" if active_reellement else "PAUSED"
     enregistrer_cle(repo, cle, {
         "campagne": objets["meta_brief"]["id"],
         "creatif_ref": objets["meta_brief"]["creatif_ref"],
@@ -310,17 +352,30 @@ def publier(repo: Path, chemin_brief: Path, plateforme: str, executer: bool,
         "ad_account_id": objets["idempotence"]["ad_account_id"],
         "lancement_utc": objets["idempotence"]["lancement_utc"],
         "identifiants": identifiants,
-        "statut_a_la_creation": "PAUSED",
+        "statut_a_la_creation": statut_a_la_creation,
+        # Toujours vide ici, quel que soit statut_a_la_creation : un POST
+        # status=ACTIVE accepté par Meta prouve que Meta a accepté la demande,
+        # pas que la diffusion a réellement commencé. « en ligne » reste réservé
+        # à generer_rapport_ads.py --confirmer-api (lecture GET effective_status).
+        "statut_meta_confirme_le": None,
     })
 
-    # Vocabulaire strict : la campagne est PROGRAMMÉE, pas « en ligne ». Elle est
-    # créée en PAUSED — seule une lecture d'API confirmant le statut ACTIVE
-    # autoriserait le mot « active » (voir generer_rapport_ads.py).
-    alerter(f"✅ *Campagne programmée* `{objets['meta_brief']['id']}`\n"
-            f"Statut à la création : `PAUSED` · lancement "
-            f"{objets['idempotence']['lancement_utc']} UTC\n"
-            f"Identifiants : `{json.dumps(identifiants, ensure_ascii=False)}`")
-    print(f"\n✅ Campagne programmée (statut PAUSED) — {identifiants}\n")
+    # Vocabulaire strict : la campagne est PROGRAMMÉE, jamais « en ligne » ici —
+    # même quand l'appel d'activation a réussi. Un POST accepté par Meta n'est pas
+    # une confirmation de diffusion (voir generer_rapport_ads.py, --confirmer-api).
+    if active_reellement:
+        alerter(f"✅ *Campagne programmée, activation envoyée* `{objets['meta_brief']['id']}`\n"
+               f"⚠️ Budget en cours d'engagement dès que Meta traite l'activation — "
+               f"pas encore confirmé « en ligne » (confirmation API requise séparément)\n"
+               f"lancement {objets['idempotence']['lancement_utc']} UTC\n"
+               f"Identifiants : `{json.dumps(identifiants, ensure_ascii=False)}`")
+        print(f"\n✅ Campagne programmée, activation envoyée (à confirmer) — {identifiants}\n")
+    else:
+        alerter(f"✅ *Campagne programmée* `{objets['meta_brief']['id']}`\n"
+               f"Statut à la création : `PAUSED` · lancement "
+               f"{objets['idempotence']['lancement_utc']} UTC\n"
+               f"Identifiants : `{json.dumps(identifiants, ensure_ascii=False)}`")
+        print(f"\n✅ Campagne programmée (statut PAUSED) — {identifiants}\n")
     return 0
 
 

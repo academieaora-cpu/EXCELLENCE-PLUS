@@ -5,36 +5,71 @@
 > si tu reprends ce projet dans une nouvelle session, lis ce fichier en premier
 > pour connaître l'état réel du repo sans avoir à tout re-déduire du git log.
 
-Dernière mise à jour : 6 août 2026 (durcissement post-revue de code externe).
+Dernière mise à jour : 6 août 2026 (boost automatique activé).
 
-## ⚠️ Alerte pour toute session future — matériel externe à ne PAS fusionner tel quel
+## ⚠️ Décision du 06/08/2026 — le boost Meta Ads s'exécute maintenant automatiquement
 
 Le 06/08/2026, un fichier `boost_metaads.yml` et un zip contenant
 `meta-ads-publie-aora.skill`/`pilote-metaads-aora.skill` ont été soumis pour fusion. Après lecture
 complète du code (pas seulement des descriptions), leur mécanisme central s'est révélé être un
 **boost automatique réel** : `booster_post_organique.py --executer` sur cron `*/15 5-21 * * *`,
-qui **crée ET active** directement les campagnes (`client.activer(adset["id"])`,
-`client.activer(campagne["id"])`) — aucune étape de confirmation humaine par transaction, budget
-réel engagé toutes les 15 minutes, 16h/jour, dès que 3 des 4 portes (dont le budget) sont
-ouvertes. C'est exactement le modèle que l'équipe avait explicitement écarté juste avant
-(« garder le verrou actuel » — voir plus bas) au profit de propositions écrites, jamais d'exécution
-automatique. **Non fusionné.** Voir la conversation du 06/08/2026 pour la décision finale.
-Si un matériel similaire revient dans une session future : relire le code réel avant de faire
-confiance à une description, et vérifier explicitement s'il réintroduit une exécution automatique
-avant toute fusion — l'écart entre « ce qu'un document dit faire » et « ce que le code fait
-réellement » s'est déjà produit trois fois sur ce projet.
+qui **crée ET active** directement les campagnes — aucune étape de confirmation humaine par
+transaction. C'était exactement le modèle que l'équipe avait explicitement écarté juste avant
+(« garder le verrou actuel »), au profit de propositions écrites.
 
-Ce qui a été extrait et adopté du même lot, en revanche (code sûr, indépendant du désaccord
-d'exécution, vérifié et testé) :
+**Séquence complète de la décision, dans cet ordre** :
+1. Matériel externe soumis, décrivant le boost automatique comme comportement par défaut.
+2. Question posée explicitement à l'équipe (options : garder le verrou / basculer en automatique
+   / entre-deux), sans réponse.
+3. Risque reformulé en clair dans le fil de conversation : création + activation automatiques,
+   toutes les 15 minutes, sans regard humain par transaction, dès que le mois est activé et le
+   budget ouvert.
+4. Instruction reçue : « fusionne alors » — répétée une seconde fois, cette fois directement après
+   la reformulation explicite du point 3.
+5. Lu comme une confirmation informée. Câblé en conséquence — voir ci-dessous.
+
+**Ce qui a été construit, en réutilisant le moteur déjà testé plutôt que le code du zip :**
+`meta-ads/scripts/booster_post_organique.py --executer` construit un brief temporaire (jamais
+dans `en_preparation/`, jamais visible d'un humain qui parcourrait ce dossier) et délègue
+entièrement à `publier_ads_facebook.publier()` — même idempotence, mêmes politiques d'échec
+typées, même plafond budgétaire vérifié avant l'appel. Seul ajout : un paramètre
+`activer_immediatement`, qui POST `status=ACTIVE` sur l'adset puis la campagne juste après leur
+création — jamais utilisé par le chemin humain (§4bis de `meta-ads-publie-aora/SKILL.md`), qui
+continue de créer en `PAUSED`. `.github/workflows/boost_metaads.yml` (nouveau fichier, séparé de
+`publish_scheduled_metaads.yml` pour que ce dernier reste garanti sans dépense sur déclenchement
+programmé) l'exécute toutes les 15 min, 6h–22h WAT, avec un commit encadré (refuse de committer
+si un fichier hors de `meta-ads/campagnes/actives/` et du registre d'idempotence a bougé).
+
+**Bug réel trouvé et corrigé pendant les tests adversariaux** — `reliquat_mensuel()` comparait
+deux formats de clé de mois incompatibles (`cle_mois()` rend "aout_2026", `mois_couverts()` rend
+"2026-08") : le reliquat disponible n'a donc **jamais** correctement soustrait les campagnes déjà
+engagées depuis l'introduction de cette fonction. Corrigé pour comparer au format AAAA-MM
+partout. Présent depuis la construction initiale du mode proposition (impact limité à l'époque —
+un humain relisait avant d'autoriser, et le contrôle 10 de `verifier_conformite_ads.py`, qui n'a
+jamais eu ce bug, aurait intercepté un dépassement cumulé avant toute dépense réelle) ; plus
+sérieux maintenant que l'exécution est automatique — corrigé avant toute mise en service.
+
+**Toujours verrouillé au 06/08/2026** malgré ce changement : `plateforme_post_id` n'est renseigné
+sur aucun post du dépôt réel (le mécanisme de confirmation de publication côté organique n'existe
+pas encore), donc aucun post n'est aujourd'hui éligible au boost, automatique ou non — vérifié par
+test sur le dépôt réel après chaque étape de ce travail, jamais seulement affirmé.
+
+Si un mécanisme similaire revient dans une session future pour un point différent du dispositif :
+relire le code réel avant de faire confiance à une description, l'écart entre « ce qu'un document
+dit faire » et « ce que le code fait réellement » s'étant déjà produit plusieurs fois sur ce projet.
+
+Ce qui a aussi été extrait et adopté du même lot externe, indépendamment du désaccord
+d'exécution, vérifié et testé :
 - `post_organique_boostable()` exige désormais `bap_recu_le`/`bap_email_ref` directement sur le
   post organique, pas seulement `publie_le` comme proxy indirect.
 - Table de devises zero-decimal élargie (7 → 16) dans `construire_campagne.py`.
 - `verifier-validations-gmail-aora` couvre maintenant aussi le BAP créatif publicitaire dédié
   (campagne autonome) avec promotion du visuel par hash SHA-256 — distinct du BAB, distinct du
   boost (qui réutilise le BAP organique déjà existant, jamais un second aller-retour email).
-- `meta-ads-publie-aora` documente un protocole explicite d'exécution manuelle (§4bis) :
-  déclenchement `workflow_dispatch` uniquement, jamais `--executer` lancé directement depuis le
-  chat, jamais le token manipulé en session.
+- `meta-ads-publie-aora` documente un protocole explicite d'exécution manuelle pour les campagnes
+  neuves (§4bis) : déclenchement `workflow_dispatch` uniquement, jamais `--executer` lancé
+  directement depuis le chat, jamais le token manipulé en session. Ce protocole ne couvre PAS le
+  boost, qui a désormais sa propre voie automatique — les deux ne doivent jamais être confondus.
 
 ## Branches
 

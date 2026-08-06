@@ -1,0 +1,134 @@
+name: Meta Ads — boost automatique (exécution réelle, 15 min)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ⚠️ CE WORKFLOW DÉPENSE DE L'ARGENT RÉEL, SANS CONFIRMATION HUMAINE PAR
+# TRANSACTION. Fichier séparé de publish_scheduled_metaads.yml délibérément :
+# ce dernier ne crée et n'active jamais rien sur son propre déclenchement
+# programmé (seule une exécution manuelle nommée, via workflow_dispatch sur
+# CE fichier-ci, engage une dépense côté publish_scheduled_metaads.yml).
+# Isoler ce mécanisme dans son propre fichier permet de le désactiver ou de le
+# supprimer sans toucher à la vérification/au rapport quotidiens, qui doivent
+# rester sûrs indépendamment de ce qui arrive ici.
+#
+# Décision actée le 06/08/2026 : un premier examen de ce même mécanisme (comme
+# matériel externe soumis pour fusion) avait été explicitement refusé au tour
+# précédent, au profit d'un modèle où le boost restait une proposition écrite.
+# La décision a été reconfirmée ensuite, sur description complète et explicite
+# du comportement réel (création ET activation automatiques, toutes les 15 min,
+# sans regard humain par transaction) — voir STATUT_PROJET.md pour la trace
+# complète de cette décision et sa date.
+#
+# Ce que ce workflow NE change PAS : les 4 portes (activation, budget écrit,
+# créatif — BAP organique direct pour un boost, jamais supposé —, cohérence du
+# compte), le plafond budgétaire dur, l'idempotence triple clé, les politiques
+# d'échec typées. Rien de tout cela n'est réimplémenté ici : ce fichier appelle
+# meta-ads/scripts/booster_post_organique.py --executer, qui délègue lui-même à
+# construire_campagne.py et publier_ads_facebook.py — le même moteur, déjà
+# testé, que le chemin humain (workflow_dispatch de publish_scheduled_metaads.yml).
+#
+# Secrets — mêmes noms que publish_scheduled_metaads.yml, jamais ceux de
+# Composio :
+#   META_MARKETING_TOKEN         token Marketing API
+#   SLACK_WEBHOOK_URL_METAADS    fil Slack dédié Meta Ads (ou SLACK_BOT_TOKEN_METAADS
+#                                 + SLACK_CHANNEL_METAADS)
+#
+# Fuseau : cron GitHub Actions = UTC. WAT = UTC+1 toute l'année (pas d'heure
+# d'été au Cameroun). 6h–22h WAT = 5h–21h UTC.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  schedule:
+    - cron: '*/15 5-21 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry-run — vérifie le comportement des portes sans exécuter (recommandé avant la première activation en continu)"
+        type: boolean
+        default: true
+
+permissions:
+  # write : nécessaire pour committer la trace d'un boost réellement créé dans
+  # meta-ads/campagnes/actives/. Encadré comme le passage de 03h00 de
+  # publish_scheduled_metaads.yml : relecture de git status avant tout commit,
+  # refus si un fichier hors du périmètre attendu a bougé.
+  contents: write
+
+concurrency:
+  # Même groupe que publish_scheduled_metaads.yml, volontairement : les deux
+  # fichiers peuvent committer dans meta-ads/campagnes/, jamais en même temps.
+  group: meta-ads-publication
+  cancel-in-progress: false
+
+jobs:
+  boost:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install pyyaml
+
+      - name: Halte si le dépôt est en PAUSE
+        id: pause
+        run: |
+          if [ -f PAUSE ]; then
+            echo "⏸️  DISPOSITIF EN PAUSE"
+            cat PAUSE
+            echo "en_pause=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "en_pause=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Boost automatique
+        id: boost
+        if: steps.pause.outputs.en_pause != 'true'
+        env:
+          META_MARKETING_TOKEN: ${{ secrets.META_MARKETING_TOKEN }}
+          SLACK_WEBHOOK_URL_METAADS: ${{ secrets.SLACK_WEBHOOK_URL_METAADS }}
+          SLACK_BOT_TOKEN_METAADS: ${{ secrets.SLACK_BOT_TOKEN_METAADS }}
+          SLACK_CHANNEL_METAADS: ${{ secrets.SLACK_CHANNEL_METAADS }}
+          # Valeurs déjà résolues côté YAML, jamais recalculées dans le bash
+          # ci-dessous — un déclenchement programmé (schedule) n'a pas de champ
+          # inputs, EST_DISPATCH_DRY_RUN vaut alors la chaîne vide, jamais une
+          # expression qui échouerait à l'évaluation.
+          EST_DECLENCHEMENT_MANUEL: ${{ github.event_name == 'workflow_dispatch' }}
+          DISPATCH_DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: |
+          if [ "$EST_DECLENCHEMENT_MANUEL" = "true" ] && [ "$DISPATCH_DRY_RUN" = "true" ]; then
+            echo "Mode dry-run (déclenchement manuel, dry_run=true) — aucun appel API."
+            python3 meta-ads/scripts/booster_post_organique.py --repo .
+          else
+            python3 meta-ads/scripts/booster_post_organique.py --repo . --executer
+          fi
+
+      # Encadrement identique à publish_scheduled_metaads.yml (passage 03h00) :
+      # relit l'état git complet, refuse de committer si un fichier hors du
+      # périmètre attendu a bougé — meta-ads/campagnes/actives/ et le registre
+      # d'idempotence uniquement, jamais en_preparation/ ni autorisees/ ni un
+      # config, jamais un fichier hors de meta-ads/.
+      - name: Committer le résultat — jamais hors de meta-ads/campagnes/ et du registre
+        if: steps.pause.outputs.en_pause != 'true'
+        run: |
+          TOUT=$(git status --porcelain)
+          HORS_PERIMETRE=$(echo "$TOUT" | grep -v -E 'meta-ads/campagnes/(actives|registre_idempotence\.json)' || true)
+          if [ -n "$HORS_PERIMETRE" ]; then
+            echo "⛔ Des fichiers hors du périmètre attendu ont été modifiés :"
+            echo "$HORS_PERIMETRE"
+            echo "Ce n'est jamais censé arriver — arrêt, rien n'est committé."
+            exit 1
+          fi
+          DANS_PERIMETRE=$(git status --porcelain meta-ads/campagnes/actives meta-ads/campagnes/registre_idempotence.json 2>/dev/null)
+          if [ -z "$DANS_PERIMETRE" ]; then
+            echo "Rien à committer — aucun boost exécuté à ce passage."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add meta-ads/campagnes/actives meta-ads/campagnes/registre_idempotence.json
+          git commit -m "boost-metaads: passage automatique $(date -u +%Y-%m-%dT%H:%MZ)"
+          git pull --rebase
+          git push
