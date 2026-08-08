@@ -68,11 +68,11 @@
       "Une tranche d'âge fausse ne casse rien visiblement — elle dépense juste le",
       "budget sur les mauvaises personnes, sans que rien ne le signale."
     ],
-    "cible": "Parents d'élèves à Yaoundé — collège prioritaire (4e, 3e, BEPC), lycée en secondaire",
-    "_source_cible": "_base/identite/brand_guidelines.md §3 — libellé, pas paramètre API"
+    "cible": "Parents d'élèves à Yaoundé — de la SIL à la Terminale, francophone et anglophone",
+    "_source_cible": "_base/identite/brand_guidelines.md §3 — libellé, pas paramètre API. Élargi le 08/08/2026, décision d'équipe non sourcée par écrit côté client — voir la note datée dans brand_guidelines.md et STATUT_PROJET.md point 12."
   },
 
-  "langues": ["fr"],
+  "langues": ["fr", "en"],
   "pays": ["CM"],
   "ville_pivot": "Yaoundé"
 }
