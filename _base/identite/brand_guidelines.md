@@ -55,8 +55,18 @@ Le service de tutorat à domicile de Yaoundé qui ne lâche pas l'élève. Suivi
 **Cible principale**
 Parents d'élèves, 35 à 70 ans, basés à Yaoundé — actifs, soucieux de la réussite scolaire de leurs enfants, disposant du budget pour investir dans du soutien de qualité.
 
-**Niveau scolaire prioritaire** : Collège (4ème, 3ème, classe d'examen BEPC)
-**Cible secondaire** : Lycéens en préparation Bac (toutes séries)
+**Niveau scolaire** : de la SIL (maternelle / initiation) à la Terminale — systèmes francophone
+et anglophone.
+
+⚠️ **Élargissement de périmètre — 8 août 2026** : ce document limitait jusqu'ici la cible à
+« Collège (4ème, 3ème, BEPC) » et « Lycéens en préparation Bac », système francophone
+uniquement. Périmètre élargi à l'ensemble du cursus (SIL à Terminale) et aux deux systèmes
+éducatifs camerounais, sur décision d'équipe du 8 août 2026 — **aucune confirmation écrite du
+client n'existe à ce jour pour cet élargissement**, à la différence des chiffres validés
+(93%/97%) qui restent, eux, sourcés par écrit. À traiter comme une hypothèse de travail
+d'équipe, pas comme un fait confirmé par M. NDOMMIE, tant qu'une trace écrite ne la confirme
+pas. Tout contenu qui s'appuie sur cet élargissement doit rester factuellement neutre (pas de
+chiffre inventé sur les effectifs anglophones ou préscolaires) en attendant cette confirmation.
 
 **Zones géographiques premium** (ciblage prioritaire)
 - Bastos
@@ -457,3 +467,15 @@ base d'un fichier BAP vérifié uniquement). Rien d'autre modifié — ce n'est 
 de la règle « pas de publication sans BAP écrit » (§11, inchangée), seulement une précision sur
 le mécanisme d'enregistrement. Détail complet : `routines/routine1_programmation.md`,
 `scripts/traiter_bap.py`.
+
+---
+
+**Mis à jour le 8 août 2026** — source : décision d'équipe en session (compte
+academieaora@gmail.com), **non sourcée par un écrit client**. Élargissement du périmètre
+scolaire cible en §3 : « Collège + Lycéens en préparation Bac (francophone) » devient
+« SIL à Terminale, francophone et anglophone ». Répercuté pour cohérence sur
+`contenu/facebook/EXC-FB-2026-001.md` (phrase « du CM2 aux classes d'examen ») et
+`meta-ads/config/meta_ads_ciblage.json` (`langues`, `demographie.cible`) — ce dernier reste par
+ailleurs `ciblage_utilisable: false`, donc sans effet réel tant que le ciblage Meta Ads n'est pas
+activé. À confirmer par écrit auprès de M. NDOMMIE dès que possible ; voir STATUT_PROJET.md
+point 12.
