@@ -137,6 +137,8 @@
   .kv{display:grid;grid-template-columns:120px 1fr;gap:6px 12px;font-size:13px}
   .kv .k{color:var(--grey);font-weight:600}
   .interdit-note{background:#FFF3E9;border-left:3px solid var(--orange);padding:9px 12px;font-size:12px;color:#7A3D0F;border-radius:4px}
+  ul.plain-list{margin:0;padding-left:18px;font-size:13.5px;line-height:1.6}
+  ul.plain-list li{margin-bottom:4px}
   .modal-actions{margin-top:12px;display:flex;justify-content:flex-end;gap:8px}
   .copy-btn{background:var(--orange);color:#fff;border:0;padding:8px 15px;border-radius:8px;font-weight:700;cursor:pointer;font-size:12.5px}
 
@@ -509,7 +511,41 @@ function openEntry(id){
   sel.innerHTML = STATUTS.map(s=>`<option value="${esc(s.id)}" ${s.id===e.statut?'selected':''}>${esc(s.label)}</option>`).join('');
   let body = accSection('📝 Résumé', esc(e.resume));
   body += accSection('📅 Date &amp; créneau', `<div class="kv"><span class="k">Date</span><span>${esc(e.date)}</span><span class="k">Plateforme</span><span>${esc(platName(e.plateforme))}</span><span class="k">Format</span><span>${esc(e.format)}</span></div>`);
+  if(e.objectifs && e.objectifs.length){
+    body += accSection('🎯 Objectifs', '<ul class="plain-list">'+e.objectifs.map(o=>`<li>${esc(o)}</li>`).join('')+'</ul>');
+  }
+  if(e.contenu){
+    body += accSection('✍️ Contenu (prêt à exploiter)', esc(e.contenu));
+  }
+  if(e.visuel){
+    const v=e.visuel;
+    body += accSection('🖼️ Direction visuelle (image à insérer)', `<div class="kv">`+
+      `<span class="k">Sujet</span><span>${esc(v.sujet||'')}</span>`+
+      `<span class="k">Décor</span><span>${esc(v.decor||'')}</span>`+
+      `<span class="k">Cadrage</span><span>${esc(v.cadrage||'')}</span>`+
+      `<span class="k">Ambiance</span><span>${esc(v.ambiance||'')}</span>`+
+      `<span class="k">À éviter</span><span>${esc(v.a_eviter||'')}</span>`+
+      `</div>`);
+  }
+  if(e.production){
+    const p=e.production;
+    body += accSection('🛠️ Production', `<div class="kv">`+
+      `<span class="k">Responsable</span><span>${esc(p.responsable||'')}</span>`+
+      `<span class="k">Délai</span><span>${esc(p.delai||'')}</span>`+
+      `<span class="k">Dépendances</span><span>${(p.dependances||[]).map(esc).join(' · ')}</span>`+
+      `</div>`);
+  }
+  if(e.validation){
+    const st = STATUTS.find(s=>s.id===e.validation.statut);
+    body += accSection('✔️ Validation', `<div class="kv">`+
+      `<span class="k">Statut</span><span>${esc(st?st.label:e.validation.statut)}</span>`+
+      `<span class="k">BAP reçu le</span><span>${esc(e.validation.bap_recu_le||'— (bloquant tant que vide)')}</span>`+
+      `</div>`);
+  }
   body += accSection('⚠️ Contraintes éditoriales', `<div class="interdit-note">${esc(e.notes)}</div>`);
+  if(e.historique && e.historique.length){
+    body += accSection('🕰️ Historique', '<ul class="plain-list">'+e.historique.map(h=>`<li><strong>${esc(h.date)}</strong> — ${esc(h.evt)}</li>`).join('')+'</ul>');
+  }
   document.getElementById('modalAccordionView').innerHTML = body;
   overlay.classList.add('show');
 }
@@ -537,7 +573,7 @@ document.getElementById('exportPdfBtn').addEventListener('click', ()=>window.pri
 /* ====== Pied de page ====== */
 (function footer(){
   const f=document.getElementById('footer');
-  f.innerHTML = 'ACADÉMIE AORA × Excellence+ — Document confidentiel — CE-EXC-001 · '+ENTRIES.length+' créneaux planifiés · Généré le 28 juillet 2026.';
+  f.innerHTML = 'ACADÉMIE AORA × Excellence+ — Document confidentiel — CE-EXC-001 · '+ENTRIES.length+' créneaux planifiés · Généré le '+((window.META&&META.genere_le)||'');
 })();
 
 render();
