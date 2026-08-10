@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-build_data.py — Fusionne les neuf objets JSON en un unique data.js.
+build_data.py — Fusionne les dix objets JSON en un unique data.js.
 
 Lit depuis ./data/ :
   entries.json, weeks.json, months.json, pillars.json, platforms.json,
-  platforms_hors_scope.json, statuts.json, meta_ads.json, kpi.json
+  platforms_hors_scope.json, statuts.json, meta_ads.json, kpi.json, meta.json
 
 Écrit ./data.js avec, en global :
   window.ENTRIES / WEEKS / MONTHS / PILLARS / PLATFORMS /
-  PLATFORMS_HORS_SCOPE / STATUTS / META_ADS / KPI
+  PLATFORMS_HORS_SCOPE / STATUTS / META_ADS / KPI / META
 
 Utilise ensure_ascii=True : data.js est 100% ASCII (\\uXXXX pour les accents),
 ce qui supprime toute corruption d'encodage au passage Python -> JS.
@@ -43,6 +43,7 @@ def main():
     statuts = load("statuts.json", [])
     meta_ads = load("meta_ads.json", [])
     kpi = load("kpi.json", {})
+    meta = load("meta.json", {})
 
     out = (
         "/* data.js - genere par build_data.py - NE PAS editer a la main */\n"
@@ -55,6 +56,7 @@ def main():
         + js_const("STATUTS", statuts)
         + js_const("META_ADS", meta_ads)
         + js_const("KPI", kpi)
+        + js_const("META", meta)
     )
     out_path = os.path.join(os.path.dirname(DATA), "data.js")
     with codecs.open(out_path, "w", encoding="utf-8") as f:

@@ -21,9 +21,11 @@ import codecs
 import datetime
 import json
 import os
+import re
 
 ICI = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(ICI, "data")
+REPO_ROOT = os.path.join(ICI, "..", "..")
 CONFIG = os.path.join(ICI, "..", "..", "config", "creneaux.json")
 os.makedirs(DATA, exist_ok=True)
 
@@ -241,6 +243,137 @@ FORMATS = {
     PRE: ["Témoignage", "Chiffre-clé", "Avant / après anonymisé"],
 }
 
+PILIER_NOM_LONG = {AUT: "Autorité éducative", MET: "La méthode Excellence+", PRE: "La preuve"}
+TON_PAR_PILIER = {AUT: "Crédible · Proche", MET: "Rassurant · Déterminé", PRE: "Proche · Rassurant"}
+
+# ---------------------------------------------------------------------------
+# Niveau 3 (fiche) — champs enrichis : objectifs, direction visuelle, contenu
+# suggéré, production, validation. Générés (pas 78 entrées écrites à la
+# main), mais avec assez de variation par pilier/format pour ne pas produire
+# le même bloc dupliqué partout — c'est précisément ce qui rendait
+# inutilisable un modèle externe reçu le 10/08/2026 (même decor/cadrage/
+# ambiance recopiés sur toutes les fiches, et palette de logo au lieu de la
+# palette de communication sociale).
+# ---------------------------------------------------------------------------
+CTA_PAR_PILIER = {
+    AUT: ["Enregistrez ce post, vous en aurez besoin bientôt",
+          "Posez vos questions en commentaire",
+          "Partagez-le à un parent que ça concerne"],
+    MET: ["Écrivez-nous sur WhatsApp pour en savoir plus",
+          "Posez vos questions en commentaire, on répond sous 48h",
+          "Suivez la suite en story cette semaine"],
+    PRE: ["Écrivez-nous sur WhatsApp : +237 699 403 969 ou +237 679 941 300",
+          "Partagez si ce résultat vous parle",
+          "Contactez-nous pour en discuter"],
+}
+KPI_PAR_PILIER = {
+    AUT: "Enregistrements + partages",
+    MET: "Commentaires + messages WhatsApp générés",
+    PRE: "Partages + messages WhatsApp générés",
+}
+DECOR_PAR_PILIER = {
+    AUT: "Intérieur familial, coin devoirs ou salon — Yaoundé",
+    MET: "Séance à domicile ou coulisses de suivi terrain — Yaoundé",
+    PRE: "Portrait, bulletin ou cahier en gros plan — Yaoundé",
+}
+CADRAGE_PAR_FORMAT = {
+    "Carrousel conseil": "Carrousel 4-5 slides, une idée par slide, texte court",
+    "Post pédagogique": "Plan large, espace de respiration pour le texte",
+    "Question aux parents": "Cadrage simple, regard tourné vers la question posée",
+    "Coulisses": "Plan rapproché sur un geste ou un visage adulte (jamais un enfant identifiable)",
+    "Portrait d'enseignant": "Portrait moyen, lumière naturelle, cadre professionnel chaleureux",
+    "Infographie de processus": "Schéma en étapes numérotées, peu de texte par étape",
+    "Témoignage": "Citation en surimpression sur fond sobre",
+    "Chiffre-clé": "Chiffre en typo Inter Black, grand format, orange sur navy",
+    "Avant / après anonymisé": "Diptyque avant/après, tout élément identifiant flouté",
+}
+AMBIANCE_STANDARD = (
+    "Navy #1B2D5C domine, orange #F37021 en accent, blanc pour respirer — "
+    "jamais la palette du logo (#181818 / #EC770D) sur un visuel de "
+    "communication sociale (voir plateforme_marque.md §5)."
+)
+A_EVITER_STANDARD = (
+    "Aucun visage d'enfant identifiable sans autorisation parentale archivée · "
+    "aucun chiffre d'effectif enseignants · jamais « Excellence++ » · "
+    "aucun tarif chiffré publiquement."
+)
+
+
+def direction_visuelle(pilier, format_, angle):
+    return {
+        "sujet": angle,
+        "decor": DECOR_PAR_PILIER[pilier],
+        "cadrage": CADRAGE_PAR_FORMAT.get(format_, "Plan moyen, espace de texte pour l'accroche"),
+        "ambiance": AMBIANCE_STANDARD,
+        "a_eviter": A_EVITER_STANDARD,
+    }
+
+
+def contenu_suggere(angle, pilier, cta):
+    """Amorce de brief pour le rédacteur — pas le texte final.
+
+    generate.py ne produit que le PLAN : le corps définitif se rédige au
+    moment du BAT, publication par publication (voir docstring du module).
+    Ce champ donne une direction concrète, pas un texte prêt à publier.
+    """
+    return (
+        "Accroche suggérée : %s\n\n"
+        "Angle à développer au BAT : reprendre l'angle ci-dessus, ton %s, "
+        "s'appuyer sur les chiffres validés (93%% en 2023-2024, 97%% en "
+        "2024-2025) si pertinent pour ce pilier. Corps définitif rédigé au "
+        "moment du BAT, jamais avant.\n\n"
+        "CTA prévu : %s"
+    ) % (angle, TON_PAR_PILIER[pilier], cta)
+
+
+def objectifs_entry(pilier, cta, kpi):
+    return [
+        "Nourrir le pilier « %s »" % PILIER_NOM_LONG[pilier],
+        "CTA : %s" % cta,
+        "KPI cible : %s" % kpi,
+    ]
+
+
+# Le front-matter des .md parle le vocabulaire SOP-001 (draft -> BAT_soumis
+# -> BAP_recu -> publié -> archivé) ; l'UI de ce calendrier parle un
+# vocabulaire à 5 états propre à l'outil (a_rediger/bat_envoye/bat_valide/
+# bap_recu/publie) — écart déjà documenté, pas un remplacement du circuit
+# officiel (voir STATUT_PROJET.md, "Conventions établies"). On traduit ici,
+# on ne fait jamais comme si les deux vocabulaires étaient le même champ.
+STATUT_MD_VERS_CALENDRIER = {
+    "draft": "a_rediger",
+    "bat_soumis": "bat_envoye",
+    "bap_recu": "bap_recu",
+    "publie": "publie",
+    "publié": "publie",
+    "archive": "publie",
+    "archivé": "publie",
+}
+
+
+def lire_statut_reel(repo_root, plateforme, eid):
+    """Statut réel d'un post, lu dans son fichier .md s'il existe déjà.
+
+    Ne jamais fabriquer un statut « en retard » ou « bloqué » par calcul de
+    date : ça ne vaut que ce que vaut la source, et la seule source fiable
+    ici est le front-matter du fichier lui-même. Pas de fichier -> le post
+    n'a simplement pas encore été rédigé (statut par défaut : a_rediger).
+    """
+    chemin = os.path.join(repo_root, "contenu", plateforme, eid + ".md")
+    if not os.path.isfile(chemin):
+        return "a_rediger", None
+    with codecs.open(chemin, "r", encoding="utf-8") as f:
+        texte = f.read()
+    m = re.search(r'^statut:\s*"?([\w_]+)"?\s*$', texte, re.MULTILINE)
+    bap = re.search(r'^bap_recu_le:\s*"?([^"\n]*)"?\s*$', texte, re.MULTILINE)
+    brut = (m.group(1) if m else "draft").strip().lower()
+    statut = STATUT_MD_VERS_CALENDRIER.get(brut, "a_rediger")
+    bap_val = bap.group(1).strip() if bap else ""
+    if bap_val.lower() in ("", "null", "none"):
+        bap_val = None
+    return statut, bap_val
+
+
 # Meta Ads : aucune campagne au mois 1. Les fenêtres recommandées sont
 # septembre (rentrée) et janvier (reprise) — mais rien n'est engagé : le client
 # décide mois par mois, par email, 7 jours avant. Tant qu'aucune décision n'est
@@ -357,6 +490,7 @@ def main():
 
     codes = {"facebook": "FB", "whatsapp": "WA", "instagram": "IG", "tiktok": "TT"}
     compteurs, curseurs, entrees = {}, {}, []
+    aujourdhui_iso = datetime.date.today().isoformat()
 
     for c in creneaux:
         mid = mois_id(c["date"])
@@ -377,12 +511,21 @@ def main():
         eid = "EXC-%s-%s-%03d" % (code, c["date"].strftime("%Y"), n)
 
         formats = FORMATS[pilier]
+        format_ = formats[idx % len(formats)]
+        cta = CTA_PAR_PILIER[pilier][idx % len(CTA_PAR_PILIER[pilier])]
+        kpi_cible = KPI_PAR_PILIER[pilier]
+        statut_reel, bap_val = lire_statut_reel(REPO_ROOT, c["plateforme"], eid)
         m = MOIS_PAR_ID[mid]
+
+        historique = [{"date": aujourdhui_iso, "evt": "Créneau planifié — pipeline generate.py"}]
+        if bap_val:
+            historique.append({"date": bap_val, "evt": "BAP reçu par email"})
+
         entrees.append({
             "id": eid,
             "titre": angle,
             "pilier": pilier,
-            "format": formats[idx % len(formats)],
+            "format": format_,
             "plateforme": c["plateforme"],
             "mois": mid,
             "date": "%s · %s WAT" % (fr_date(c["date"]), c["heure"]),
@@ -391,15 +534,25 @@ def main():
             "heure": c["heure"],
             "tags": [c["plateforme"], pilier],
             "favori": False,
-            "statut": "a_rediger",
+            "statut": statut_reel,
             "meta_ads": None,
             "resume": "%s. Pilier %s — mois « %s ». Angle planifié : le texte "
                       "définitif est rédigé au moment du BAT, puis validé par "
-                      "email avant publication." % (
-                          angle,
-                          {AUT: "Autorité éducative", MET: "La méthode Excellence+",
-                           PRE: "La preuve"}[pilier],
-                          m["theme"]),
+                      "email avant publication." % (angle, PILIER_NOM_LONG[pilier], m["theme"]),
+            "objectifs": objectifs_entry(pilier, cta, kpi_cible),
+            "visuel": direction_visuelle(pilier, format_, angle),
+            "contenu": contenu_suggere(angle, pilier, cta),
+            "production": {
+                "responsable": "Claude (rédaction) → Stéphane/Laurence (validation interne) → M. NDOMMIE (BAP)",
+                "delai": "%s · %s WAT" % (fr_date(c["date"]), c["heure"]),
+                "dependances": [
+                    "Créneau %s confirmé" % FR_JOURS[c["date"].weekday()].capitalize(),
+                    "Validation interne AORA (Stéphane/Laurence)",
+                    "BAP client par email (bap_recu_le)",
+                ],
+            },
+            "validation": {"statut": statut_reel, "bap_recu_le": bap_val},
+            "historique": historique,
             "notes": INTERDITS_NOTE,
         })
 
@@ -417,6 +570,7 @@ def main():
         "statuts.json": STATUTS,
         "meta_ads.json": META_ADS,
         "kpi.json": kpi,
+        "meta.json": {"genere_le": fr_date(datetime.date.today())},
     }
     for nom, obj in sorties.items():
         with codecs.open(os.path.join(DATA, nom), "w", encoding="utf-8") as f:
