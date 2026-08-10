@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Génère le calendrier éditorial Excellence+ — v3, arbitrages du 30/07/2026.
+Génère le calendrier éditorial Excellence+ — v3, arbitrages du 30/07/2026,
+jours/heures ajustés le 02/08/2026.
 
 Règles appliquées (source : config/creneaux.json, qui fait foi) :
   · 6 mois — août 2026 → janvier 2027 (janvier réintégré au programme)
   · 3 publications par semaine AU TOTAL, tous canaux confondus
-    mardi 12h30 · jeudi 19h00 · samedi 10h00 WAT
+    lundi 06h00 · mercredi 12h00 · samedi 06h00 WAT
   · Facebook seul canal ouvert au lancement — les autres suivent
   · Ciblage : Yaoundé dans son ensemble, plus le premium exclusif
   · Aucune campagne Meta Ads au mois 1 (août)

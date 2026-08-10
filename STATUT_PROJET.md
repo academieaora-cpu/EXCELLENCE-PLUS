@@ -153,6 +153,26 @@ Dernière mise à jour : 5 août 2026.
    l'API attend les budgets en unité mineure de la devise du compte, soit un facteur 100
    entre XAF et EUR/USD. **`ad_account_id` est l'action humaine la plus bloquante du
    dispositif Meta Ads.**
+12. **(08/08/2026) Périmètre scolaire cible élargi sur décision d'équipe, non confirmé par
+   écrit côté client.** `brand_guidelines.md` §3 limitait jusqu'ici la cible à Collège
+   (4e/3e/BEPC) + Lycéens en préparation Bac, francophone uniquement. Élargi à SIL–Terminale,
+   francophone et anglophone, à la demande du compte academieaora@gmail.com en session — sans
+   trace écrite de M. NDOMMIE. Répercuté sur `contenu/facebook/EXC-FB-2026-001.md` et
+   `meta-ads/config/meta_ads_ciblage.json` (`langues`, `demographie.cible`) pour cohérence
+   interne ; le ciblage Meta Ads reste `ciblage_utilisable: false` par ailleurs, donc sans effet
+   réel. **À confirmer par écrit auprès du client dès que possible** — traiter comme une
+   hypothèse de travail tant que ce n'est pas fait, ne jamais la présenter comme un fait validé
+   dans un livrable client.
+13. **(10/08/2026) Créneaux Lundi/Mercredi/Samedi (modifiés le 02/08/2026) retenus sans trace
+   écrite client.** `config/creneaux.json` notait « NON CONFIRMÉ » depuis le 02/08 — aucun email
+   de M. NDOMMIE archivé dans `validation/BAP/` sur ce changement précis de jours/heures. Le
+   compte academieaora@gmail.com a affirmé en session que la validation avait eu lieu
+   physiquement à la signature du contrat ; aucun document contractuel n'est présent dans le
+   dépôt pour le vérifier, et la chronologie pose question (la signature précède en principe
+   l'ajustement du 02/08, qui remplaçait un créneau déjà en place). Retenu comme décision
+   d'équipe, pas comme fait client vérifié — voir la note datée dans `config/creneaux.json`. Si
+   M. NDOMMIE réagit un jour à ce créneau précis, traiter comme un point ouvert à reprendre avec
+   lui, pas comme un changement pré-validé à défendre.
 
 ## Conventions établies (à respecter dans une nouvelle session)
 
