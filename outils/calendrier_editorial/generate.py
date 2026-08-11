@@ -295,9 +295,9 @@ CADRAGE_PAR_FORMAT = {
     "Avant / après anonymisé": "Diptyque avant/après, tout élément identifiant flouté",
 }
 AMBIANCE_STANDARD = (
-    "Navy #1B2D5C domine, orange #F37021 en accent, blanc pour respirer — "
-    "jamais la palette du logo (#181818 / #EC770D) sur un visuel de "
-    "communication sociale (voir plateforme_marque.md §5)."
+    "Navy #1B2D5C, orange #EC770D et blanc — n'importe laquelle des trois peut "
+    "dominer selon le visuel, jamais de texte blanc en fond orange (voir "
+    "palette_excellence.json et plateforme_marque.md §5)."
 )
 A_EVITER_STANDARD = (
     "Aucun visage d'enfant identifiable sans autorisation parentale archivée · "
@@ -373,7 +373,7 @@ def direction_visuelle(pilier, format_, angle):
         "cadrage": CADRAGE_PAR_FORMAT.get(format_, "Plan moyen, espace de texte pour l'accroche"),
         "ambiance": AMBIANCE_STANDARD,
         "prompt_ia": "%s — %s, Yaoundé Cameroun, lumière naturelle chaleureuse, "
-                     "palette navy #1B2D5C et orange #F37021, photoréaliste" % (
+                     "palette navy #1B2D5C et orange #EC770D, photoréaliste" % (
                          angle, DECOR_PAR_PILIER[pilier]),
         "references": "Cohérence avec brand_guidelines.md §7 (identité visuelle Excellence+)",
         "a_eviter": A_EVITER_STANDARD,

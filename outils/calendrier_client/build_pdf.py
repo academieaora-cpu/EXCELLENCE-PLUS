@@ -152,7 +152,7 @@ HTML_SHELL = """<!DOCTYPE html>
 <title>Calendrier éditorial client — Excellence+ — CC-EXC-001</title>
 <style>
   :root{{
-    --navy:#1B2D5C; --navy2:#2A3F6E; --orange:#F37021;
+    --navy:#1B2D5C; --navy2:#2A3F6E; --orange:#EC770D;
     --tint-navy:#F1F3F8; --tint-orange:#FDF1E8;
     --gray-line:#E8E8EC; --gray-mid:#9CA0A8; --white:#fff;
   }}

@@ -4,7 +4,7 @@ const path = require('path');
 const HEADER_TEMPLATE = `
 <div style="font-family:Inter,Arial,sans-serif;font-size:7.5px;color:#1B2D5C;width:100%;
             padding:6px 15mm 4px;display:flex;justify-content:space-between;align-items:center;
-            border-bottom:1px solid #F37021;box-sizing:border-box">
+            border-bottom:1px solid #EC770D;box-sizing:border-box">
   <span style="font-weight:800;letter-spacing:.3px">EXCELLENCE+ — CALENDRIER ÉDITORIAL CLIENT</span>
   <span style="color:#9CA0A8">AORA × EXCELLENCE+ · CC-EXC-001 · Extrait août-septembre 2026</span>
 </div>`;
@@ -12,7 +12,7 @@ const HEADER_TEMPLATE = `
 const FOOTER_TEMPLATE = `
 <div style="font-family:Inter,Arial,sans-serif;font-size:7.5px;color:#1B2D5C;width:100%;
             padding:4px 15mm 6px;display:flex;justify-content:space-between;align-items:center;
-            border-top:1px solid #F37021;box-sizing:border-box">
+            border-top:1px solid #EC770D;box-sizing:border-box">
   <span style="color:#9CA0A8">AORA Communication Agency — L'EXCELLENCE À VOTRE PORTÉE.</span>
   <span style="font-weight:800">PAGE <span class="pageNumber"></span> / <span class="totalPages"></span></span>
 </div>`;

@@ -19,7 +19,7 @@
 - [ ] Logo Excellence+ (coin bas droit, min 80px)
 - [ ] Bande orange 6px en haut (signature AORA)
 - [ ] Numéro WhatsApp visible si post conversion
-- [ ] Couleurs : Navy #1B2D5C · Orange #F37021 uniquement
+- [ ] Couleurs : Navy #1B2D5C · Orange #EC770D uniquement (dominante ou accent selon le visuel — jamais de blanc sur fond orange)
 
 ## Style photographique
 [Ambiance / Émotion souhaitée]

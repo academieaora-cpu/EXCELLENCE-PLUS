@@ -6,28 +6,34 @@
       "hex": "#1B2D5C",
       "rgb": [27, 45, 92],
       "cmjn": [100, 92, 36, 41],
-      "usage": "Fond principal, titres, headers — dominant 60-70%"
+      "usage": "Dominante (60-70%) ou accent (10-20%) selon le visuel — texte blanc dessus toujours conforme"
     },
     "orange": {
-      "hex": "#F37021",
-      "rgb": [243, 112, 33],
-      "cmjn": [0, 67, 95, 0],
-      "usage": "Kickers, CTA, bande signature, accents — 10-20%"
+      "hex": "#EC770D",
+      "rgb": [236, 119, 13],
+      "cmjn_approx": [0, 50, 94, 7],
+      "cmjn_note": "Conversion RGB→CMJN naïve, sans profil colorimétrique. À vérifier avant tout support imprimé.",
+      "usage": "Dominante (60-70%) ou accent (10-20%) selon le visuel — jamais de texte blanc en fond orange (2,9:1, échoue WCAG AA)",
+      "corrige_le": "2026-08-11",
+      "ancienne_valeur": "#F37021 — choix d'harmonisation agence avec la charte AORA (AORA_Charte_Graphique_2026.md). Remplacé sur décision de Stéphane (Responsable projet), communiquée le 11/08/2026, par l'orange réel du logo Excellence+.",
+      "source": "Extraction pixel du logo (excellence_plus_logo.png), écart de teinte 0,2° au logo réel. Détail : direction-artistique-excellence-plus/references/palette-et-signature.md §1."
     },
     "blanc": {
       "hex": "#FFFFFF",
       "rgb": [255, 255, 255],
       "cmjn": [0, 0, 0, 0],
-      "usage": "Texte sur navy, espaces de respiration"
+      "usage": "Dominante, accent ou respiration selon le visuel — jamais comme texte sur fond orange"
     }
   },
-  "regle_or": "Navy domine. Orange accentue. Blanc respire. Ne jamais inverser.",
+  "regle_or": "N'importe laquelle des trois domine (60-70%), une autre accentue (10-20%), la troisième respire. Le contraste mesuré décide qui porte le texte — jamais de texte blanc sur fond orange.",
   "combinaisons_autorisees": [
-    "navy + orange + blanc",
+    "navy + orange + blanc, dans n'importe quel rôle (dominante / accent / respiration)",
     "blanc sur navy",
+    "charbon #181818 sur orange, texte courant",
     "orange sur blanc (texte > 18pt uniquement)"
   ],
   "combinaisons_interdites": [
-    "orange + navy directement (lisibilité insuffisante pour texte)"
+    "orange + navy directement (lisibilité insuffisante pour texte)",
+    "blanc sur orange, quel que soit le rôle (2,9:1, échoue WCAG AA)"
   ]
 }
