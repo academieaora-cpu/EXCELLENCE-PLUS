@@ -18,8 +18,9 @@
 ## Éléments obligatoires
 - [ ] Logo Excellence+ (coin bas droit, min 80px)
 - [ ] Bande orange 6px en haut (signature AORA)
-- [ ] Numéro WhatsApp visible si post conversion
-- [ ] Couleurs : Navy #1B2D5C · Orange #EC770D uniquement (dominante ou accent selon le visuel — jamais de blanc sur fond orange)
+- [ ] Contact 699 403 969 visible — systématique, tout visuel (corrigé 11/08/2026)
+- [ ] Icônes Facebook, Instagram, WhatsApp groupées près du contact (ajouté 11/08/2026)
+- [ ] Couleurs : Charbon #181818 · Orange #EC770D · Blanc uniquement (navy exclu — jamais de blanc sur fond orange)
 
 ## Style photographique
 [Ambiance / Émotion souhaitée]

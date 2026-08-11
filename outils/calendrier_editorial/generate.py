@@ -269,7 +269,7 @@ CTA_PAR_PILIER = {
     MET: ["Écrivez-nous sur WhatsApp pour en savoir plus",
           "Posez vos questions en commentaire, on répond sous 48h",
           "Suivez la suite en story cette semaine"],
-    PRE: ["Écrivez-nous sur WhatsApp : +237 699 403 969 ou +237 679 941 300",
+    PRE: ["Écrivez-nous sur WhatsApp : +237 699 403 969",
           "Partagez si ce résultat vous parle",
           "Contactez-nous pour en discuter"],
 }

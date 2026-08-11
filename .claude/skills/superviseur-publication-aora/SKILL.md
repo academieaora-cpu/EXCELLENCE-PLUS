@@ -130,10 +130,13 @@ fois par audit, pas à chaque ligne.
 
 ### Contrôle 9 — Numéros WhatsApp
 
-Relis `config/contacts.json`. Numéros attendus dans un post : **+237 699 403 969** et
-**+237 679 941 300**. Le numéro France (+33 753 117 352) ne doit **jamais** apparaître comme
-contact dans un post ou un visuel Excellence+ — s'il y figure : **⚠️ CRITIQUE**. Si le fichier est
-absent : signale le risque qu'un post soit rédigé avec un numéro halluciné ou obsolète.
+Relis `config/contacts.json`. Numéro attendu dans un post : **+237 699 403 969** — seul numéro
+Excellence+ confirmé. Le numéro France (+33 753 117 352) ne doit **jamais** apparaître comme
+contact dans un post ou un visuel Excellence+ — s'il y figure : **⚠️ CRITIQUE**. Si un autre
+numéro que +237 699 403 969 apparaît (notamment **+237 679 941 300**, retiré le 11/08/2026 —
+introuvable dans le contrat, le brief annonceur ou les transcriptions client) : **⚠️ CRITIQUE**,
+même logique qu'un numéro halluciné. Si le fichier est absent : signale le risque qu'un post soit
+rédigé avec un numéro halluciné ou obsolète.
 
 ---
 

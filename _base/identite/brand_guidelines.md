@@ -192,7 +192,8 @@ pas par une lecture automatique de RECO-001 comme prioritaire sur ce point préc
 ### Couleurs
 
 ```
-NAVY             #1B2D5C   RGB(27, 45, 92)
+CHARBON          #181818   RGB(24, 24, 24)   [remplace #1B2D5C navy, retiré le 11/08/2026,
+                 décision Stéphane ; voir palette_excellence.json]
                  Usage : dominante (60-70%) ou accent (10-20%) selon le visuel
                  Texte blanc dessus : toujours conforme
 
@@ -206,15 +207,15 @@ BLANC            #FFFFFF   RGB(255, 255, 255)
 
 ⚠️  RÈGLE D'OR : l'une des trois domine (60-70%), une accentue (10-20%), la troisième respire —
     le rôle n'est plus fixé par couleur. Le contraste mesuré décide qui porte le texte :
-    jamais de texte blanc sur fond orange.
+    jamais de texte blanc sur fond orange. Le navy #1B2D5C n'est plus une couleur active
+    (reste la couleur d'AORA elle-même, hors palette Excellence+).
     Ne jamais ajouter une quatrième couleur sans validation DA.
 ```
 
 **Accessibilité** (ratios de contraste)
-- Navy #1B2D5C / Blanc : ratio 11.4:1 → AAA ✅ — texte à toute taille
+- Charbon #181818 / Blanc : ratio 17.75:1 → AAA ✅ — texte à toute taille
 - Orange #EC770D / Blanc : ratio 2.9:1 → échoue en texte courant, ≥ 18pt uniquement
 - Charbon #181818 / Orange #EC770D : ratio 6.1:1 → texte courant, marge confortable
-- Navy #1B2D5C / Orange #EC770D : ratio ≈ 4.5:1 → passe à peine, préférer le charbon
 
 ### Typographie
 
@@ -222,9 +223,9 @@ BLANC            #FFFFFF   RGB(255, 255, 255)
 FAMILLE UNIQUE : Inter (toutes graisses)
 Fallback si non disponible : Helvetica Neue → Helvetica → Arial
 
-Titres (H1)      : Inter Black ou Inter ExtraBold  — navy #1B2D5C
-Sous-titres (H2) : Inter SemiBold                  — navy ou orange selon contexte
-Corps de texte   : Inter Regular                   — navy sur fond clair, blanc sur fond navy
+Titres (H1)      : Inter Black ou Inter ExtraBold  — charbon #181818
+Sous-titres (H2) : Inter SemiBold                  — charbon ou orange selon contexte
+Corps de texte   : Inter Regular                   — charbon sur fond clair, blanc sur fond charbon
 Kickers          : Inter Black, MAJUSCULES          — orange #EC770D, taille 9-11pt
 Chiffres clés    : Inter Black                     — orange #EC770D, taille large
 CTA / Boutons    : Inter SemiBold                  — foncé sur fond orange (jamais blanc)

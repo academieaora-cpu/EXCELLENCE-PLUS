@@ -1,13 +1,16 @@
 {
   "_lisez_moi": [
-    "Numéros affichables comme contact WhatsApp dans un post ou un visuel.",
-    "Source : flyer officiel Excellence+ (Home Tutoring, Yaoundé-Cradat)."
+    "Numéro affichable comme contact WhatsApp dans un post ou un visuel.",
+    "Source : flyer officiel Excellence+ (Home Tutoring, Yaoundé-Cradat).",
+    "+237 679 941 300 retiré le 11/08/2026 : introuvable dans le contrat AORA-CCC-005, le brief",
+    "annonceur ou une transcription client vérifiable. Ne pas le réintroduire sans validation",
+    "écrite explicite."
   ],
   "whatsapp_posts": [
-    "+237 699 403 969",
-    "+237 679 941 300"
+    "+237 699 403 969"
   ],
   "whatsapp_exclus": {
-    "+33 753 117 352": "Numéro France — jamais utilisé comme contact dans un post Excellence+."
+    "+33 753 117 352": "Numéro France — jamais utilisé comme contact dans un post Excellence+.",
+    "+237 679 941 300": "Retiré le 11/08/2026 — non confirmé par une source contractuelle ou client."
   }
 }
