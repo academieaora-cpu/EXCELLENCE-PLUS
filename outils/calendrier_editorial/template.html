@@ -514,6 +514,9 @@ function openEntry(id){
   if(e.objectifs && e.objectifs.length){
     body += accSection('🎯 Objectifs', '<ul class="plain-list">'+e.objectifs.map(o=>`<li>${esc(o)}</li>`).join('')+'</ul>');
   }
+  if(e.description){
+    body += accSection('🧭 Description', esc(e.description));
+  }
   if(e.contenu){
     body += accSection('✍️ Contenu (prêt à exploiter)', esc(e.contenu));
   }
@@ -522,8 +525,11 @@ function openEntry(id){
     body += accSection('🖼️ Direction visuelle (image à insérer)', `<div class="kv">`+
       `<span class="k">Sujet</span><span>${esc(v.sujet||'')}</span>`+
       `<span class="k">Décor</span><span>${esc(v.decor||'')}</span>`+
+      `<span class="k">Éléments</span><span>${(v.elements||[]).map(esc).join(' · ')}</span>`+
       `<span class="k">Cadrage</span><span>${esc(v.cadrage||'')}</span>`+
       `<span class="k">Ambiance</span><span>${esc(v.ambiance||'')}</span>`+
+      `<span class="k">Prompt IA</span><span>${esc(v.prompt_ia||'')}</span>`+
+      `<span class="k">Références</span><span>${esc(v.references||'')}</span>`+
       `<span class="k">À éviter</span><span>${esc(v.a_eviter||'')}</span>`+
       `</div>`);
   }

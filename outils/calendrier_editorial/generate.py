@@ -245,6 +245,13 @@ FORMATS = {
 
 PILIER_NOM_LONG = {AUT: "Autorité éducative", MET: "La méthode Excellence+", PRE: "La preuve"}
 TON_PAR_PILIER = {AUT: "Crédible · Proche", MET: "Rassurant · Déterminé", PRE: "Proche · Rassurant"}
+# Rôle de chaque pilier — reprise directe de brand_guidelines.md §4, pas une
+# reformulation libre.
+PILIER_ROLE = {
+    AUT: "pose Excellence+ comme référence pédagogique de confiance",
+    MET: "rend visible ce qui est invisible : la rigueur du suivi terrain",
+    PRE: "déclenche la décision par la preuve",
+}
 
 # ---------------------------------------------------------------------------
 # Niveau 3 (fiche) — champs enrichis : objectifs, direction visuelle, contenu
@@ -297,19 +304,83 @@ A_EVITER_STANDARD = (
     "aucun chiffre d'effectif enseignants · jamais « Excellence++ » · "
     "aucun tarif chiffré publiquement."
 )
+ELEMENTS_PAR_FORMAT = {
+    "Carrousel conseil": ["Numérotation des slides", "Une idée par slide"],
+    "Post pédagogique": ["Icône ou pictogramme simple"],
+    "Question aux parents": ["Zone de texte pour la question posée"],
+    "Coulisses": ["Geste de travail concret (cahier, correction, échange)"],
+    "Portrait d'enseignant": ["Cadre professionnel", "Regard caméra"],
+    "Infographie de processus": ["Étapes numérotées", "Flèches de progression"],
+    "Témoignage": ["Guillemets ou cadre de citation"],
+    "Chiffre-clé": ["Chiffre en grand format", "Contexte en sous-texte"],
+    "Avant / après anonymisé": ["Ligne de séparation avant/après", "Éléments identifiants floutés"],
+}
+
+# Persona et étape du tunnel : dérivés du rôle documenté de chaque pilier
+# (brand_guidelines.md §4 — Autorité "pose Excellence+ comme référence",
+# Méthode "rend visible ce qui est invisible", Preuve "déclenche la
+# décision"), pas une segmentation démographique inventée en plus de la
+# cible unique déjà définie en §3.
+PERSONA_PAR_PILIER = {
+    AUT: "Parent d'élève à Yaoundé — repère un besoin, pas encore en recherche active",
+    MET: "Parent d'élève à Yaoundé — compare les options de suivi scolaire",
+    PRE: "Parent d'élève à Yaoundé — cherche une preuve avant de décider",
+}
+ETAPE_TUNNEL_PAR_PILIER = {AUT: "Découverte", MET: "Considération", PRE: "Décision"}
+
+HASHTAGS_BASE = ["#ExcellencePlus", "#Yaoundé"]
+HASHTAGS_PAR_MOIS = {
+    "2026-08": "#Rentrée2026", "2026-09": "#Rentrée2026",
+    "2026-10": "#SoutienScolaire", "2026-11": "#RéussiteScolaire",
+    "2026-12": "#BilanTrimestre", "2027-01": "#NouvelÉlan",
+}
+
+
+def hashtags_du_mois(mid):
+    return HASHTAGS_BASE + [HASHTAGS_PAR_MOIS.get(mid, "#SoutienScolaire")]
+
+
+def canaux_ouverts_a(config, mid):
+    """Canaux dont la date d'activation (config/creneaux.json) est atteinte
+    au mois mid — des intentions documentées, pas des créneaux réellement
+    programmés tant qu'ils n'ont pas leur propre entrée dans
+    config["creneaux"] (aujourd'hui, Facebook seul)."""
+    activation = (config.get("canaux") or {}).get("activation") or {}
+    return [c for c, date_min in activation.items() if date_min and date_min <= mid]
+
+
+def description_entry(config, mid, m, pilier, plateforme_creneau):
+    noms = {"facebook": "Facebook", "whatsapp": "Chaîne WhatsApp",
+            "instagram": "Instagram", "tiktok": "TikTok"}
+    ouverts = [c for c in ("facebook", "whatsapp", "instagram", "tiktok")
+               if c in canaux_ouverts_a(config, mid)]
+    decl = ", ".join(noms[c] for c in ouverts) if ouverts else noms[plateforme_creneau]
+    return (
+        "Thème du mois : %s. Pilier « %s » — %s.\n"
+        "Persona : %s.\n"
+        "Canaux ouverts ce mois-ci selon config/creneaux.json : %s — publication "
+        "réelle sur %s (seul canal avec un créneau programmé aujourd'hui) ; les "
+        "autres restent une déclinaison possible une fois leur créneau ajouté."
+    ) % (m["theme"], PILIER_NOM_LONG[pilier], PILIER_ROLE[pilier],
+         PERSONA_PAR_PILIER[pilier], decl, noms[plateforme_creneau])
 
 
 def direction_visuelle(pilier, format_, angle):
     return {
         "sujet": angle,
         "decor": DECOR_PAR_PILIER[pilier],
+        "elements": ELEMENTS_PAR_FORMAT.get(format_, []),
         "cadrage": CADRAGE_PAR_FORMAT.get(format_, "Plan moyen, espace de texte pour l'accroche"),
         "ambiance": AMBIANCE_STANDARD,
+        "prompt_ia": "%s — %s, Yaoundé Cameroun, lumière naturelle chaleureuse, "
+                     "palette navy #1B2D5C et orange #F37021, photoréaliste" % (
+                         angle, DECOR_PAR_PILIER[pilier]),
+        "references": "Cohérence avec brand_guidelines.md §7 (identité visuelle Excellence+)",
         "a_eviter": A_EVITER_STANDARD,
     }
 
 
-def contenu_suggere(angle, pilier, cta):
+def contenu_suggere(angle, pilier, cta, mid):
     """Amorce de brief pour le rédacteur — pas le texte final.
 
     generate.py ne produit que le PLAN : le corps définitif se rédige au
@@ -322,13 +393,15 @@ def contenu_suggere(angle, pilier, cta):
         "s'appuyer sur les chiffres validés (93%% en 2023-2024, 97%% en "
         "2024-2025) si pertinent pour ce pilier. Corps définitif rédigé au "
         "moment du BAT, jamais avant.\n\n"
-        "CTA prévu : %s"
-    ) % (angle, TON_PAR_PILIER[pilier], cta)
+        "CTA prévu : %s\n"
+        "Hashtags suggérés : %s"
+    ) % (angle, TON_PAR_PILIER[pilier], cta, " ".join(hashtags_du_mois(mid)))
 
 
 def objectifs_entry(pilier, cta, kpi):
     return [
         "Nourrir le pilier « %s »" % PILIER_NOM_LONG[pilier],
+        "Étape du tunnel : %s" % ETAPE_TUNNEL_PAR_PILIER[pilier],
         "CTA : %s" % cta,
         "KPI cible : %s" % kpi,
     ]
@@ -540,8 +613,9 @@ def main():
                       "définitif est rédigé au moment du BAT, puis validé par "
                       "email avant publication." % (angle, PILIER_NOM_LONG[pilier], m["theme"]),
             "objectifs": objectifs_entry(pilier, cta, kpi_cible),
+            "description": description_entry(config, mid, m, pilier, c["plateforme"]),
             "visuel": direction_visuelle(pilier, format_, angle),
-            "contenu": contenu_suggere(angle, pilier, cta),
+            "contenu": contenu_suggere(angle, pilier, cta, mid),
             "production": {
                 "responsable": "Claude (rédaction) → Stéphane/Laurence (validation interne) → M. NDOMMIE (BAP)",
                 "delai": "%s · %s WAT" % (fr_date(c["date"]), c["heure"]),
