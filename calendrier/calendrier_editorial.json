@@ -48,6 +48,39 @@
       "format": "image_texte",
       "statut": "a_rediger",
       "fichier": "contenu/facebook/EXC-FB-2026-003.md"
+    },
+    {
+      "id": "EXC-FB-2026-004",
+      "plateforme": "facebook",
+      "date": "2026-08-17",
+      "heure_wat": "06:00",
+      "pilier": "autorité_éducative",
+      "theme": "Les signes avant le bulletin — pas après",
+      "format": "image_texte",
+      "statut": "draft",
+      "fichier": "contenu/facebook/EXC-FB-2026-004.md"
+    },
+    {
+      "id": "EXC-FB-2026-005",
+      "plateforme": "facebook",
+      "date": "2026-08-19",
+      "heure_wat": "12:00",
+      "pilier": "methode_excellence",
+      "theme": "On ne s'arrête pas à l'enseignant — suivi, vérification, correction",
+      "format": "carrousel",
+      "statut": "draft",
+      "fichier": "contenu/facebook/EXC-FB-2026-005.md"
+    },
+    {
+      "id": "EXC-FB-2026-006",
+      "plateforme": "facebook",
+      "date": "2026-08-22",
+      "heure_wat": "06:00",
+      "pilier": "la_preuve",
+      "theme": "93 % → 97 % — ce que deux ans de suivi donnent",
+      "format": "image_texte",
+      "statut": "draft",
+      "fichier": "contenu/facebook/EXC-FB-2026-006.md"
     }
   ]
 }
