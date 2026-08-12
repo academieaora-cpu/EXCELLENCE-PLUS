@@ -59,7 +59,7 @@ Blanc                #FFFFFF
 Gris clair           #F2F2F2
 ```
 
-⚠️ Ceci est la palette native du logo. La palette officielle de **communication sociale** (posts, visuels réseaux) reste celle définie dans `_base/couleurs/palette_excellence.json` — Navy #1B2D5C · Orange #F37021 · Blanc. Ne pas confondre ni mélanger les deux sur un même visuel.
+⚠️ Ceci est la palette native du logo. Depuis le 11/08/2026 (décision de Stéphane), la palette officielle de **communication sociale** définie dans `_base/couleurs/palette_excellence.json` est identique à celle-ci sur les 3 couleurs partagées — Charbon #181818 · Orange #EC770D · Blanc. Le navy #1B2D5C n'est plus utilisé sur Excellence+. Seul le gris clair #F2F2F2 reste propre au logo, jamais repris comme couleur active sur un visuel de communication sociale.
 
 **Signe distinctif**
 Le « + » est la seule lettre orange du logo — signature graphique récurrente, à réutiliser pour souligner un progrès, un bulletin amélioré, une réussite.

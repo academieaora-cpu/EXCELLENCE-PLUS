@@ -2,32 +2,49 @@
   "client": "Excellence+",
   "version": "2026",
   "couleurs": {
-    "navy": {
-      "hex": "#1B2D5C",
-      "rgb": [27, 45, 92],
-      "cmjn": [100, 92, 36, 41],
-      "usage": "Fond principal, titres, headers — dominant 60-70%"
+    "charbon": {
+      "hex": "#181818",
+      "rgb": [24, 24, 24],
+      "cmjn_approx": [0, 0, 0, 91],
+      "cmjn_note": "Conversion RGB→CMJN naïve, sans profil colorimétrique. À vérifier avant tout support imprimé.",
+      "usage": "Dominante (60-70%) ou accent (10-20%) selon le visuel — texte blanc dessus toujours conforme",
+      "corrige_le": "2026-08-11",
+      "source": "Couleur native du logo (plateforme_marque.md §5), remplace #1B2D5C navy."
     },
     "orange": {
-      "hex": "#F37021",
-      "rgb": [243, 112, 33],
-      "cmjn": [0, 67, 95, 0],
-      "usage": "Kickers, CTA, bande signature, accents — 10-20%"
+      "hex": "#EC770D",
+      "rgb": [236, 119, 13],
+      "cmjn_approx": [0, 50, 94, 7],
+      "cmjn_note": "Conversion RGB→CMJN naïve, sans profil colorimétrique. À vérifier avant tout support imprimé.",
+      "usage": "Dominante (60-70%) ou accent (10-20%) selon le visuel — jamais de texte blanc en fond orange (2,9:1, échoue WCAG AA)",
+      "corrige_le": "2026-08-11",
+      "ancienne_valeur": "#F37021 — choix d'harmonisation agence avec la charte AORA (AORA_Charte_Graphique_2026.md). Remplacé sur décision de Stéphane (Responsable projet), communiquée le 11/08/2026, par l'orange réel du logo Excellence+.",
+      "source": "Extraction pixel du logo (excellence_plus_logo.png), écart de teinte 0,2° au logo réel. Détail : direction-artistique-excellence-plus/references/palette-et-signature.md §1."
     },
     "blanc": {
       "hex": "#FFFFFF",
       "rgb": [255, 255, 255],
       "cmjn": [0, 0, 0, 0],
-      "usage": "Texte sur navy, espaces de respiration"
+      "usage": "Dominante, accent ou respiration selon le visuel — jamais comme texte sur fond orange"
     }
   },
-  "regle_or": "Navy domine. Orange accentue. Blanc respire. Ne jamais inverser.",
+  "couleur_retiree": {
+    "navy": {
+      "hex": "#1B2D5C",
+      "retire_le": "2026-08-11",
+      "raison": "Choix d'harmonisation avec la charte AORA, pas une couleur du logo Excellence+. Retiré sur décision de Stéphane (Responsable projet), même logique que la correction de l'orange le même jour. Reste la couleur d'AORA elle-même (AORA_Charte_Graphique_2026.md) — hors palette Excellence+ uniquement.",
+      "ne_jamais": "Utiliser cette valeur dans un brief, un prompt ou un fichier de sortie destiné à un visuel Excellence+."
+    }
+  },
+  "regle_or": "Charbon, orange et blanc se partagent le rôle de fond selon le visuel — l'une des trois domine (60-70%), une deuxième accentue (10-20%), la troisième respire. Le brief choisit et écrit laquelle. Jamais de texte blanc sur fond orange. Le navy n'est plus une couleur active.",
   "combinaisons_autorisees": [
-    "navy + orange + blanc",
-    "blanc sur navy",
+    "charbon + orange + blanc, dans n'importe quel rôle (dominante / accent / respiration)",
+    "blanc sur charbon",
+    "charbon sur orange, texte courant",
     "orange sur blanc (texte > 18pt uniquement)"
   ],
   "combinaisons_interdites": [
-    "orange + navy directement (lisibilité insuffisante pour texte)"
+    "toute utilisation du navy #1B2D5C sur un visuel Excellence+",
+    "blanc sur orange, quel que soit le rôle (2,9:1, échoue WCAG AA)"
   ]
 }

@@ -194,8 +194,9 @@ non fongibles, dans deux fichiers distincts. **Jamais un seul tableau.**
    technique documentée.
 
 Le numéro France **+33 753 117 352** ne doit jamais apparaître dans un créatif
-publicitaire. Seuls **+237 699 403 969** et **+237 679 941 300** sont autorisés
-(`config/contacts.json`). Le script rejette, il ne se contente pas de déconseiller.
+publicitaire. Seul **+237 699 403 969** est autorisé (`config/contacts.json`) —
+**+237 679 941 300** retiré le 11/08/2026, non confirmé par une source
+contractuelle. Le script rejette, il ne se contente pas de déconseiller.
 
 ---
 

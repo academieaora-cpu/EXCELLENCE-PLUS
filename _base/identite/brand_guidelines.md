@@ -192,27 +192,30 @@ pas par une lecture automatique de RECO-001 comme prioritaire sur ce point préc
 ### Couleurs
 
 ```
-NAVY PRINCIPAL   #1B2D5C   RGB(27, 45, 92)
-                 Usage : fonds principaux, textes sur fond clair, cadres, headers
-                 Proportion : 60-70% de la surface d'un visuel
+CHARBON          #181818   RGB(24, 24, 24)   [remplace #1B2D5C navy, retiré le 11/08/2026,
+                 décision Stéphane ; voir palette_excellence.json]
+                 Usage : dominante (60-70%) ou accent (10-20%) selon le visuel
+                 Texte blanc dessus : toujours conforme
 
-ORANGE ACCENT    #F37021   RGB(243, 112, 33)
-                 Usage : kickers, CTA, bande signature, chiffres clés, accents
-                 Proportion : 10-20% — jamais dominant
+ORANGE           #EC770D   RGB(236, 119, 13)   [corrigé le 11/08/2026, décision Stéphane —
+                 remplace #F37021, ancien choix d'harmonisation agence ; voir palette_excellence.json]
+                 Usage : dominante (60-70%) ou accent (10-20%) selon le visuel
+                 Texte dessus : foncé uniquement (charbon de préférence), jamais blanc (2,9:1, échoue AA)
 
 BLANC            #FFFFFF   RGB(255, 255, 255)
-                 Usage : texte sur fond navy, espaces de respiration, fonds clairs
-                 Proportion : le reste
+                 Usage : dominante, accent ou respiration selon le visuel
 
-⚠️  RÈGLE D'OR : Navy domine. Orange accentue. Blanc respire.
-    Ne jamais inverser cette hiérarchie.
+⚠️  RÈGLE D'OR : l'une des trois domine (60-70%), une accentue (10-20%), la troisième respire —
+    le rôle n'est plus fixé par couleur. Le contraste mesuré décide qui porte le texte :
+    jamais de texte blanc sur fond orange. Le navy #1B2D5C n'est plus une couleur active
+    (reste la couleur d'AORA elle-même, hors palette Excellence+).
     Ne jamais ajouter une quatrième couleur sans validation DA.
 ```
 
 **Accessibilité** (ratios de contraste)
-- Navy #1B2D5C / Blanc : ratio 11.4:1 → AAA ✅ — texte à toute taille
-- Orange #F37021 / Blanc : ratio 3.1:1 → texte > 18pt uniquement
-- Orange #F37021 / Navy : ratio 3.6:1 → titres et accents uniquement
+- Charbon #181818 / Blanc : ratio 17.75:1 → AAA ✅ — texte à toute taille
+- Orange #EC770D / Blanc : ratio 2.9:1 → échoue en texte courant, ≥ 18pt uniquement
+- Charbon #181818 / Orange #EC770D : ratio 6.1:1 → texte courant, marge confortable
 
 ### Typographie
 
@@ -220,12 +223,12 @@ BLANC            #FFFFFF   RGB(255, 255, 255)
 FAMILLE UNIQUE : Inter (toutes graisses)
 Fallback si non disponible : Helvetica Neue → Helvetica → Arial
 
-Titres (H1)      : Inter Black ou Inter ExtraBold  — navy #1B2D5C
-Sous-titres (H2) : Inter SemiBold                  — navy ou orange selon contexte
-Corps de texte   : Inter Regular                   — navy sur fond clair, blanc sur fond navy
-Kickers          : Inter Black, MAJUSCULES          — orange #F37021, taille 9-11pt
-Chiffres clés    : Inter Black                     — orange #F37021, taille large
-CTA / Boutons    : Inter SemiBold                  — blanc sur fond orange
+Titres (H1)      : Inter Black ou Inter ExtraBold  — charbon #181818
+Sous-titres (H2) : Inter SemiBold                  — charbon ou orange selon contexte
+Corps de texte   : Inter Regular                   — charbon sur fond clair, blanc sur fond charbon
+Kickers          : Inter Black, MAJUSCULES          — orange #EC770D, taille 9-11pt
+Chiffres clés    : Inter Black                     — orange #EC770D, taille large
+CTA / Boutons    : Inter SemiBold                  — foncé sur fond orange (jamais blanc)
 
 Taille minimum sur mobile (posts réseaux) : 28pt
 ```
@@ -233,7 +236,7 @@ Taille minimum sur mobile (posts réseaux) : 28pt
 ### Éléments graphiques signatures
 
 ```
-BANDE ORANGE HORIZONTALE  6px, orange #F37021, en haut de chaque visuel post
+BANDE ORANGE HORIZONTALE  6px, orange #EC770D, en haut de chaque visuel post
                            → signature visuelle AORA, obligatoire sur tout post
 
 KICKER                    "— TEXTE EN MAJUSCULES" en orange avant chaque titre
