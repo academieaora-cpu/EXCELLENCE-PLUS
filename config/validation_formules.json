@@ -6,24 +6,27 @@
     "(expéditeur exact, objet identifié, aucune réserve) s'appliquent en plus,",
     "jamais à sa place.",
     "",
-    "⚠️ Incohérence à corriger ailleurs dans le dispositif : les modèles email du",
-    "skill community-manager-aora (references/bat-publication.md) demandent au",
-    "client de répondre « BAT VALIDÉ » / « BAP VALIDÉ ». Ces mentions NE SONT",
-    "PAS dans la liste ci-dessous et ne seront donc pas reconnues par la",
-    "routine. Tant que l'un des deux n'est pas aligné sur l'autre, les emails",
-    "envoyés à M. NDOMMIE doivent explicitement lui demander la formule",
-    "ci-dessous, pas celle du template."
+    "Corrigé le 12/08/2026 : les gabarits email de community-manager-aora",
+    "(references/bat-publication.md) demandent au client de répondre",
+    "« BAT VALIDÉ » / « BAP VALIDÉ ». Ces mentions sont désormais recevables",
+    "ci-dessous, en plus de la phrase longue — les deux formulations envoyées",
+    "au client sont reconnues, quel que soit le gabarit utilisé pour la",
+    "demande. Les 3 autres conditions restent obligatoires, sans exception."
   ],
 
   "bap": {
     "formules_recevables": [
-      "je valide ce contenu pour publication."
+      "je valide ce contenu pour publication.",
+      "bap validé",
+      "bap validée"
     ]
   },
 
   "bat": {
     "formules_recevables": [
-      "je valide ce document pour impression / mise en production."
+      "je valide ce document pour impression / mise en production.",
+      "bat validé",
+      "bat validée"
     ]
   },
 

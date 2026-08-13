@@ -118,15 +118,13 @@ avec l'adresse attendue.
 
 ### Contrôle 8 — Formule de validation
 
-Relis `config/validation_formules.json`. La formule BAP attendue est *« Je valide ce contenu pour
-publication. »* — pas « BAP VALIDÉ ».
+Relis `config/validation_formules.json`. Formules BAP recevables : *« Je valide ce contenu pour
+publication. »* ou *« BAP VALIDÉ »* (variante féminine incluse). Même principe côté BAT.
 
-⚠️ Écart connu, non résolu au moment de l'écriture de ce skill : les modèles email de
-`community-manager-aora` (`references/bat-publication.md`) demandent au client de répondre
-« BAT VALIDÉ » / « BAP VALIDÉ », deux formules absentes de `validation_formules.json`. Tant que ce
-n'est pas aligné, vérifie — quand le corps d'un email cité dans un rapport est visible — qu'il
-demande bien la formule de `validation_formules.json`, pas celle du template. Signale l'écart une
-fois par audit, pas à chaque ligne.
+Résolu le 12/08/2026 : `community-manager-aora` (`references/bat-publication.md`) et
+`validation_formules.json` sont désormais alignés — les deux formulations envoyées au client sont
+reconnues. Si ce contrôle retrouve un jour un email exigeant une formule absente du fichier de
+config, signale-le comme une régression, pas comme un rappel de routine.
 
 ### Contrôle 9 — Numéros WhatsApp
 
@@ -169,9 +167,6 @@ Court, greffé après le rapport audité — jamais un document séparé qu'on d
 🔍 SUPERVISION — conforme
    Page ✅ · Créneaux ✅ · Double porte ✅ · Idempotence ✅
    Expéditeur ✅ · Formule BAP ✅ · WhatsApp ✅
-   (publish_scheduled.yml toujours actif — rappel, pas une nouvelle alerte)
-   (écart connu : gabarit community-manager-aora demande « BAP VALIDÉ », pas
-   la formule de validation_formules.json — rappel, pas une nouvelle alerte)
 ```
 
 **Cas avec écart :**
