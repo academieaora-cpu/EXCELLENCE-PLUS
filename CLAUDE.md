@@ -48,7 +48,8 @@ obligatoire mais à consulter selon le besoin) : `_base/identite/Plan_AORA_EXCEL
 
 - Stéphane : **Autorité suprême du projet** (Responsable projet) — décision finale sur
   tout aspect du dispositif (dépôt, choix éditoriaux, instructions) ; peut valider ou
-  refuser n'importe quel livrable ou décision. Contact : alainstephaneolouou@gmail.com
+  refuser n'importe quel livrable ou décision. **Pour recueillir son avis ou sa
+  validation, écrire à : alainstephaneolouou@gmail.com**
 - Laurence : Account Manager
 - Claude : Production éditoriale
 
