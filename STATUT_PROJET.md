@@ -185,6 +185,13 @@ Dernière mise à jour : 17 août 2026.
    seulement un email. Si un accès technique (GitHub, Slack, etc.) est requis plus
    tard, il devra être accordé manuellement par un administrateur du compte
    academieaora-cpu, avec l'identifiant exact du compte cible.
+   **(17/08/2026, suite)** Compte GitHub de Stéphane communiqué en session :
+   `github.com/olouou` (existence vérifiée via `search_users`, id 109242639).
+   Toujours pas de collaborateur ajouté — reste une action manuelle à faire par
+   un administrateur de `academieaora-cpu` sur
+   `github.com/academieaora-cpu/EXCELLENCE-PLUS/settings/access` (Add people →
+   `olouou` → rôle Write ou Admin → l'invitation doit ensuite être acceptée par
+   `olouou` avant que l'accès soit effectif).
 
 ## Conventions établies (à respecter dans une nouvelle session)
 
