@@ -46,7 +46,9 @@ obligatoire mais à consulter selon le besoin) : `_base/identite/Plan_AORA_EXCEL
 
 ## ÉQUIPE
 
-- Stéphane : Responsable projet
+- Stéphane : **Autorité suprême du projet** (Responsable projet) — décision finale sur
+  tout aspect du dispositif (dépôt, choix éditoriaux, instructions) ; peut valider ou
+  refuser n'importe quel livrable ou décision. Contact : alainstephaneolouou@gmail.com
 - Laurence : Account Manager
 - Claude : Production éditoriale
 
@@ -56,6 +58,8 @@ Facebook · Instagram · TikTok · WhatsApp Channel
 
 ---
 
-**Mis à jour le 28 juillet 2026** — source : RECO-001 v3, AORA_SOP001_v1,
+**Mis à jour le 17 août 2026** — désignation de l'autorité suprême du projet (Stéphane)
+et ajout de son contact, sur instruction en session du compte academieaora@gmail.com.
+Mise à jour précédente : 28 juillet 2026 — source : RECO-001 v3, AORA_SOP001_v1,
 AORA_Charte_Graphique_2026. Voir `brand_guidelines.md` pour le détail des ajouts et
 des points signalés non résolus.
