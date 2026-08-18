@@ -5,7 +5,7 @@
 > si tu reprends ce projet dans une nouvelle session, lis ce fichier en premier
 > pour connaître l'état réel du repo sans avoir à tout re-déduire du git log.
 
-Dernière mise à jour : 5 août 2026.
+Dernière mise à jour : 17 août 2026.
 
 ## Branches
 
@@ -173,6 +173,25 @@ Dernière mise à jour : 5 août 2026.
    d'équipe, pas comme fait client vérifié — voir la note datée dans `config/creneaux.json`. Si
    M. NDOMMIE réagit un jour à ce créneau précis, traiter comme un point ouvert à reprendre avec
    lui, pas comme un changement pré-validé à défendre.
+
+14. **(17/08/2026) Stéphane désigné « autorité suprême du projet » dans `CLAUDE.md`**,
+   avec son email de contact, sur instruction directe donnée en session par le compte
+   academieaora@gmail.com (confirmée explicitement via question de clarification —
+   portée voulue : décision finale sur le dépôt, les choix éditoriaux et les
+   instructions ; validation ou refus de tout livrable). Aucun accès GitHub n'a été
+   accordé : le repo n'a qu'un seul collaborateur (`academieaora-cpu`), aucun outil
+   d'invitation de collaborateur n'est disponible en session, et une invitation
+   GitHub réelle nécessiterait de toute façon un nom d'utilisateur GitHub, pas
+   seulement un email. Si un accès technique (GitHub, Slack, etc.) est requis plus
+   tard, il devra être accordé manuellement par un administrateur du compte
+   academieaora-cpu, avec l'identifiant exact du compte cible.
+   **(17/08/2026, suite)** Compte GitHub de Stéphane communiqué en session :
+   `github.com/olouou` (existence vérifiée via `search_users`, id 109242639).
+   Toujours pas de collaborateur ajouté — reste une action manuelle à faire par
+   un administrateur de `academieaora-cpu` sur
+   `github.com/academieaora-cpu/EXCELLENCE-PLUS/settings/access` (Add people →
+   `olouou` → rôle Write ou Admin → l'invitation doit ensuite être acceptée par
+   `olouou` avant que l'accès soit effectif).
 
 ## Conventions établies (à respecter dans une nouvelle session)
 
