@@ -60,8 +60,10 @@ Rappel des points qui ne se négocient pas :
 · Ne signale comme écart qu'un créneau PASSÉ resté vide. Les créneaux futurs
   non couverts sont normaux pendant la montée en charge.
 
-· Cadence de référence : 3 publications par semaine AU TOTAL, tous canaux
-  confondus — mardi 12h30, jeudi 19h00, samedi 10h00 WAT.
+· Cadence de référence : 3 publications par semaine et par canal prioritaire
+  (Facebook, WhatsApp, Instagram — même jour/heure, un contenu pivot décliné)
+  — lundi 06h00, mercredi 12h00, samedi 06h00 WAT. Les 4 canaux (+ TikTok,
+  ~1×/mois hors grille) sont ouverts simultanément depuis le 03/08/2026.
   Source qui fait foi : config/creneaux.json.
 
 Sortie : le rapport court dans Slack, canal #excellence-plus.

@@ -15,8 +15,8 @@ Connecteurs requis : Composio · Slack · Gmail (lecture seule)
 ```
 
 **Pourquoi 03h00** — la programmation doit être faite avant le premier créneau du jour
-(mardi 12h30 WAT). À 03h00 la veille est close, personne ne modifie le dépôt, et le rapport
-attend l'équipe à son arrivée.
+(lundi 06h00 WAT — le plus matinal des trois, voir config/creneaux.json). À 03h00 la veille est
+close, personne ne modifie le dépôt, et le rapport attend l'équipe à son arrivée.
 
 **Pourquoi quotidienne et pas au push** — une routine Claude se déclenche à l'heure, pas sur un
 événement Git. Avec deux semaines d'avance de production (l'objectif du dispositif), un passage

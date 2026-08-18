@@ -1,7 +1,19 @@
 # Pipeline de génération — calendrier éditorial CE-EXC-001
 
-Génère `rapports/calendrier_editorial_excellence_plus.html` (calendrier interactif
-juillet → décembre 2026, navigation 4 niveaux : vue 6 mois → mois → semaine → fiche).
+⚠️ **SUPERSÉDÉ LE 18/08/2026** — le fichier actuel dans `rapports/` a été refondu
+avec une structure HTML entièrement différente (fiches `<details class="fiche-card">`
+groupées par mois, statuts cliquables À produire/Bloqué/etc., glossaire intégré) —
+plus de `window.ENTRIES`/`window.WEEKS`, plus de `template.html` en sortie. **Ne pas
+relancer ce pipeline en pensant régénérer ou mettre à jour le fichier courant** :
+il produirait l'ancienne architecture et écraserait la nouvelle. Ce dossier reste
+documenté ci-dessous à titre d'historique et au cas où quelqu'un choisirait
+délibérément de revenir à cette architecture — dans ce cas, il faudra d'abord y
+porter le contenu de la version actuelle (6 mois, 4 canaux simultanés — voir
+`config/creneaux.json`).
+
+Génère (générait) `rapports/calendrier_editorial_excellence_plus.html` (calendrier
+interactif août 2026 → janvier 2027, navigation 4 niveaux : vue 6 mois → mois →
+semaine → fiche).
 
 ## Pipeline
 

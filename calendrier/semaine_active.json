@@ -1,23 +1,57 @@
 {
   "_lisez_moi": [
-    "Corrigé le 03/08/2026 : l'ancienne semaine « W32 » (04→10/08) et ses 5 posts",
-    "multi-canaux dataient du dispositif d'avant l'arbitrage du 30/07/2026. Le",
-    "dispositif actuel est 3 publications/semaine AU TOTAL, Facebook seul au",
-    "lancement (voir config/creneaux.json, qui fait foi). La première publication",
-    "réelle est lundi 10/08/2026 06h00 — ISO semaine 33 (10→16/08), pas 32.",
-    "posts_a_produire ci-dessous vient directement de la sortie de",
-    "outils/calendrier_editorial/generate.py pour cette semaine — ne pas",
-    "réinventer des identifiants manuellement."
+    "Corrigé le 18/08/2026 : le calendrier CE-EXC-001",
+    "(rapports/calendrier_editorial_excellence_plus.html) a été remis à jour le",
+    "même jour — première publication au 03/08/2026 (semaine ISO 32, pas 33),",
+    "4 canaux (Facebook, WhatsApp, Instagram, TikTok) ouverts SIMULTANÉMENT",
+    "dès le lancement, plus de canal 'seul au lancement'. Voir",
+    "config/creneaux.json, qui fait foi.",
+    "",
+    "'semaine' ci-dessous est calculée par rapport à AUJOURD'HUI (18/08/2026),",
+    "pas par rapport au lancement — à recalculer si ce fichier est relu un",
+    "autre jour. Cadence : lundi 06h00 / mercredi 12h00 / samedi 06h00.",
+    "",
+    "⚠️ posts_a_produire est VIDE : le nouveau calendrier ne porte aucun",
+    "identifiant EXC-XX-2026-NNN sur ses fiches (seulement sujet + pilier +",
+    "date) — n'en invente aucun ici. Les identifiants ne sont attribués qu'au",
+    "moment où community-manager-aora/redaction-hebdo-excellence-plus rédige",
+    "réellement le post dans contenu/. 'sujets_attendus' ci-dessous transcrit",
+    "les fiches du calendrier pour cette semaine, à titre de préparation.",
+    "",
+    "⚠️ Point ouvert découvert en corrigeant ce fichier : le seul post déjà",
+    "rédigé dans le dépôt, contenu/facebook/EXC-FB-2026-001.md (date_publication",
+    "2026-08-10, titre « Préparer la rentrée — trois gestes à commencer",
+    "maintenant »), ne correspond à AUCUNE fiche du calendrier remis à jour le",
+    "18/08 — ni son sujet, ni son angle ne s'y retrouvent, y compris à la même",
+    "date. Il est orphelin par rapport au plan actuel. Ne pas le publier ni le",
+    "réutiliser sans que Stéphane/Laurence tranchent : le retirer, le recaler",
+    "sur une fiche existante, ou le traiter comme un post hors-plan."
   ],
-  "semaine": "W33",
-  "du": "2026-08-10",
-  "au": "2026-08-16",
-  "objectif": "Fondation et preuve",
-  "posts_a_produire": [
-    "EXC-FB-2026-001",
-    "EXC-FB-2026-002",
-    "EXC-FB-2026-003"
+  "semaine": "W34",
+  "du": "2026-08-17",
+  "au": "2026-08-23",
+  "objectif": "Préparer une rentrée scolaire sereine et réussie",
+  "sujets_attendus": [
+    {
+      "date": "2026-08-17",
+      "jour": "lundi",
+      "pilier": "① Identifier",
+      "sujet": "Choisir un accompagnement à domicile : les bonnes questions"
+    },
+    {
+      "date": "2026-08-19",
+      "jour": "mercredi",
+      "pilier": "② Méthode",
+      "sujet": "Nos formules pour la rentrée 2026-2027"
+    },
+    {
+      "date": "2026-08-22",
+      "jour": "samedi",
+      "pilier": "③ Preuve",
+      "sujet": "Témoignage classe d'examen : la préparation qui rassure"
+    }
   ],
+  "posts_a_produire": [],
   "posts_en_bat": [],
   "posts_bap_recu": [],
   "posts_publies": []

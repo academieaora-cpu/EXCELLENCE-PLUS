@@ -51,9 +51,11 @@ rattrape pas.
 ### Contrôle 2 — Créneaux
 
 Relis `config/creneaux.json` à **chaque** exécution — ne réutilise jamais une valeur mémorisée
-d'un échange précédent. Les créneaux ont déjà changé une fois (Mardi 12h30/Jeudi 19h00/Samedi
-10h00 du 30/07/2026 → Lundi 06h00/Mercredi 12h00/Samedi 06h00 du 02/08/2026) ; rien ne dit qu'ils
-ne changeront pas à nouveau.
+d'un échange précédent. Les créneaux ont déjà changé deux fois : Mardi 12h30/Jeudi 19h00/Samedi
+10h00 du 30/07/2026 → Lundi 06h00/Mercredi 12h00/Samedi 06h00 du 02/08/2026 (jours/heures) ; puis,
+le 18/08/2026, la première publication (10/08 → 03/08) et l'ouverture des canaux (Facebook seul →
+Facebook/WhatsApp/Instagram/TikTok simultanés) ont aussi changé. Rien ne dit qu'ils ne changeront
+pas à nouveau — c'est précisément pourquoi ce contrôle relit le fichier plutôt que ce document.
 
 Si le rapport programme ou signale un post à un jour/heure absent du fichier : signale l'écart.
 Si le fichier porte une note `_maj` indiquant une re-validation client en attente : rappelle-le

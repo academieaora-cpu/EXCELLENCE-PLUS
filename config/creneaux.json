@@ -4,13 +4,27 @@
     "les documents de référence — modifier brand_guidelines.md sans modifier ce",
     "fichier ne change rien à ce qui est publié.",
     "",
-    "3 publications par semaine AU TOTAL, tous canaux confondus (arbitrage du",
-    "30/07/2026). Un créneau = une publication = un canal. Facebook d'abord ;",
-    "les autres canaux s'ouvrent progressivement (voir canaux.activation).",
+    "3 publications par semaine PAR CANAL PRIORITAIRE (Facebook, WhatsApp,",
+    "Instagram — même jour/heure/pilier, un contenu pivot décliné sur les",
+    "trois), TikTok en plus quand une vidéo source existe (~1×/mois, pas un",
+    "créneau fixe). Les 4 canaux sont ouverts SIMULTANÉMENT dès le lancement —",
+    "arbitrage du 18/08/2026, qui remplace l'ouverture progressive retenue le",
+    "30/07/2026. LinkedIn et YouTube restent hors périmètre du contrat actuel",
+    "(voir canaux.activation).",
     "",
     "Le champ pilier de chaque créneau est un DÉFAUT, pas une règle figée : la",
-    "répartition 40/35/25 se mesure sur 30 jours glissants, pas sur la semaine.",
-    "Le pilier réel de chaque post vit dans le front-matter du fichier .md.",
+    "répartition 40/35/25 se mesure sur 30 jours glissants, pas sur la semaine",
+    "(la rotation stricte 1 pilier/jour ci-dessous donne mécaniquement du",
+    "33/33/33 — l'écart avec la cible 40/35/25 est structurel, pas une erreur",
+    "à corriger ici). Le pilier réel de chaque post vit dans le front-matter du",
+    "fichier .md.",
+    "",
+    "⚠️ MODIFIÉ LE 18/08/2026 : première publication et ouverture des canaux",
+    "recalées sur le calendrier CE-EXC-001 remis à jour le même jour",
+    "(rapports/calendrier_editorial_excellence_plus.html) — décision confirmée",
+    "par le compte academieaora@gmail.com en session. Remplace la version du",
+    "10/08/2026 ci-dessous (semaine 33), elle-même retenue comme décision",
+    "d'équipe plutôt que fait client vérifié par document écrit.",
     "",
     "⚠️ MODIFIÉ LE 02/08/2026 : jours et heures changés (Mardi/Jeudi/Samedi",
     "→ Lundi/Mercredi/Samedi). Statut au 10/08/2026 : retenu par décision",
@@ -31,7 +45,7 @@
     "debut": "2026-08-01",
     "fin": "2027-01-31",
     "duree_mois": 6,
-    "premiere_publication": "2026-08-10",
+    "premiere_publication": "2026-08-03",
     "fuseau": "WAT",
     "utc_offset": "+01:00",
     "_note_fuseau": "WAT = UTC+1 toute l'année, pas d'heure d'été au Cameroun."
@@ -44,10 +58,30 @@
       { "jour": "lundi",    "heure": "06:00", "pilier": 1, "intention": "Conseil de fond — avant le départ à l'école, moment de préparation matinale" },
       { "jour": "mercredi", "heure": "12:00", "pilier": 2, "intention": "Méthode et coulisses — pause déjeuner, milieu de semaine" },
       { "jour": "samedi",   "heure": "06:00", "pilier": 3, "intention": "Preuve et témoignages — début de matinée week-end" }
+    ],
+    "whatsapp": [
+      { "jour": "lundi",    "heure": "06:00", "pilier": 1, "intention": "Même contenu pivot que Facebook, décliné — canal officiel = Chaîne WhatsApp « Excellence Plus Éducation »" },
+      { "jour": "mercredi", "heure": "12:00", "pilier": 2, "intention": "Même contenu pivot que Facebook, décliné" },
+      { "jour": "samedi",   "heure": "06:00", "pilier": 3, "intention": "Même contenu pivot que Facebook, décliné" }
+    ],
+    "instagram": [
+      { "jour": "lundi",    "heure": "06:00", "pilier": 1, "intention": "Même contenu pivot que Facebook, décliné en format 4:5 ou carré" },
+      { "jour": "mercredi", "heure": "12:00", "pilier": 2, "intention": "Même contenu pivot que Facebook, décliné en format 4:5 ou carré" },
+      { "jour": "samedi",   "heure": "06:00", "pilier": 3, "intention": "Même contenu pivot que Facebook, décliné en format 4:5 ou carré" }
+    ],
+    "_note_tiktok": [
+      "TikTok n'a pas de créneau fixe : ~1 publication/mois, seulement les",
+      "semaines où une vidéo source existe déjà (réutilisée, pas produite",
+      "spécifiquement). Ne pas lui inventer un triplet jour/heure/pilier ici."
     ]
   },
 
   "_historique_creneaux": {
+    "2026-08-10_semaine33": {
+      "note": "Première publication placée au 10/08/2026 (semaine ISO 33), Facebook seul au lancement, ouverture progressive des autres canaux (instagram 09/2026, tiktok 10/2026).",
+      "annulee_le": "2026-08-18",
+      "_note": "Remplacée par l'ouverture simultanée des 4 canaux dès le 03/08/2026 (semaine 32) — voir programme.premiere_publication et canaux.activation ci-dessus."
+    },
     "2026-07-30": {
       "facebook": [
         { "jour": "mardi",  "heure": "12:30", "pilier": 1 },
@@ -62,17 +96,20 @@
     "activation": {
       "facebook": "2026-08",
       "whatsapp": "2026-08",
-      "instagram": "2026-09",
-      "tiktok": "2026-10",
+      "instagram": "2026-08",
+      "tiktok": "2026-08",
       "linkedin": null,
       "youtube": null
     },
     "_note_activation": [
-      "Un canal dont la date d'activation est null ou postérieure au mois du",
-      "créneau ne doit pas être programmé. Facebook est le canal pivot : c'est",
-      "le seul ouvert au lancement, les créneaux ci-dessus lui sont tous",
-      "attribués. L'ouverture des suivants se décide au vu des premiers",
-      "résultats — ces dates sont des intentions, pas des engagements."
+      "Un canal dont la date d'activation est null ne doit pas être programmé.",
+      "Les 4 canaux prioritaires (Facebook, WhatsApp, Instagram, TikTok) sont",
+      "ouverts SIMULTANÉMENT depuis le 03/08/2026 (arbitrage du 18/08/2026) —",
+      "Facebook reste le canal pivot éditorial (le contenu y est rédigé en",
+      "premier puis décliné), mais n'est plus seul à l'ouverture. LinkedIn est",
+      "prêt (ligne éditoriale existante) mais explicitement hors périmètre du",
+      "contrat AORA-CCC-005 actuel ; YouTube n'est pas retenu pour ce premier",
+      "semestre (charge de production trop lourde pour le forfait actuel)."
     ]
   },
 

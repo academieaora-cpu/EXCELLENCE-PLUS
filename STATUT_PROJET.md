@@ -5,13 +5,14 @@
 > si tu reprends ce projet dans une nouvelle session, lis ce fichier en premier
 > pour connaître l'état réel du repo sans avoir à tout re-déduire du git log.
 
-Dernière mise à jour : 17 août 2026.
+Dernière mise à jour : 18 août 2026.
 
 ## Branches
 
-- **Branche de travail courante** : `claude/meta-ads-publie-aora-ik6u82` (pipeline Meta Ads,
-  livrée et fusionnée dans `main` le 05/08/2026)
-- **Branche de travail précédente** : `claude/excellence-plus-repo-setup-rs7efy`
+- **Branche de travail courante** : `claude/appliquer-changeset-excellence-plus-ylnsd4`
+  (recalage CE-EXC-001/LE-EXC-001/PE-EXC-001 du 18/08/2026, voir point de vigilance 15)
+- **Branches de travail précédentes** : `claude/meta-ads-publie-aora-ik6u82` (pipeline Meta
+  Ads, fusionnée dans `main` le 05/08/2026), `claude/excellence-plus-repo-setup-rs7efy`
 - **`main`** : synchronisée avec la branche de travail (merge `--no-ff` après
   chaque livraison confirmée par l'utilisateur). Les deux branches sont à jour
   l'une par rapport à l'autre au moment de la rédaction de ce document.
@@ -25,25 +26,29 @@ Dernière mise à jour : 17 août 2026.
 |---|---|---|
 | — | Structure repo initiale | `CLAUDE.md`, `_base/identite/*`, `_base/couleurs/*`, `_base/logos/*`, `_base/templates/*`, `calendrier/*.json`, `scripts/*.py`, `.github/workflows/*.yml` |
 | — | `calendrier/calendrier_editorial_aout_2026.html` | Calendrier HTML — août 2026 seul (semaine 32), première itération, jamais retouché depuis |
-| **CE-EXC-001** | `rapports/calendrier_editorial_excellence_plus.html` | Calendrier interactif **août → décembre 2026 (5 mois actifs — juillet achevé, retiré du plan)**, 239 créneaux, navigation 4 niveaux (vue d'ensemble → mois → semaine → fiche). Mois numérotés Mois 1 (août) à Mois 5 (décembre) ; décembre = bilan mi-annuel. **Version courante.** Voir `outils/calendrier_editorial/README.md` pour régénérer. |
-| **CC-EXC-001** | `rapports/calendrier_client_excellence_plus_aout_septembre.html` + `.pdf` | **Livrable client** — extrait août+septembre du calendrier ci-dessus, A4 **paysage**, trié par priorité de pilier (pas chronologique), langage client (pas de statut SOP-001), 89 publications, 9 pages, prêt pour soumission BAT. Twin livrable de CE-EXC-001 (même source de données). Voir `outils/calendrier_client/README.md`. |
-| **LE-EXC-001** | `rapports/ligne_editoriale_excellence_plus.html` + `.pdf` | Ligne éditoriale (7 sections), sourcée depuis `brand_guidelines.md` + `plateforme_marque.md`. Pas encore recalée sur 5 mois (voir vigilance §5). |
-| **PE-EXC-001** | `rapports/planification_editoriale_excellence_plus.html` + `.pdf` | Planification éditoriale (7 sections). **Version 1.1** — recalée sur 5 mois actifs (août-décembre), décembre repositionné bilan mi-annuel, forfait AORA (6 mois / 315 000 FCFA) laissé intact avec note distinguant durée contractuelle et fenêtre de production active. |
+| **CE-EXC-001** | `rapports/calendrier_editorial_excellence_plus.html` | **Refondu le 18/08/2026** — nouvelle architecture HTML (fiches `<details class="fiche-card">` groupées par mois, statuts cliquables À produire/Bloqué/etc., glossaire intégré) ; **n'est plus produit par `outils/calendrier_editorial/`** (voir README de ce dossier, superséde). **août 2026 → janvier 2027 (6 mois pleins)**, 78 publications Facebook/WhatsApp/Instagram (13/mois) + TikTok hors grille. Première publication : lundi 03/08/2026 06h00 (remplace le 10/08 retenu le 03/08). 4 canaux ouverts SIMULTANÉMENT (remplace l'ouverture progressive). **Version courante.** |
+| — | `rapports/calendrier_client_excellence_plus_aout_septembre.html` + `.pdf` (CC-EXC-001) | **Supprimé le 18/08/2026** (commits `da57bfd`/`4b6837f`, hors session). Aucun livrable client de rechange déposé à ce jour — si un extrait client est de nouveau nécessaire, `outils/calendrier_client/` existe encore mais lit une structure de données (`window.ENTRIES`) que CE-EXC-001 n'a plus depuis sa refonte : il faudra l'adapter à la nouvelle structure, pas simplement le relancer. |
+| **LE-EXC-001** | `rapports/ligne_editoriale_excellence_plus.html` + `.pdf` | **Version 1.1 (18/08/2026)** — Section 5 (stratégie plateformes) et Section 6 (cadence) réécrites : 4 canaux simultanés, lundi/mercredi/samedi 06h00/12h00/06h00, statut réel du volet Meta Ads (verrouillé, pas de campagne en cours). Résout la vigilance historique §5 (recalage sur le calendrier actif). |
+| **PE-EXC-001** | `rapports/planification_editoriale_excellence_plus.html` + `.pdf` | **Version 2.1 (18/08/2026)** — Sections 1, 2, 3, 4 recalées sur la même base que LE-EXC-001 (03/08 au lieu du 11/08, 4 canaux simultanés au lieu d'une hiérarchie 1-4 progressive). Thèmes mensuels (Section 3) et budget (Section 6) déjà corrects, non retouchés. |
 | **MA-EXC-001** | `meta-ads/` + `.github/workflows/publish_scheduled_metaads.yml` + `routines/routine4_metaads.md` | **Pipeline Meta Ads (05/08/2026)** — miroir payant de `composio-publie-aora`. 4 portes bloquantes (activation temporelle · BAB budgétaire · BAP contenu + visuel · cohérence du compte), plafond budgétaire dur vérifié avant appel API, idempotence triple clé, conversion WAT→UTC, échecs typés. Groupes Facebook en simulation forcée. **État : verrouillé** — les 4 portes sont fermées, aucune campagne créable. Devenu **Routine 4**, à 03h00 WAT (même heure que R1) + lundi 08h00 WAT. Détail : `meta-ads/README.md`. |
 
 ## Outillage préservé dans le repo
 
-- `outils/calendrier_editorial/` — pipeline complet de génération de CE-EXC-001
-  (`generate.py` → `build_data.py` → `inject_template.py` → HTML autonome).
-  **100 % déterministe** (vérifié par diff sur runs successifs). Voir le
-  `README.md` du dossier pour la commande de régénération et la liste des
-  endroits où modifier le contenu (piliers, plateformes, mois, axes de contenu).
-- `outils/calendrier_client/` — génère CC-EXC-001 à partir des données produites
-  par `calendrier_editorial/generate.py` (même source, pas de duplication de
-  contenu). `MOIS_CIBLES` dans `build_pdf.py` contrôle la période extraite.
-  Technique clé : sections piliers en `<table><thead>` (pas de simples `<div>`)
-  pour que l'en-tête coloré du pilier se répète automatiquement sur les pages de
-  continuation en impression — cf. README du dossier.
+- `outils/calendrier_editorial/` — ⚠️ **superséde depuis le 18/08/2026** (CE-EXC-001
+  a une structure HTML entièrement différente désormais — voir point de
+  vigilance 15 et le README du dossier). Pipeline conservé à titre historique
+  (`generate.py` → `build_data.py` → `inject_template.py` → HTML autonome,
+  **100 % déterministe**) — ne pas le relancer en pensant régénérer le fichier
+  courant, il produirait l'ancienne architecture (`window.ENTRIES`/`WEEKS`) et
+  l'écraserait.
+- `outils/calendrier_client/` — génère CC-EXC-001 (supprimé le 18/08/2026, voir
+  tableau des livrables) à partir des données produites par
+  `calendrier_editorial/generate.py`. Doublement obsolète pour l'instant : sa
+  source de données ne correspond plus à CE-EXC-001, et le livrable qu'il
+  produit n'existe plus. `MOIS_CIBLES` dans `build_pdf.py` contrôlait la période
+  extraite ; technique clé conservée pour référence : sections piliers en
+  `<table><thead>` (pas de simples `<div>`) pour que l'en-tête coloré du pilier
+  se répète automatiquement sur les pages de continuation en impression.
 - **Piège récurrent** : `generate.py` écrit `data/` + `data.js` dans le dossier
   courant. Ces artefacts sont gitignorés mais `scripts/validate_repo.py` scanne
   le **disque**, pas seulement git — il faut les supprimer (`rm -rf data
@@ -88,14 +93,14 @@ Dernière mise à jour : 17 août 2026.
    normal à ce stade (rien n'est encore validé/publié), mais rappel que la
    règle absolue « jamais publier sans BAP » s'applique dès le premier post
    réel.
-5. **LE-EXC-001 n'a pas été recalé sur 5 mois actifs** (contrairement à
-   CE-EXC-001 et PE-EXC-001, v1.1) — il documente encore un cadre implicite
-   juillet-décembre. Impact limité (LE-EXC-001 est une charte éditoriale, pas
-   un planning daté), mais à harmoniser si le document est retouché.
-6. **Les 3 mois non couverts par CC-EXC-001** (octobre, novembre, décembre)
-   n'ont pas encore de pendant client — seuls août+septembre ont un extrait
-   BAT-ready. `outils/calendrier_client/build_pdf.py` peut être relancé avec
-   `MOIS_CIBLES` étendu quand ces mois devront être soumis à validation.
+5. **Résolu le 18/08/2026** — LE-EXC-001 est recalé (v1.1, Sections 5-6 : 4
+   canaux simultanés, cadence lundi/mercredi/samedi). Voir point 15 pour le
+   détail de la correction et de son origine.
+6. **CC-EXC-001 supprimé le 18/08/2026** (hors session — voir tableau des
+   livrables) : plus de pendant client du tout, pas seulement une couverture
+   incomplète. Si un extrait client redevient nécessaire, `outils/calendrier_client/`
+   devra d'abord être adapté à la nouvelle structure de CE-EXC-001 (plus de
+   `window.ENTRIES`) avant de pouvoir être relancé.
 7. **(28 juillet 2026)** Trois documents de référence poussés dans le repo
    (`_base/identite/Plan_AORA_EXCELLENCE_PLUS_Rentree_2026.md` = RECO-001,
    `_base/aora/AORA_Charte_Graphique_2026.md`, `_base/aora/AORA_SOP001_v1_Gestion_Client.md`)
@@ -193,6 +198,42 @@ Dernière mise à jour : 17 août 2026.
    `olouou` → rôle Write ou Admin → l'invitation doit ensuite être acceptée par
    `olouou` avant que l'accès soit effectif).
 
+15. **(18/08/2026) CE-EXC-001 refondu hors session, deux contradictions avec
+   la vérité machine tranchées en session par le compte academieaora@gmail.com :**
+   - CE-EXC-001 fait désormais démarrer les publications au **lundi 03/08/2026**
+     (semaine ISO 32), alors que `config/creneaux.json` et
+     `calendrier/semaine_active.json` disaient depuis le 03/08 que la bonne date
+     était le 10/08 (semaine 33). **Tranché : le 03/08 est la nouvelle réalité**
+     — `config/creneaux.json` (`premiere_publication`, `_historique_creneaux`)
+     et `calendrier/semaine_active.json`/`calendrier_editorial.json` corrigés en
+     conséquence.
+   - CE-EXC-001 montre Facebook + WhatsApp + Instagram simultanés dès août, alors
+     que `config/creneaux.json` prévoyait une ouverture progressive (Instagram
+     09/2026, TikTok 10/2026). **Tranché : l'ouverture simultanée est la nouvelle
+     réalité** — `canaux.activation` et `creneaux.{whatsapp,instagram}` ajoutés
+     dans `config/creneaux.json` (miroir exact de `facebook`) ; TikTok reste hors
+     grille fixe (~1×/mois, vidéo source requise), aucun triplet jour/heure/pilier
+     ne lui est inventé.
+   Répercuté dans LE-EXC-001 (v1.1), PE-EXC-001 (v2.1), `routines/routine1_*.md`,
+   `routines/routine2_*.md`, `superviseur-publication-aora/SKILL.md` (Contrôle 2),
+   et une note de dépréciation ajoutée à `outils/calendrier_editorial/` (dont la
+   sortie ne correspond plus à la structure HTML actuelle de CE-EXC-001 — ne pas
+   le relancer en pensant régénérer le fichier courant).
+   **Point ouvert découvert au passage, non résolu** : `contenu/facebook/EXC-FB-2026-001.md`
+   (le seul post réellement rédigé du dépôt, `date_publication: 2026-08-10`,
+   titre « Préparer la rentrée — trois gestes à commencer maintenant ») ne
+   correspond à aucune fiche de CE-EXC-001 pour cette date ni pour aucune autre —
+   ni le sujet, ni l'angle. Il est orphelin par rapport au plan actuel. Noté dans
+   `calendrier/semaine_active.json` ; à trancher avec Stéphane/Laurence (le
+   retirer, le recaler sur une fiche existante, ou le garder hors-plan) avant
+   tout BAT/BAP sur ce fichier.
+   **Autre point ouvert** : seul un post est rédigé dans tout le dépôt
+   (`contenu/facebook/EXC-FB-2026-001.md`) alors que le plan recalé attend 7
+   publications Facebook entre le 03/08 et le 18/08 (aujourd'hui) — retard de
+   production réel, pas seulement un décalage de date de lancement. `posts_a_produire`
+   dans `calendrier/semaine_active.json` est volontairement laissé vide (voir sa
+   `_lisez_moi`) plutôt que de contenir des identifiants inventés.
+
 ## Conventions établies (à respecter dans une nouvelle session)
 
 - **Format des livrables** : HTML autonome (aucune dépendance externe hormis
@@ -243,18 +284,22 @@ Dernière mise à jour : 17 août 2026.
 Colle ceci en premier message :
 
 > Lis `STATUT_PROJET.md` et `CLAUDE.md` avant toute action. CE-EXC-001 (interne,
-> août-décembre) et CC-EXC-001 (client, août-septembre) sont à jour dans
-> `rapports/`, pipelines de régénération dans `outils/calendrier_editorial/` et
-> `outils/calendrier_client/`.
+> août 2026 → janvier 2027, 6 mois) est à jour dans `rapports/` — refondu le
+> 18/08/2026, plus produit par `outils/calendrier_editorial/` (superséde, voir
+> son README). CC-EXC-001 (client) a été supprimé le 18/08/2026, pas de
+> remplaçant à ce jour.
 
 Rien d'autre n'est en attente à ce stade — tous les livrables demandés ont été
 poussés sur `main` et la branche de travail.
 
-Sur les 11 points de vigilance ci-dessus, **aucun ne bloque la production
-éditoriale**. Trois bloquent en revanche le pipeline Meta Ads (points 9, 10, 11)
-— c'est voulu : le dispositif est conçu pour rester verrouillé tant qu'une valeur
-humaine manque, plutôt que de tourner sur une supposition. Le plus bloquant est
-`ad_account_id`, parce que c'est le seul qu'aucun arbitrage interne ne peut lever.
+Sur les 15 points de vigilance ci-dessus, **aucun ne bloque la production
+éditoriale au sens strict**, mais le point 15 signale un vrai retard de
+production (1 seul post rédigé sur 7 attendus depuis le 03/08) et un post
+orphelin par rapport au plan actuel. Trois autres bloquent le pipeline Meta Ads
+(points 9, 10, 11) — c'est voulu : le dispositif est conçu pour rester verrouillé
+tant qu'une valeur humaine manque, plutôt que de tourner sur une supposition. Le
+plus bloquant est `ad_account_id`, parce que c'est le seul qu'aucun arbitrage
+interne ne peut lever.
 
 **Meta Ads reste par ailleurs non activé au mois 1 (août 2026) par contrat
 AORA-CCC-005** : même si les trois points ci-dessus étaient résolus demain, la

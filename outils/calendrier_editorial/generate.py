@@ -2,13 +2,21 @@
 # -*- coding: utf-8 -*-
 """
 Génère le calendrier éditorial Excellence+ — v3, arbitrages du 30/07/2026,
-jours/heures ajustés le 02/08/2026.
+jours/heures ajustés le 02/08/2026, ouverture des canaux revue le 18/08/2026.
+
+⚠️ SUPERSÉDÉ LE 18/08/2026 — ce générateur produit une architecture HTML
+(window.ENTRIES/WEEKS + template.html) différente de celle qui est actuellement
+dans rapports/calendrier_editorial_excellence_plus.html (fiches <details>,
+statuts cliquables). Le relancer n'actualise PAS le fichier courant, il le
+remplacerait par l'ancienne architecture. Voir README.md du dossier.
 
 Règles appliquées (source : config/creneaux.json, qui fait foi) :
   · 6 mois — août 2026 → janvier 2027 (janvier réintégré au programme)
-  · 3 publications par semaine AU TOTAL, tous canaux confondus
-    lundi 06h00 · mercredi 12h00 · samedi 06h00 WAT
-  · Facebook seul canal ouvert au lancement — les autres suivent
+  · 3 publications par semaine par canal prioritaire (Facebook, WhatsApp,
+    Instagram — même jour/heure/pilier), TikTok en plus (~1×/mois, vidéo
+    source déjà disponible) — lundi 06h00 · mercredi 12h00 · samedi 06h00 WAT
+  · Les 4 canaux prioritaires sont ouverts SIMULTANÉMENT dès le lancement
+    (18/08/2026 — remplace l'ouverture progressive du 30/07/2026)
   · Ciblage : Yaoundé dans son ensemble, plus le premium exclusif
   · Aucune campagne Meta Ads au mois 1 (août)
   · Piliers 40 / 35 / 25 mesurés sur la période entière
@@ -342,9 +350,10 @@ def hashtags_du_mois(mid):
 
 def canaux_ouverts_a(config, mid):
     """Canaux dont la date d'activation (config/creneaux.json) est atteinte
-    au mois mid — des intentions documentées, pas des créneaux réellement
-    programmés tant qu'ils n'ont pas leur propre entrée dans
-    config["creneaux"] (aujourd'hui, Facebook seul)."""
+    au mois mid — depuis le 18/08/2026, les 4 canaux prioritaires (facebook,
+    whatsapp, instagram, tiktok) partagent la même date d'activation
+    (2026-08) : ils s'ouvrent simultanément, plus de canal seul au
+    lancement. linkedin/youtube restent à null (hors périmètre)."""
     activation = (config.get("canaux") or {}).get("activation") or {}
     return [c for c, date_min in activation.items() if date_min and date_min <= mid]
 
