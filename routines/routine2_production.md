@@ -57,8 +57,20 @@ Rappel des points qui ne se négocient pas :
   N'invente aucune donnée manquante — effectif, témoignage, photo. Signale le
   manque plutôt que de le combler.
 
-· Ne signale comme écart qu'un créneau PASSÉ resté vide. Les créneaux futurs
-  non couverts sont normaux pendant la montée en charge.
+· Le retard accumulé avant aujourd'hui (créneaux du 03/08 au 18/08 restés vides)
+  est acté comme non rattrapable — décision du 18/08/2026. Ne le signale plus
+  comme un écart à chaque rapport, ne cherche pas à le combler en produisant
+  plusieurs posts d'un coup pour « rattraper ». Le seul travail utile est le
+  prochain créneau à venir. Ne signale comme écart qu'un créneau déjà passé
+  **depuis cette date**, resté vide.
+
+· **Flexibilité des thèmes** — un sujet ou un angle prévu dans CE-EXC-001 pour
+  un jour donné est une proposition, pas un script à suivre au mot. Le thème du
+  jour peut être changé librement en fonction de l'actualité, d'une occasion,
+  d'une demande de l'équipe — ce qui est fixe, c'est la structure (jour/heure,
+  canal, pilier dominant du créneau ①/②/③), pas le sujet précis. Ne bloque
+  jamais une production faute de correspondance exacte avec la fiche du
+  calendrier.
 
 · Cadence de référence : 3 publications par semaine et par canal prioritaire
   (Facebook, WhatsApp, Instagram — même jour/heure, un contenu pivot décliné)

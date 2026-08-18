@@ -233,6 +233,16 @@ Dernière mise à jour : 18 août 2026.
    production réel, pas seulement un décalage de date de lancement. `posts_a_produire`
    dans `calendrier/semaine_active.json` est volontairement laissé vide (voir sa
    `_lisez_moi`) plutôt que de contenir des identifiants inventés.
+   **Résolu le 18/08/2026 (même jour, décision de posture)** : le compte
+   academieaora@gmail.com a tranché en session que ce retard **n'est pas à
+   rattraper** — pas de production en rafale pour combler les créneaux du 03
+   au 17/08. La routine de production regarde uniquement vers l'avant (le
+   prochain créneau à venir), et **le sujet précis d'un créneau donné n'est
+   plus figé** : CE-EXC-001 propose un angle par créneau, mais l'équipe peut
+   le changer jour au jour (actualité, occasion) sans que ce soit un écart —
+   seule la structure (jour/heure/canal/pilier dominant) reste fixe. Répercuté
+   dans `config/creneaux.json` (`_lisez_moi`), `calendrier/semaine_active.json`
+   et `routines/routine2_production.md`.
 
 ## Conventions établies (à respecter dans une nouvelle session)
 
