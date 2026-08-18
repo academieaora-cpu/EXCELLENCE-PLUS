@@ -41,7 +41,8 @@ d'un souvenir de conversation : ce sont eux qui peuvent se tromper, pas le fichi
 ### Contrôle 1 — Page Facebook cible
 
 Relis `config/page_cible.json`. Valeur attendue actuelle : nom **Excellence+ Éducation**, id
-**61584305458367** (voir §6 si le fichier n'existe pas encore).
+**885480714646404** — corrigé dans le fichier le 15/08/2026 ; l'ancienne valeur
+**61584305458367**, écrite ici jusqu'au 18/08, était erronée (voir §6).
 
 Si le rapport audité mentionne une Page, un identifiant de compte, ou une connexion Composio qui
 ne correspond pas à ce fichier : **⚠️ CRITIQUE**. Dis-le en premier, recommande l'arrêt de toute
@@ -207,27 +208,32 @@ pas noyée dans la liste.
 
 ---
 
-## 6 · Fichier à créer si absent — `config/page_cible.json`
+## 6 · Historique — `config/page_cible.json`
 
-Ce fichier n'existe pas encore dans le dépôt au moment de l'écriture de ce skill (02/08/2026) — la
-Page cible ne vit aujourd'hui que dans la mémoire de conversation, ce qui est fragile : une
-mémoire peut se perdre, un fichier de config, non. Tant qu'il est absent, traite ce point comme
-**⚠️ CRITIQUE en attente de correction**, pas comme un blocage à chaque audit — signale-le une fois,
-propose la création, puis reviens au reste.
+Ce fichier n'existait pas au moment de l'écriture de ce skill (02/08/2026) : la Page cible ne
+vivait que dans la mémoire de conversation, ce qui est fragile — une mémoire peut se perdre, un
+fichier de config, non. **Il existe aujourd'hui**, et son identifiant a été corrigé le 15/08/2026 :
+**885480714646404** (l'ancienne valeur **61584305458367** était erronée). Ce point n'est donc plus
+une procédure à appliquer à chaque audit, c'est un historique.
 
-Contenu proposé, même esprit que `config/creneaux.json` :
+Ce qui reste vrai : si ce fichier venait à disparaître du dépôt, ce serait une **régression**, pas
+un état normal — signale-la, propose de le recréer avec la valeur ci-dessous, et n'improvise
+jamais l'identifiant à partir de ce que la conversation semble indiquer.
+
+État actuel du fichier, qui fait foi :
 
 ```json
 {
   "_lisez_moi": [
-    "Page Facebook unique de destination pour toute publication/programmation",
-    "Composio Excellence+. Ne jamais publier ni programmer ailleurs.",
-    "Source de vérité : ce fichier, pas la mémoire de conversation ni un rapport Slack."
+    "Page de destination unique pour toute programmation Composio. Vérifier à",
+    "chaque exécution que la connexion Composio pointe exactement vers cet",
+    "identifiant avant toute action — si Composio propose une autre Page,",
+    "arrêter et signaler, ne jamais programmer sur une supposition."
   ],
   "facebook": {
     "nom": "Excellence+ Éducation",
-    "url": "https://web.facebook.com/profile.php?id=61584305458367",
-    "id": "61584305458367"
+    "id": "885480714646404",
+    "url": "https://web.facebook.com/profile.php?id=885480714646404"
   }
 }
 ```
@@ -246,4 +252,6 @@ Contenu proposé, même esprit que `config/creneaux.json` :
 
 ---
 
-*ACADÉMIE AORA · SUP-PUB-001 · v1.0 — 02/08/2026 · Contrat AORA-CCC-005*
+*ACADÉMIE AORA · SUP-PUB-001 · v1.1 — 18/08/2026 (Contrôle 1 et §6 : ID de Page corrigé vers
+885480714646404, conforme à `config/page_cible.json` depuis le 15/08/2026 ; §6 requalifié de
+« procédure si absent » en historique, le fichier existant désormais) · Contrat AORA-CCC-005*

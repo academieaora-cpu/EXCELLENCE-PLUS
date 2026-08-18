@@ -23,7 +23,7 @@
   ],
 
   "ad_account_id": null,
-  "page_id": "61584305458367",
+  "page_id": "885480714646404",
   "page_nom": "Excellence+ Éducation",
   "instagram_actor_id": null,
   "devise_compte": null,
@@ -44,7 +44,9 @@
   ],
 
   "_coherence_page_id": [
-    "page_id est identique à config/page_cible.json → facebook.id (61584305458367),",
+    "page_id est identique à config/page_cible.json → facebook.id (885480714646404,",
+    "corrigé le 15/08/2026 ; l'ancienne valeur 61584305458367 était erronée et a",
+    "traîné ici jusqu'au 18/08, faisant diverger les deux fichiers),",
     "la Page qui fait déjà foi côté organique. verifier_activation.py compare les",
     "deux fichiers à chaque exécution et refuse d'ouvrir la porte 4 s'ils divergent :",
     "deux fichiers qui se contredisent sur la Page cible valent une valeur absente."

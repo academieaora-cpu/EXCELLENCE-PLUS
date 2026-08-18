@@ -9,7 +9,10 @@ Dernière mise à jour : 18 août 2026.
 
 ## Branches
 
-- **Branche de travail courante** : `claude/appliquer-changeset-excellence-plus-ylnsd4`
+- **Branche de travail courante** : `claude/validation-formula-root-uwvxvh`
+  (élargissement de la formule de validation à la racine « valid » + alignement de
+  l'ID de Page, 18/08/2026 — voir points de vigilance 16 et 17)
+- **Branche de travail précédente** : `claude/appliquer-changeset-excellence-plus-ylnsd4`
   (recalage CE-EXC-001/LE-EXC-001/PE-EXC-001 du 18/08/2026, voir point de vigilance 15)
 - **Branches de travail précédentes** : `claude/meta-ads-publie-aora-ik6u82` (pipeline Meta
   Ads, fusionnée dans `main` le 05/08/2026), `claude/excellence-plus-repo-setup-rs7efy`
@@ -243,6 +246,25 @@ Dernière mise à jour : 18 août 2026.
    seule la structure (jour/heure/canal/pilier dominant) reste fixe. Répercuté
    dans `config/creneaux.json` (`_lisez_moi`), `calendrier/semaine_active.json`
    et `routines/routine2_production.md`.
+
+16. **Résolu le 18/08/2026 — l'ID de la Page Facebook avait divergé entre trois
+   fichiers.** `config/page_cible.json` a été corrigé le 15/08/2026 (commit
+   `149aef4`) : l'identifiant réel de la Page « Excellence+ Éducation » est
+   **885480714646404**, l'ancien **61584305458367** était erroné. Deux copies de
+   l'ancienne valeur avaient survécu à cette correction et n'ont été trouvées que
+   le 18/08 : `superviseur-publication-aora/SKILL.md` (Contrôle 1 et §6, qui
+   auraient fait signaler comme **⚠️ CRITIQUE** une publication pourtant partie
+   sur la bonne Page) et `meta-ads/config/meta_ads_comptes.json` → `page_id`
+   (que `verifier_conformite_ads.py` signalait effectivement en CRITIQUE : deux
+   fichiers se contredisant sur la Page cible). Les deux sont alignés sur
+   `config/page_cible.json`, qui reste la seule source de vérité ; §6 du skill,
+   qui décrivait encore la procédure « créer le fichier s'il est absent », est
+   requalifié en historique — le fichier existe depuis le 03/08.
+   **Leçon à retenir, pas seulement un correctif** : corriger un identifiant dans
+   son fichier de vérité ne suffit pas — il faut `grep` l'ancienne valeur dans
+   tout le dépôt le jour même. Le contrôle automatique n'a rattrapé qu'une des
+   deux copies (celle de `meta_ads_comptes.json`) ; l'autre vivait dans un
+   document de skill, hors de portée de tout script.
 
 ## Conventions établies (à respecter dans une nouvelle session)
 
