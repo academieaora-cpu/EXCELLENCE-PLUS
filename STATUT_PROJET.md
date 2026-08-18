@@ -206,6 +206,34 @@ Dernière mise à jour : 18 août 2026.
    ajoutés, plus `README.md`. Miroir complet par rapport au Projet Claude.ai « Excellence Plus »
    à cette date — à revérifier normalement (`ls .claude/skills/`) si une session future le trouve
    incomplet, ce fichier ne remplaçant pas cette vérification, il donne juste l'état au 18/08.
+16. **(18/08/2026) Trois formulations de CTA WhatsApp coexistent, aucune ne
+   correspond exactement à l'usage réel — jamais réconcilié, jamais tranché.**
+   `_base/identite/brand_guidelines.md` §9 autorise « Envoyez-nous un message
+   WhatsApp », « Contactez-nous sur WhatsApp », « Écrivez-nous pour en savoir plus »
+   — introduites au commit initial (`3d54440`, 27/07/2026), jamais retouchées depuis
+   bien que le fichier lui-même l'ait été à quatre reprises (28/07, 08/08, 11/08 ×2).
+   `_base/templates/template_post_facebook.md`, créé dans ce même commit initial et
+   jamais modifié non plus, fixe **« Écrivez-nous sur WhatsApp »** — une formule
+   différente des trois ci-dessus, et c'est elle qui est réellement utilisée dans
+   le seul post committé dans `contenu/facebook/` à ce jour (`EXC-FB-2026-001.md` —
+   vérifié, seul fichier présent dans ce dossier hors `.gitkeep`). **Correction à
+   l'affirmation d'origine de ce point** : le patch source citait aussi -005 et -006
+   comme committés ; ces deux ID n'apparaissent que comme exemples illustratifs dans
+   les nouveaux skills du patch 0001 (`format-slack.md`, `mise-en-forme-yaytext.md`),
+   pas comme fichiers réels dans ce dépôt — à vérifier plutôt qu'à supposer si un jour
+   ça devient pertinent. Le skill
+   claude.ai `direction-artistique-excellence-plus` (`references/portes-bloquantes.md`,
+   hors dépôt — jamais poussé ici) porte une **troisième** liste : « Écrivez-nous sur
+   WhatsApp », « Parlons du parcours de votre enfant », « Posez-nous vos questions » —
+   les deux derniers éléments n'apparaissent nulle part ailleurs dans ce dépôt, ni
+   dans aucun post réel. Le commit de réconciliation du 28/07 (`5f543cf`) avait
+   explicitement revu « the calendar/template pipeline » et l'avait jugé cohérent,
+   sans confronter sa formulation exacte à celle de `brand_guidelines.md` §9 — c'est
+   là que l'écart aurait dû être vu. Découvert le 18/08/2026 en comparant le prompt
+   d'une session Claude Code au dépôt réel ; aucune trace d'arbitrage avant cette
+   date. **À trancher par Stéphane** : quelle formule (ou quel sous-ensemble) fait
+   foi. L'usage réel penche pour celle du template, mais ce n'est pas à un skill de
+   le décider seul — c'est une question de voix de marque, pas un fait à vérifier.
 
 ## Conventions établies (à respecter dans une nouvelle session)
 
