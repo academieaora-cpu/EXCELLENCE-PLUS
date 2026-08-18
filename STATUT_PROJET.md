@@ -5,7 +5,7 @@
 > si tu reprends ce projet dans une nouvelle session, lis ce fichier en premier
 > pour connaître l'état réel du repo sans avoir à tout re-déduire du git log.
 
-Dernière mise à jour : 17 août 2026.
+Dernière mise à jour : 18 août 2026.
 
 ## Branches
 
@@ -192,6 +192,20 @@ Dernière mise à jour : 17 août 2026.
    `github.com/academieaora-cpu/EXCELLENCE-PLUS/settings/access` (Add people →
    `olouou` → rôle Write ou Admin → l'invitation doit ensuite être acceptée par
    `olouou` avant que l'accès soit effectif).
+
+15. **Résolu le 18/08/2026 — Page Facebook (pour mémoire, ne plus revérifier sauf régression)**
+   `config/page_cible.json` (`885480714646404`) fait foi depuis le 15/08/2026 (commit `149aef4`).
+   `meta-ads/config/meta_ads_comptes.json` et `.claude/skills/superviseur-publication-aora/SKILL.md`
+   citaient encore l'ancien `61584305458367` — corrigés le 18/08/2026 (patch 0002), avec
+   `_GABARIT_campagne.md` vidé pour hériter de la config plutôt que de porter un autre chiffre en
+   dur. Les trois fichiers concordent, vérifié. **Si l'un de ces trois fichiers réaffiche
+   `61584305458367` un jour, c'est une régression à signaler, pas un état à rediagnostiquer depuis
+   zéro.**
+   **Même lot (patch 0001)** : `.claude/skills/` a désormais ses 6 skills — `community-manager-aora`,
+   `redaction-hebdo-excellence-plus`, `contenu-visuel-excellence-plus`, `pilote-quotidien-aora`
+   ajoutés, plus `README.md`. Miroir complet par rapport au Projet Claude.ai « Excellence Plus »
+   à cette date — à revérifier normalement (`ls .claude/skills/`) si une session future le trouve
+   incomplet, ce fichier ne remplaçant pas cette vérification, il donne juste l'état au 18/08.
 
 ## Conventions établies (à respecter dans une nouvelle session)
 
