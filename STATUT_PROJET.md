@@ -266,6 +266,35 @@ Dernière mise à jour : 18 août 2026.
    deux copies (celle de `meta_ads_comptes.json`) ; l'autre vivait dans un
    document de skill, hors de portée de tout script.
 
+17. **(18/08/2026) La reconnaissance d'une validation client passe de la formule
+   exacte à la racine « valid ».** `config/validation_formules.json` exigeait
+   jusqu'ici une correspondance avec une liste figée de phrases (élargie une
+   première fois le 12/08 pour y ajouter « BAP VALIDÉ »). M. NDOMMIE n'a
+   historiquement jamais repris une de ces formules mot pour mot : exiger
+   l'exactitude a raté des validations réelles plus souvent qu'elle n'en a
+   protégé. Le fichier porte désormais `tige_reconnue` (« valid ») et toute forme
+   du verbe compte comme signal positif — valide, validé, validée, validons,
+   validation. `\bvalid\w*` ne matche pas dans « invalide »/« invalider »
+   (aucune limite de mot entre le préfixe et la racine) — vérifié par test.
+   `mots_disqualifiants` passe de 14 à 28 entrées : élargir la détection positive
+   rend cette liste **plus** critique, pas moins, puisqu'une correspondance sur la
+   seule racine attrape aussi « je NE valide PAS » — ce qu'une correspondance sur
+   la phrase entière évitait par accident. Répercuté dans
+   `meta-ads/scripts/verifier_conformite_ads.py` (Contrôle 8) et
+   `superviseur-publication-aora` (Contrôle 8 + checklist, v1.2).
+   **Ce que ce changement ne fait pas** : `scripts/traiter_bap.py` ne lit toujours
+   pas `validation_formules.json` — le rapprochement entre l'email reçu et le
+   fichier déposé dans `validation/BAP/` reste une décision humaine, ce fichier
+   n'en est que le critère documenté. Aucun mot-clé ne remplace la lecture
+   complète de l'email, et les 3 autres conditions (expéditeur exact, objet
+   identifié, aucune réserve) s'appliquent toujours en plus.
+   **Reste à faire, hors dépôt** : le skill `community-manager-aora` (§Cas
+   Excellence+) porte encore un « ⚠️ Point de vigilance ouvert » sur le
+   désalignement gabarit email / `validation_formules.json`. Ce désalignement est
+   résolu depuis le 12/08 et sans objet depuis le 18/08. Ce skill ne vit pas dans
+   ce dépôt (il est synchronisé depuis le Projet claude.ai) : la requalification en
+   « historique résolu » doit être faite là-bas, elle ne peut pas l'être ici.
+
 ## Conventions établies (à respecter dans une nouvelle session)
 
 - **Format des livrables** : HTML autonome (aucune dépendance externe hormis

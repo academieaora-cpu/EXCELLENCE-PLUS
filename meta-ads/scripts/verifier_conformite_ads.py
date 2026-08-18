@@ -14,7 +14,7 @@ le plafond budgétaire.
   5  Vocabulaire               « active » jamais affirmé sans confirmation d'API
   6  Automatismes concurrents  aucun second moteur qui toucherait Meta Ads
   7  Expéditeur autorisé       BAB et BAP reçus de config/comptes.json
-  8  Formule de validation     formule exacte de config/validation_formules.json
+  8  Formule de validation     racine « valid » détectée, sans mot disqualifiant
   9  Numéros WhatsApp          numéros Cameroun uniquement, jamais le +33
  10  Plafond budgétaire        aucune campagne active ou programmée au-delà du plafond
 
@@ -298,25 +298,37 @@ def main() -> int:
                 f"config/comptes.json → emails_autorises ({', '.join(autorises)})")
 
     # ── Contrôle 8 — formule de validation ───────────────────────────────────
+    # Élargi le 18/08/2026 : toute forme de la racine `tige_reconnue` compte comme
+    # signal positif (regex \btige\w*), plus une liste figée de formules exactes —
+    # voir config/validation_formules.json → _lisez_moi pour le raisonnement.
     if err_formules:
         critiques.append(f"config/validation_formules.json : {err_formules}")
     else:
-        recevables = [sans_accent(x) for x in
-                      ((formules.get("bap") or {}).get("formules_recevables") or [])]
-        disqualifiants = [sans_accent(x) for x in (formules.get("mots_disqualifiants") or [])]
-        if not recevables:
-            critiques.append("config/validation_formules.json → aucune formule BAP recevable")
+        tige = sans_accent(str(formules.get("tige_reconnue") or "valid"))
+        motif_tige = re.compile(r"\b" + re.escape(tige) + r"\w*")
+        # dict.fromkeys : sans accents, « pas validé » et « pas validée » deviennent la
+        # même clé — sans dédoublonnage le rapport citerait deux fois le même mot.
+        disqualifiants = list(dict.fromkeys(
+            sans_accent(x) for x in (formules.get("mots_disqualifiants") or [])))
         for etiquette, f, m, corps in preuves:
             texte = sans_accent(corps)
-            if recevables and not any(r in texte for r in recevables):
+            signal = bool(motif_tige.search(texte))
+            if not signal:
                 critiques.append(
-                    f"{etiquette} {f.name} — aucune formule recevable trouvée dans la "
-                    f"trace. Attendu : « {(formules.get('bap') or {}).get('formules_recevables', [''])[0]} »")
+                    f"{etiquette} {f.name} — aucune forme de « {tige} » trouvée dans la "
+                    f"trace (ex. valide, validé, validation).")
             trouves = [d for d in disqualifiants if d and d in texte]
             if trouves:
+                # « malgré » n'a de sens que si la racine a bien été détectée : une
+                # trace qui ne dit qu'« invalide » déclenche un disqualifiant sans
+                # jamais avoir produit de signal positif.
+                nuance = ("validation possiblement sous réserve, malgré une forme de "
+                          f"« {tige} » détectée") if signal else (
+                          "aucun signal positif par ailleurs : ce n'est pas une "
+                          "validation sous réserve, c'est une non-validation")
                 avertissements.append(
                     f"{etiquette} {f.name} — mot(s) disqualifiant(s) présent(s) : "
-                    f"{', '.join(trouves)} — validation possiblement sous réserve")
+                    f"{', '.join(trouves)} — {nuance}")
 
     # ── Contrôle 9 — numéros WhatsApp ────────────────────────────────────────
     chiffres = lambda n: "".join(c for c in str(n) if c.isdigit())  # noqa: E731
