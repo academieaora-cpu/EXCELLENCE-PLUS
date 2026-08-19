@@ -125,6 +125,8 @@ def main():
     activation = creneaux_data.get("canaux", {}).get("activation", {})
 
     for canal, liste_creneaux in canaux_creneaux.items():
+        if canal.startswith("_"):
+            continue
         date_activation = activation.get(canal)
         slots_canal = []
 

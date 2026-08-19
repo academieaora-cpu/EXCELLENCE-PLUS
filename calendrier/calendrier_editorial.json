@@ -87,6 +87,39 @@
       "format": "image_texte",
       "statut": "draft",
       "fichier": "contenu/facebook/EXC-FB-2026-006.md"
+    },
+    {
+      "id": "EXC-FB-2026-007",
+      "plateforme": "facebook",
+      "date": "2026-08-24",
+      "heure_wat": "06:00",
+      "pilier": "autorité_éducative",
+      "theme": "Un bulletin décevant n'est pas une sentence",
+      "format": "image_texte",
+      "statut": "draft",
+      "fichier": "contenu/facebook/EXC-FB-2026-007.md"
+    },
+    {
+      "id": "EXC-FB-2026-008",
+      "plateforme": "facebook",
+      "date": "2026-08-26",
+      "heure_wat": "12:00",
+      "pilier": "methode_excellence",
+      "theme": "Ce que vous recevez chaque semaine — le bilan transmis aux parents",
+      "format": "carrousel",
+      "statut": "draft",
+      "fichier": "contenu/facebook/EXC-FB-2026-008.md"
+    },
+    {
+      "id": "EXC-FB-2026-009",
+      "plateforme": "facebook",
+      "date": "2026-08-29",
+      "heure_wat": "06:00",
+      "pilier": "la_preuve",
+      "theme": "La preuve, ce n'est pas un chiffre affiché une fois",
+      "format": "image_texte",
+      "statut": "draft",
+      "fichier": "contenu/facebook/EXC-FB-2026-009.md"
     }
   ]
 }
