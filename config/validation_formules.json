@@ -1,18 +1,43 @@
 {
   "_lisez_moi": [
-    "Formules recevables comme validation formelle (BAT ou BAP), comparées en",
-    "minuscules et sans accents par la routine avant de transcrire quoi que ce",
-    "soit dans validation/BAP/. C'est la condition 2 sur 4 — les trois autres",
-    "(expéditeur exact, objet identifié, aucune réserve) s'appliquent en plus,",
-    "jamais à sa place.",
+    "Élargi le 18/08/2026 : toute forme du verbe « valider » compte comme signal",
+    "positif de validation formelle (BAT ou BAP) — pas seulement les formules",
+    "exactes ci-dessous. M. NDOMMIE n'a historiquement jamais repris l'une des",
+    "formules demandées mot pour mot ; exiger une correspondance exacte a raté",
+    "des validations réelles plus souvent que ça n'en a protégé.",
     "",
-    "Corrigé le 12/08/2026 : les gabarits email de community-manager-aora",
-    "(references/bat-publication.md) demandent au client de répondre",
-    "« BAT VALIDÉ » / « BAP VALIDÉ ». Ces mentions sont désormais recevables",
-    "ci-dessous, en plus de la phrase longue — les deux formulations envoyées",
-    "au client sont reconnues, quel que soit le gabarit utilisé pour la",
-    "demande. Les 3 autres conditions restent obligatoires, sans exception."
+    "Mécanique : toute occurrence de la racine `tige_reconnue` (comparaison en",
+    "minuscules, sans accents) compte comme signal positif — « valide »,",
+    "« validé », « validée », « validons », « validation »... Un mot commençant",
+    "par cette racine mais précédé d'un autre mot collé (« invalide »,",
+    "« invalider ») n'est PAS reconnu : il n'y a pas de limite de mot entre",
+    "« in » et « valid », donc `\\bvalid\\w*` ne matche pas dedans. Vérifié.",
+    "",
+    "C'est la condition 2 sur 4 — les trois autres (expéditeur exact, objet",
+    "identifié, aucune réserve) s'appliquent EN PLUS, jamais à sa place, et ne",
+    "sont pas allégées par cet élargissement. Élargir la détection positive",
+    "rend `mots_disqualifiants` plus important qu'avant, pas moins : une",
+    "détection étroite sur une formule complète ratait automatiquement une",
+    "négation simple (« je NE valide PAS » ne contient pas la phrase exacte",
+    "« je valide ce contenu pour publication. »). Une détection large sur la",
+    "seule racine, elle, matche « valide » à l'intérieur d'une négation — d'où",
+    "les tournures de négation ajoutées ci-dessous. Ni cette liste ni aucun",
+    "mot-clé ne remplacent une lecture humaine complète de l'email avant",
+    "d'enregistrer un BAT/BAP : ce sont des garde-fous de premier niveau, pas",
+    "un jugement automatique suffisant à lui seul.",
+    "",
+    "formules_recevables reste utile : c'est ce que les gabarits email de",
+    "community-manager-aora (references/bat-publication.md) demandent encore",
+    "explicitement au client — les garder comme référence documentée, même si",
+    "la détection elle-même ne les exige plus mot pour mot.",
+    "",
+    "Historique : formule exacte unique jusqu'au 12/08/2026 ; « BAT VALIDÉ » /",
+    "« BAP VALIDÉ » ajoutées le 12/08 pour s'aligner sur les gabarits email ;",
+    "racine « valid » le 18/08."
   ],
+
+  "tige_reconnue": "valid",
+  "_tige_reconnue_regex": "\\bvalid\\w*",
 
   "bap": {
     "formules_recevables": [
@@ -33,6 +58,10 @@
   "mots_disqualifiants": [
     "mais", "sauf", "sous réserve", "à condition", "peux-tu", "pourrais-tu",
     "modifier", "changer", "corriger", "remplacer", "attendre", "plus tard",
-    "sans le", "retirer"
+    "sans le", "retirer",
+    "ne valide pas", "ne valide pas encore", "pas validé", "pas validée",
+    "pas valide", "non validé", "non validée", "n'est pas validé",
+    "n'est pas validée", "aucune validation", "pas de validation",
+    "invalide", "invalider", "invalidée"
   ]
 }

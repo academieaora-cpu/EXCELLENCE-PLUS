@@ -120,13 +120,27 @@ avec l'adresse attendue.
 
 ### Contrôle 8 — Formule de validation
 
-Relis `config/validation_formules.json`. Formules BAP recevables : *« Je valide ce contenu pour
-publication. »* ou *« BAP VALIDÉ »* (variante féminine incluse). Même principe côté BAT.
+Élargi le 18/08/2026 : relis `config/validation_formules.json` → `tige_reconnue` (« valid » par
+défaut). Toute occurrence de cette racine dans l'email compte comme signal positif — « valide »,
+« validé », « validée », « validation »... pas seulement les formules exactes listées dans
+`formules_recevables` (gardées comme référence pour ce que les gabarits email demandent encore,
+pas comme seule forme reconnue). `\bvalid\w*` ne matche jamais dans « invalide »/« invalider » —
+aucune limite de mot entre le préfixe et la racine, vérifié.
 
-Résolu le 12/08/2026 : `community-manager-aora` (`references/bat-publication.md`) et
-`validation_formules.json` sont désormais alignés — les deux formulations envoyées au client sont
-reconnues. Si ce contrôle retrouve un jour un email exigeant une formule absente du fichier de
-config, signale-le comme une régression, pas comme un rappel de routine.
+C'est la condition 2 sur 4 (voir `_lisez_moi` du fichier) — les trois autres (expéditeur exact,
+objet identifié, aucune réserve) s'appliquent en plus, jamais à sa place. Une détection large sur
+la seule racine attrape aussi « je NE valide PAS » ou « valide MAIS... » — c'est pour ça que
+`mots_disqualifiants` a été étoffé le même jour avec des tournures de négation explicites
+(« ne valide pas », « pas validé », « non validé »...). Si un rapport traite un email contenant un
+mot disqualifiant comme une validation propre, sans note sur la réserve : **⚠️ CRITIQUE**, quelle
+que soit la présence d'un mot de la racine « valid ». Un mot-clé détecté n'est jamais une lecture
+complète de l'email — il ne dispense personne de la lire en entier avant d'enregistrer un BAT/BAP.
+
+Historique : formule exacte unique jusqu'au 12/08/2026 (*« Je valide ce contenu pour
+publication. »* seule) ; élargi le 12/08 à *« BAP VALIDÉ »* / *« BAT VALIDÉ »* (formule
+alternative, toujours exacte) ; élargi de nouveau le 18/08 à toute forme de la racine — le client
+n'a historiquement jamais repris une formule mot pour mot, et l'exiger a raté des validations
+réelles plus souvent que ça n'en a protégé.
 
 ### Contrôle 9 — Numéros WhatsApp
 
@@ -238,11 +252,13 @@ disparition serait une régression, pas un état normal.
 | `scripts/verifier_conformite.py` | Double porte, idempotence, expéditeur, formule, WhatsApp — lecture seule, ne modifie rien |
 | `references/checklist-supervision.md` | Version courte des neuf contrôles, pour relecture rapide |
 | `config/comptes.json` | Adresse(s) client autorisée(s) — fait foi pour le contrôle 7 |
-| `config/validation_formules.json` | Formule BAP exacte — fait foi pour le contrôle 8 |
+| `config/validation_formules.json` | Racine « valid » + mots disqualifiants — fait foi pour le contrôle 8 |
 | `config/contacts.json` | Numéros WhatsApp autorisés — fait foi pour le contrôle 9 |
 
 ---
 
-*ACADÉMIE AORA · SUP-PUB-001 · v1.1 — 18/08/2026 (Contrôle 1 et §6 : ID de Page corrigé vers
+*ACADÉMIE AORA · SUP-PUB-001 · v1.2 — 18/08/2026 (Contrôle 1 et §6 : ID de Page corrigé vers
 885480714646404, conforme à `config/page_cible.json` depuis le 15/08/2026 ; §6 requalifié de
-« procédure si absent » en historique, le fichier existant désormais) · Contrat AORA-CCC-005*
+« procédure si absent » en historique, le fichier existant désormais. Contrôle 8 : détection
+élargie à la racine « valid », `mots_disqualifiants` renforcés contre la négation) ·
+Contrat AORA-CCC-005*

@@ -9,7 +9,10 @@ Dernière mise à jour : 18 août 2026.
 
 ## Branches
 
-- **Branche de travail courante** : `claude/appliquer-changeset-excellence-plus-ylnsd4`
+- **Branche de travail courante** : `claude/validation-formula-root-uwvxvh`
+  (élargissement de la formule de validation à la racine « valid » + alignement de
+  l'ID de Page, 18/08/2026 — voir points de vigilance 16 et 17)
+- **Branche de travail précédente** : `claude/appliquer-changeset-excellence-plus-ylnsd4`
   (recalage CE-EXC-001/LE-EXC-001/PE-EXC-001 du 18/08/2026, voir point de vigilance 15)
 - **Branches de travail précédentes** : `claude/meta-ads-publie-aora-ik6u82` (pipeline Meta
   Ads, fusionnée dans `main` le 05/08/2026), `claude/excellence-plus-repo-setup-rs7efy`
@@ -256,6 +259,13 @@ Dernière mise à jour : 18 août 2026.
    ajoutés, plus `README.md`. Miroir complet par rapport au Projet Claude.ai « Excellence Plus »
    à cette date — à revérifier normalement (`ls .claude/skills/`) si une session future le trouve
    incomplet, ce fichier ne remplaçant pas cette vérification, il donne juste l'état au 18/08.
+   **Leçon de méthode, tirée le 18/08/2026 en retrouvant le même écart depuis une
+   seconde session** : corriger un identifiant dans son fichier de vérité ne suffit
+   pas — il faut `grep` l'ancienne valeur dans tout le dépôt le jour même. Le
+   contrôle automatique n'avait rattrapé qu'une des deux copies (celle de
+   `meta_ads_comptes.json`, via `verifier_conformite_ads.py`) ; l'autre vivait dans
+   un document de skill, hors de portée de tout script. Deux sessions ont fini par
+   le corriger en parallèle, ce qui est du travail fait deux fois.
 17. **(18/08/2026) Trois formulations de CTA WhatsApp coexistent, aucune ne
    correspond exactement à l'usage réel — jamais réconcilié, jamais tranché.**
    `_base/identite/brand_guidelines.md` §9 autorise « Envoyez-nous un message
@@ -284,6 +294,37 @@ Dernière mise à jour : 18 août 2026.
    date. **À trancher par Stéphane** : quelle formule (ou quel sous-ensemble) fait
    foi. L'usage réel penche pour celle du template, mais ce n'est pas à un skill de
    le décider seul — c'est une question de voix de marque, pas un fait à vérifier.
+
+18. **(18/08/2026) La reconnaissance d'une validation client passe de la formule
+   exacte à la racine « valid ».** `config/validation_formules.json` exigeait
+   jusqu'ici une correspondance avec une liste figée de phrases (élargie une
+   première fois le 12/08 pour y ajouter « BAP VALIDÉ »). M. NDOMMIE n'a
+   historiquement jamais repris une de ces formules mot pour mot : exiger
+   l'exactitude a raté des validations réelles plus souvent qu'elle n'en a
+   protégé. Le fichier porte désormais `tige_reconnue` (« valid ») et toute forme
+   du verbe compte comme signal positif — valide, validé, validée, validons,
+   validation. `\bvalid\w*` ne matche pas dans « invalide »/« invalider »
+   (aucune limite de mot entre le préfixe et la racine) — vérifié par test.
+   `mots_disqualifiants` passe de 14 à 28 entrées : élargir la détection positive
+   rend cette liste **plus** critique, pas moins, puisqu'une correspondance sur la
+   seule racine attrape aussi « je NE valide PAS » — ce qu'une correspondance sur
+   la phrase entière évitait par accident. Répercuté dans
+   `meta-ads/scripts/verifier_conformite_ads.py` (Contrôle 8) et
+   `superviseur-publication-aora` (Contrôle 8 + checklist, v1.2).
+   **Ce que ce changement ne fait pas** : `scripts/traiter_bap.py` ne lit toujours
+   pas `validation_formules.json` — le rapprochement entre l'email reçu et le
+   fichier déposé dans `validation/BAP/` reste une décision humaine, ce fichier
+   n'en est que le critère documenté. Aucun mot-clé ne remplace la lecture
+   complète de l'email, et les 3 autres conditions (expéditeur exact, objet
+   identifié, aucune réserve) s'appliquent toujours en plus.
+   **Répercuté dans `community-manager-aora`** (§Cas Excellence+) : son
+   « ⚠️ Point de vigilance ouvert » sur le désalignement gabarit email /
+   `validation_formules.json` est requalifié en historique résolu — le désalignement
+   l'était depuis le 12/08 et est sans objet depuis le 18/08. Cette correction n'a pu
+   être faite qu'au moment de la fusion vers `main` : le skill ne vivait pas dans ce
+   dépôt jusque-là (patch 0001 de la session `acces-depot`, voir point 16). Le Projet
+   claude.ai « Excellence Plus » garde sa propre copie de ce skill — si les deux
+   doivent rester alignées, la même requalification y reste à faire à la main.
 
 ## Conventions établies (à respecter dans une nouvelle session)
 

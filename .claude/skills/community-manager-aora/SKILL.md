@@ -171,12 +171,15 @@ superviseur-publication-aora → audit a posteriori : page cible, créneaux, dou
 `visuels/approuves/` ni ne renseigne `bap_recu_le` — cette validation humaine fait foi, quel que
 soit le degré d'automatisation en aval.
 
-**⚠️ Point de vigilance ouvert (signalé par `superviseur-publication-aora`)** : les gabarits
-d'email de `references/bat-publication.md` demandent la mention « BAT VALIDÉ » / « BAP VALIDÉ ».
-Le dispositif automatisé Excellence+ attend une formule différente — vérifier
-`config/validation_formules.json` du dépôt EXCELLENCE-PLUS avant d'envoyer un email de validation
-sur ce client, plutôt que d'utiliser le gabarit générique tel quel. Ce fichier fait foi, pas ce
-document.
+**Historique résolu, à ne plus traiter comme un point ouvert** : les gabarits d'email de
+`references/bat-publication.md` demandent la mention « BAT VALIDÉ » / « BAP VALIDÉ ». Signalé
+comme désaligné par `superviseur-publication-aora`, aligné le 12/08/2026, puis élargi le
+18/08/2026 : `config/validation_formules.json` du dépôt EXCELLENCE-PLUS reconnaît désormais toute
+forme de la racine « valid » (valide, validé, validation...), pas seulement une formule exacte —
+le gabarit ci-dessus reste une bonne pratique à demander, mais n'est plus la seule réponse
+reconnue. Ce fichier fait foi, pas ce document ; le relire avant d'envoyer un email de validation
+sur ce client reste la bonne habitude, même si le risque de désalignement qui a motivé ce point à
+l'origine est levé.
 
 ---
 

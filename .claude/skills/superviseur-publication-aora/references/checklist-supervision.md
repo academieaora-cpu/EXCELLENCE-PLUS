@@ -11,7 +11,7 @@
 | 5 | Vocabulaire | front-matter (`statut`, `publie_le`) | rapport dit « publié » sans `publie_le` renseigné |
 | 6 | Automatismes concurrents | `.github/workflows/publish_scheduled.yml` | supprimé le 03/08/2026 — s'il réapparaît, c'est une régression |
 | 7 | Expéditeur autorisé | `config/comptes.json` → `client.emails_autorises` | BAP transcrit d'une adresse absente de la liste |
-| 8 | Formule de validation | `config/validation_formules.json` | email demandé/reçu avec « BAP VALIDÉ » au lieu de la formule exacte |
+| 8 | Formule de validation | `config/validation_formules.json` | élargi le 18/08 : racine « valid » (`tige_reconnue`) + `mots_disqualifiants` étoffés contre la négation — écart type = un signal positif accompagné d'un mot disqualifiant, traité comme validation propre sans note de réserve dans le rapport |
 | 9 | Numéros WhatsApp | `config/contacts.json` | numéro France (+33) utilisé comme contact dans un post |
 
 ## Dernier état constaté (03/08/2026 — à mettre à jour, pas à recopier tel quel indéfiniment)
