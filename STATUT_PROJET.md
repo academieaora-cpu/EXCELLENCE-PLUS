@@ -9,16 +9,31 @@ Dernière mise à jour : 18 août 2026.
 
 ## Branches
 
-- **Branche de travail courante** : `claude/validation-formula-root-uwvxvh`
-  (élargissement de la formule de validation à la racine « valid » + alignement de
-  l'ID de Page, 18/08/2026 — voir points de vigilance 16 et 17)
-- **Branche de travail précédente** : `claude/appliquer-changeset-excellence-plus-ylnsd4`
-  (recalage CE-EXC-001/LE-EXC-001/PE-EXC-001 du 18/08/2026, voir point de vigilance 15)
-- **Branches de travail précédentes** : `claude/meta-ads-publie-aora-ik6u82` (pipeline Meta
-  Ads, fusionnée dans `main` le 05/08/2026), `claude/excellence-plus-repo-setup-rs7efy`
-- **`main`** : synchronisée avec la branche de travail (merge `--no-ff` après
-  chaque livraison confirmée par l'utilisateur). Les deux branches sont à jour
-  l'une par rapport à l'autre au moment de la rédaction de ce document.
+- **Consolidation du 18/08/2026** — trois branches fusionnées dans `main` en
+  `--no-ff` sur demande du compte academieaora@gmail.com :
+  `claude/acces-depot-projet-l77g6o` (les 4 skills éditoriaux versionnés dans
+  `.claude/skills/` + correction de l'ID de Page + points 16/17),
+  `claude/validation-formula-root-uwvxvh` (racine « valid », point 18),
+  `claude/keen-edison-hk18cy` (3 posts brouillons du 12/08 pour la semaine du 17/08).
+- **Deux branches délibérément NON fusionnées**, en attente d'un arbitrage humain :
+  - `claude/meta-ads-publie-aora-ik6u82` (3 commits des 05-06/08/2026, ~1900 lignes) :
+    `booster_post_organique.py` + le workflow `boost_metaads.yml` (cron 15 min) qui
+    activent le **boost payant automatique par défaut**. ⚠️ **La ligne « fusionnée dans
+    `main` le 05/08/2026 » qui figurait ici était fausse** : la base du pipeline Meta Ads
+    l'est, ces 3 commits-là ne le sont pas. Plusieurs skills actifs (`pilote-metaads-aora`,
+    `meta-ads-publie-aora`) décrivent pourtant `booster_post_organique.py` comme tournant
+    toutes les 15 minutes — ils décrivent du code absent de `main`. À trancher : fusionner
+    (donc armer une automatisation qui engage du budget) ou corriger les skills.
+  - `claude/routines-skills-integrations-mjrfwq` (1 commit du 30/07/2026) : renomme
+    `routine3_bat_hebdomadaire.md` → `routine3_bat_quotidien.md` et change la cadence
+    R2/R3. Antérieur aux décisions de cadence du 02/08 ET du 18/08 — le fusionner tel
+    quel réintroduirait un état périmé.
+- **Branches précédentes** : `claude/appliquer-changeset-excellence-plus-ylnsd4`
+  (recalage CE-EXC-001/LE-EXC-001/PE-EXC-001 du 18/08/2026, point 15),
+  `claude/excellence-plus-repo-setup-rs7efy`.
+- **`main`** : porte l'état consolidé ci-dessus. Vérifié après fusion :
+  `scripts/validate_repo.py` 7/7, `verifier_conformite.py` et
+  `verifier_conformite_ads.py` sans écart.
 - Convention établie : développer sur la branche désignée, pousser, puis
   merger proprement vers `main` (jamais de force-push) quand une livraison est
   actée.
@@ -230,10 +245,18 @@ Dernière mise à jour : 18 août 2026.
    `calendrier/semaine_active.json` ; à trancher avec Stéphane/Laurence (le
    retirer, le recaler sur une fiche existante, ou le garder hors-plan) avant
    tout BAT/BAP sur ce fichier.
-   **Autre point ouvert** : seul un post est rédigé dans tout le dépôt
-   (`contenu/facebook/EXC-FB-2026-001.md`) alors que le plan recalé attend 7
-   publications Facebook entre le 03/08 et le 18/08 (aujourd'hui) — retard de
-   production réel, pas seulement un décalage de date de lancement. `posts_a_produire`
+   **Autre point ouvert, en partie levé le 18/08** : un seul post était rédigé dans
+   le dépôt (`contenu/facebook/EXC-FB-2026-001.md`) alors que le plan recalé attend 7
+   publications Facebook entre le 03/08 et le 18/08 — retard de production réel, pas
+   seulement un décalage de date de lancement. La consolidation du 18/08 a ramené dans
+   `main` trois posts supplémentaires (`EXC-FB-2026-004/005/006`, rédigés le 12/08 sur
+   la branche `keen-edison`, restés non fusionnés une semaine) qui couvrent exactement
+   les trois créneaux de la semaine en cours — 17/08 06h00, 19/08 12h00, 22/08 06h00.
+   Les quatre sont en `statut: draft`, `bap_recu_le: null` : **aucun n'est publiable en
+   l'état**, le circuit BAT→BAP reste entier devant eux. Leurs sujets diffèrent des
+   `sujets_attendus` de `calendrier/semaine_active.json`, ce qui est explicitement
+   permis depuis la décision du même jour (le sujet est une proposition, seule la
+   structure jour/heure/canal/pilier est figée). `posts_a_produire`
    dans `calendrier/semaine_active.json` est volontairement laissé vide (voir sa
    `_lisez_moi`) plutôt que de contenir des identifiants inventés.
    **Résolu le 18/08/2026 (même jour, décision de posture)** : le compte
