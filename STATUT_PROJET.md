@@ -243,6 +243,47 @@ Dernière mise à jour : 18 août 2026.
    seule la structure (jour/heure/canal/pilier dominant) reste fixe. Répercuté
    dans `config/creneaux.json` (`_lisez_moi`), `calendrier/semaine_active.json`
    et `routines/routine2_production.md`.
+16. **Résolu le 18/08/2026 — Page Facebook (pour mémoire, ne plus revérifier sauf régression)**
+   `config/page_cible.json` (`885480714646404`) fait foi depuis le 15/08/2026 (commit `149aef4`).
+   `meta-ads/config/meta_ads_comptes.json` et `.claude/skills/superviseur-publication-aora/SKILL.md`
+   citaient encore l'ancien `61584305458367` — corrigés le 18/08/2026 (patch 0002), avec
+   `_GABARIT_campagne.md` vidé pour hériter de la config plutôt que de porter un autre chiffre en
+   dur. Les trois fichiers concordent, vérifié. **Si l'un de ces trois fichiers réaffiche
+   `61584305458367` un jour, c'est une régression à signaler, pas un état à rediagnostiquer depuis
+   zéro.**
+   **Même lot (patch 0001)** : `.claude/skills/` a désormais ses 6 skills — `community-manager-aora`,
+   `redaction-hebdo-excellence-plus`, `contenu-visuel-excellence-plus`, `pilote-quotidien-aora`
+   ajoutés, plus `README.md`. Miroir complet par rapport au Projet Claude.ai « Excellence Plus »
+   à cette date — à revérifier normalement (`ls .claude/skills/`) si une session future le trouve
+   incomplet, ce fichier ne remplaçant pas cette vérification, il donne juste l'état au 18/08.
+17. **(18/08/2026) Trois formulations de CTA WhatsApp coexistent, aucune ne
+   correspond exactement à l'usage réel — jamais réconcilié, jamais tranché.**
+   `_base/identite/brand_guidelines.md` §9 autorise « Envoyez-nous un message
+   WhatsApp », « Contactez-nous sur WhatsApp », « Écrivez-nous pour en savoir plus »
+   — introduites au commit initial (`3d54440`, 27/07/2026), jamais retouchées depuis
+   bien que le fichier lui-même l'ait été à quatre reprises (28/07, 08/08, 11/08 ×2).
+   `_base/templates/template_post_facebook.md`, créé dans ce même commit initial et
+   jamais modifié non plus, fixe **« Écrivez-nous sur WhatsApp »** — une formule
+   différente des trois ci-dessus, et c'est elle qui est réellement utilisée dans
+   le seul post committé dans `contenu/facebook/` à ce jour (`EXC-FB-2026-001.md` —
+   vérifié, seul fichier présent dans ce dossier hors `.gitkeep`). **Correction à
+   l'affirmation d'origine de ce point** : le patch source citait aussi -005 et -006
+   comme committés ; ces deux ID n'apparaissent que comme exemples illustratifs dans
+   les nouveaux skills du patch 0001 (`format-slack.md`, `mise-en-forme-yaytext.md`),
+   pas comme fichiers réels dans ce dépôt — à vérifier plutôt qu'à supposer si un jour
+   ça devient pertinent. Le skill
+   claude.ai `direction-artistique-excellence-plus` (`references/portes-bloquantes.md`,
+   hors dépôt — jamais poussé ici) porte une **troisième** liste : « Écrivez-nous sur
+   WhatsApp », « Parlons du parcours de votre enfant », « Posez-nous vos questions » —
+   les deux derniers éléments n'apparaissent nulle part ailleurs dans ce dépôt, ni
+   dans aucun post réel. Le commit de réconciliation du 28/07 (`5f543cf`) avait
+   explicitement revu « the calendar/template pipeline » et l'avait jugé cohérent,
+   sans confronter sa formulation exacte à celle de `brand_guidelines.md` §9 — c'est
+   là que l'écart aurait dû être vu. Découvert le 18/08/2026 en comparant le prompt
+   d'une session Claude Code au dépôt réel ; aucune trace d'arbitrage avant cette
+   date. **À trancher par Stéphane** : quelle formule (ou quel sous-ensemble) fait
+   foi. L'usage réel penche pour celle du template, mais ce n'est pas à un skill de
+   le décider seul — c'est une question de voix de marque, pas un fait à vérifier.
 
 ## Conventions établies (à respecter dans une nouvelle session)
 

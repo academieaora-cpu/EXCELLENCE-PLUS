@@ -23,7 +23,7 @@
   ],
 
   "ad_account_id": null,
-  "page_id": "61584305458367",
+  "page_id": "885480714646404",
   "page_nom": "Excellence+ Éducation",
   "instagram_actor_id": null,
   "devise_compte": null,
@@ -44,9 +44,14 @@
   ],
 
   "_coherence_page_id": [
-    "page_id est identique à config/page_cible.json → facebook.id (61584305458367),",
+    "page_id est identique à config/page_cible.json → facebook.id (885480714646404),",
     "la Page qui fait déjà foi côté organique. verifier_activation.py compare les",
     "deux fichiers à chaque exécution et refuse d'ouvrir la porte 4 s'ils divergent :",
-    "deux fichiers qui se contredisent sur la Page cible valent une valeur absente."
+    "deux fichiers qui se contredisent sur la Page cible valent une valeur absente.",
+    "",
+    "Corrigé le 18/08/2026 : ce fichier portait encore 61584305458367, périmé depuis la",
+    "correction du 15/08/2026 sur config/page_cible.json — la porte 4 restait donc",
+    "fermée par construction (comportement correct, pas une alerte) tant que ce champ",
+    "n'était pas mis à jour. Si un futur écart réapparaît ici, c'est une régression."
   ]
 }

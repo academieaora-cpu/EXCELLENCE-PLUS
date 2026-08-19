@@ -21,7 +21,7 @@ creatif_ref: A_REMPLIR          # préfixe du visuel dans visuels/approuves/ et
 # Les renseigner ne sert qu'à déclarer explicitement une cible : toute valeur
 # différente de la config déclenche la porte 4 en criticité maximale.
 ad_account_id:
-page_id: "61584305458367"
+page_id:
 instagram_actor_id:
 
 # Mécanisme central : Click-to-WhatsApp.

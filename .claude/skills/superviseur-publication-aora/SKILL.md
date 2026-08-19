@@ -41,7 +41,7 @@ d'un souvenir de conversation : ce sont eux qui peuvent se tromper, pas le fichi
 ### Contrôle 1 — Page Facebook cible
 
 Relis `config/page_cible.json`. Valeur attendue actuelle : nom **Excellence+ Éducation**, id
-**61584305458367** (voir §6 si le fichier n'existe pas encore).
+**885480714646404** — corrigé le 15/08/2026 (voir §6 pour l'historique de cette correction).
 
 Si le rapport audité mentionne une Page, un identifiant de compte, ou une connexion Composio qui
 ne correspond pas à ce fichier : **⚠️ CRITIQUE**. Dis-le en premier, recommande l'arrêt de toute
@@ -207,30 +207,27 @@ pas noyée dans la liste.
 
 ---
 
-## 6 · Fichier à créer si absent — `config/page_cible.json`
+## 6 · Historique — `config/page_cible.json`
 
-Ce fichier n'existe pas encore dans le dépôt au moment de l'écriture de ce skill (02/08/2026) — la
-Page cible ne vit aujourd'hui que dans la mémoire de conversation, ce qui est fragile : une
-mémoire peut se perdre, un fichier de config, non. Tant qu'il est absent, traite ce point comme
-**⚠️ CRITIQUE en attente de correction**, pas comme un blocage à chaque audit — signale-le une fois,
-propose la création, puis reviens au reste.
+Le fichier n'existait pas au moment de l'écriture de ce skill (02/08/2026). Créé le 03/08/2026
+avec l'ID 61584305458367, corrigé le 15/08/2026 vers la valeur actuelle — voir Contrôle 1. Il
+existe désormais : ne plus traiter son absence comme le cas probable à chaque audit, vérifier
+d'abord qu'il est bien là avant de proposer de le recréer.
 
-Contenu proposé, même esprit que `config/creneaux.json` :
+Contenu actuel confirmé (18/08/2026) :
 
 ```json
 {
-  "_lisez_moi": [
-    "Page Facebook unique de destination pour toute publication/programmation",
-    "Composio Excellence+. Ne jamais publier ni programmer ailleurs.",
-    "Source de vérité : ce fichier, pas la mémoire de conversation ni un rapport Slack."
-  ],
   "facebook": {
     "nom": "Excellence+ Éducation",
-    "url": "https://web.facebook.com/profile.php?id=61584305458367",
-    "id": "61584305458367"
+    "id": "885480714646404",
+    "url": "https://web.facebook.com/profile.php?id=885480714646404"
   }
 }
 ```
+
+Si ce fichier venait à disparaître à nouveau, le recréer avec ce contenu et alerter — sa
+disparition serait une régression, pas un état normal.
 
 ---
 
@@ -246,4 +243,6 @@ Contenu proposé, même esprit que `config/creneaux.json` :
 
 ---
 
-*ACADÉMIE AORA · SUP-PUB-001 · v1.0 — 02/08/2026 · Contrat AORA-CCC-005*
+*ACADÉMIE AORA · SUP-PUB-001 · v1.1 — 18/08/2026 (Contrôle 1 et §6 : ID de Page corrigé vers
+885480714646404, conforme à `config/page_cible.json` depuis le 15/08/2026 ; §6 requalifié de
+« procédure si absent » en historique, le fichier existant désormais) · Contrat AORA-CCC-005*
